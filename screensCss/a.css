@@ -1,0 +1,253 @@
+/* Global Reset & Box Sizing */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Global HTML & Body Styles */
+html,
+body {
+  width: 100%;
+  /* height: 500vh; REMOVED: Let content dictate height */
+  font-family: var(--font-poppins); /* Use Poppins font variable */
+  background-color: transparent; /* Ensure transparency for FluidGradient */
+}
+
+/* Container & Image Defaults */
+.container {
+  width: 100%;
+  height: 100%;
+}
+
+img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Section Styles */
+section {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: transparent; /* Ensure transparency */
+}
+
+/* Card Global Styles (used in layout & animations) */
+.card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 280px;
+  height: 400px;
+  perspective: 1000px;
+}
+
+.card p {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+/* Card Wrapper Floating Animation */
+.card-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  animation: floating 3s infinite ease-in-out;
+}
+
+#card-1 .card-wrapper {
+  animation-delay: 0;
+}
+#card-2 .card-wrapper {
+  animation-delay: 0.2s;
+}
+#card-3 .card-wrapper {
+  animation-delay: 0.4s;
+}
+#card-4 .card-wrapper {
+  animation-delay: 0.6s;
+}
+
+/* Flip Card Inner & Sides */
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
+}
+
+.flip-card-front,
+.flip-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 0.8em;
+  overflow: hidden;
+}
+
+/* Flip Card Back */
+.flip-card-back {
+  padding: 1em;
+  background-color: white;
+  transform: rotateY(180deg);
+}
+
+/* Floating Animation Keyframes */
+@keyframes floating {
+  0% {
+    transform: translate(-50%, -50%);
+  }
+  50% {
+    transform: translate(-50%, -60%);
+  }
+  100% {
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* Cards Layout Container */
+.cards {
+  position: relative;
+  height: 100vh;
+}
+
+/* Header & Logo (Removed from Teams page, but kept here for reference if needed elsewhere) */
+.header {
+  position: fixed;
+  top: 50px; /* Adjusted for spacing */
+  left: 50px;
+  z-index: 1000;
+  color: #ffffff;
+  font-size: 34px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.logo {
+  width: 250px;
+  height: auto;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .card {
+    position: relative !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    top: auto !important;
+    width: 80% !important;
+    height: 300px !important;
+    margin: 20px 0 !important;
+    scale: 1 !important;
+    opacity: 1 !important;
+    box-shadow: none !important;
+  }
+  .cards {
+    height: auto !important;
+    min-height: 100vh !important;
+    padding: 20px 0 !important;
+    display: block !important;
+  }
+  .header h1 {
+    font-size: 24px !important;
+    left: 20px !important;
+    top: 20px !important;
+  }
+  .hero h1,
+  .footer h1 {
+    font-size: 2.5rem !important;
+    width: 90% !important;
+  }
+  .flip-card-inner {
+    transform-style: preserve-3d;
+  }
+  .flip-card-front,
+  .flip-card-back {
+    backface-visibility: hidden;
+  }
+  /* Logo adjustments for mobile */
+  .header .logo {
+    width: 150px;
+    height: auto;
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+  }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #1f2937;
+  border: none;
+}
+::-webkit-scrollbar-thumb {
+  background: #374151;
+  border-radius: 9999px;
+  border: none;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #4b5563;
+}
+
+/* Wave Section (if applicable) */
+.wave-section {
+  position: relative;
+  overflow: hidden;
+  background: transparent;
+  display: none;
+}
+.mobile-wave-section {
+  display: block;
+}
+@media (min-width: 769px) {
+  .wave-section {
+    display: block;
+  }
+  .mobile-wave-section {
+    display: none;
+  }
+}
+
+.liquid-chrome-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* screensCss/a.css */
+.transform-style-preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.card {
+  backface-visibility: hidden;
+}
+
+.loading-spinner {
+  perspective: 1000px;
+}

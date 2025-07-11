@@ -1,0 +1,103 @@
+/* Base card container */
+.card {
+  width: 200px; /* Default width */
+  height: 300px; /* Default height */
+  perspective: 1000px;
+}
+
+/* Wrapper for inner elements */
+.card-wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+/* Flip animation container */
+.flip-card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.8s;
+}
+
+/* Front and back faces */
+.flip-card-front,
+.flip-card-back {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  backface-visibility: hidden;
+}
+
+/* Front face specifics */
+.flip-card-front {
+  z-index: 2;
+}
+
+/* Back face specifics */
+.flip-card-back {
+  transform: rotateY(180deg);
+  position: relative;
+  background: #fff; /* Added for contrast if image is transparent */
+}
+
+/* Card logo styling */
+.card-logo {
+  width: 90%;
+  height: auto;
+  display: block;
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 8px; /* Added rounded borders */
+}
+
+/* Member names styling on the back face */
+.flip-card-back .member-names {
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #000; /* Ensure contrast */
+  font-size: 14px; /* Smaller font size (was 16px) */
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 10px 8px;
+  border-radius: 4px;
+}
+
+/* Grid layout for member names */
+.flip-card-back .member-names ul {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two equal columns */
+  gap: 4px; /* Adjust gap as needed */
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Ensure each name stays on one line */
+.flip-card-back .member-names li {
+  margin: 2px 0;
+  white-space: nowrap; /* Prevent wrapping of names */
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .card {
+    width: 150px; /* Smaller width for mobile */
+    height: 225px; /* Adjust height proportionally */
+  }
+
+  .card-logo {
+    width: 80%;
+    top: 50%;
+  }
+
+  .flip-card-back .member-names {
+    font-size: 12px; /* Smaller mobile font size (was 14px) */
+    padding: 2px 6px;
+  }
+}
