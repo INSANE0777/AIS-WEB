@@ -60,6 +60,9 @@ export default function Home() {
           <About />
         </SectionTransition>
 
+        <SectionTransition delay={0.3}>
+          <Timeline />
+        </SectionTransition>
 
         <SectionTransition delay={0.4}>
           <Teams />
