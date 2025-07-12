@@ -12,11 +12,12 @@ export default function ParallaxHero() {
   const subtitleRef = useRef<HTMLParagraphElement>(null)
   const ctaRef = useRef<HTMLDivElement>(null)
   const backgroundRef = useRef<HTMLDivElement>(null)
+  const logoRef = useRef<HTMLDivElement>(null)
   const { isMobile, reducedMotion } = useMobileOptimization()
 
   useEffect(() => {
     // Ensure elements are visible
-    gsap.set([titleRef.current, subtitleRef.current, ctaRef.current], {
+    gsap.set([titleRef.current, subtitleRef.current, ctaRef.current, logoRef.current], {
       opacity: 1,
       visibility: "visible",
     })
@@ -25,6 +26,21 @@ export default function ParallaxHero() {
 
     // Optimized hero entrance animation
     const tl = gsap.timeline({ delay: 0.3 })
+
+    // Logo entrance animation
+    if (logoRef.current) {
+      tl.fromTo(
+        logoRef.current,
+        { y: -30, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: getOptimizedDuration(0.8, isMobile, reducedMotion),
+          ease: getOptimizedEase(isMobile),
+        },
+        0
+      )
+    }
 
     // Faster title animation
     if (titleRef.current) {
@@ -118,6 +134,23 @@ export default function ParallaxHero() {
       ease: "sine.inOut",
       stagger: 0.2,
     })
+
+    // Logo hover animation
+    if (logoRef.current) {
+      gsap.to(logoRef.current, {
+        scale: 1.1,
+        duration: 0.3,
+        ease: "power2.out",
+        paused: true,
+        onComplete: () => {
+          gsap.to(logoRef.current, {
+            scale: 1,
+            duration: 0.3,
+            ease: "power2.out",
+          })
+        }
+      })
+    }
   }, [isMobile, reducedMotion])
 
   return (
@@ -125,6 +158,19 @@ export default function ParallaxHero() {
       ref={heroRef}
       className="relative min-h-screen flex items-center justify-center overflow-hidden parallax-container"
     >
+      {/* Logo in top left corner */}
+      <div 
+        ref={logoRef}
+        className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20 cursor-pointer hover:scale-110 transition-transform duration-300"
+        style={{ opacity: 1, visibility: "visible" }}
+      >
+        <img 
+          src="/images/BIAS.png" 
+          alt="AI Society Logo" 
+          className="w-12 h-12 sm:w-16 sm:h-16 object-contain drop-shadow-lg hover:drop-shadow-xl transition-all duration-300"
+        />
+      </div>
+
       {/* Optimized Parallax Background Elements */}
       <div ref={backgroundRef} className="absolute inset-0 parallax-element">
         <div className="absolute top-20 left-4 sm:left-10 w-1 h-1 sm:w-2 sm:h-2 bg-black rounded-full opacity-20 animate-pulse"></div>

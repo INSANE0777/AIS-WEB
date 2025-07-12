@@ -132,7 +132,6 @@ export default function TakeWhatYouNeed() {
                     transition={{
                       duration: 0.3,
                       delay: index * 0.05,
-                      exit: { duration: 0.6 },
                       layout: { duration: 0.3 },
                     }}
                     className="relative flex-1"

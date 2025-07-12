@@ -1,54 +1,130 @@
 "use client"
-
 import type React from "react"
-
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { gsap } from "gsap"
 import { usePathname } from "next/navigation"
 
 export default function PageTransition({ children }: { children: React.ReactNode }) {
   const containerRef = useRef<HTMLDivElement>(null)
   const maskRef = useRef<HTMLDivElement>(null)
+  const textRef = useRef<HTMLDivElement>(null)
   const pathname = usePathname()
+  const [scrambledText, setScrambledText] = useState("AIS")
+
+  const scrambleText = () => {
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    const targetText = "AIS"
+    let iteration = 0
+    
+    const interval = setInterval(() => {
+      setScrambledText(
+        targetText
+          .split("")
+          .map((letter, index) => {
+            if (index < iteration) {
+              return targetText[index]
+            }
+            return letters[Math.floor(Math.random() * letters.length)]
+          })
+          .join("")
+      )
+      
+      if (iteration >= targetText.length) {
+        clearInterval(interval)
+      }
+      
+      iteration += 1 / 4.5
+    }, 80)
+  }
 
   useEffect(() => {
     const container = containerRef.current
     const mask = maskRef.current
-    if (!container || !mask) return
+    const text = textRef.current
+    
+    if (!container || !mask || !text) return
 
+    // Start with random letters
+    setScrambledText("XYZ")
+    
     // Page entrance animation
     const tl = gsap.timeline()
+    
+    // Mask animation with text scrambling
+    tl.fromTo(mask, { scaleX: 0, transformOrigin: "left center" }, { 
+      scaleX: 1, 
+      duration: 0.8, 
+      ease: "power3.inOut",
+      onStart: () => {
+        // Show text and start scrambling
+        gsap.set(text, { opacity: 1, scale: 1 })
+        scrambleText()
+      }
+    })
+    .to(mask, { 
+      scaleX: 0, 
+      transformOrigin: "right center", 
+      duration: 0.8, 
+      ease: "power3.inOut",
+      onStart: () => {
+        // Fade out text
+        gsap.to(text, { opacity: 0, scale: 0.8, duration: 0.4, ease: "power2.out" })
+      }
+    }, "+=0.2")
+    .fromTo(container, { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, "-=0.4")
 
-    // Mask animation
-    tl.fromTo(mask, { scaleX: 0, transformOrigin: "left center" }, { scaleX: 1, duration: 0.8, ease: "power3.inOut" })
-      .to(mask, { scaleX: 0, transformOrigin: "right center", duration: 0.8, ease: "power3.inOut" }, "+=0.2")
-      .fromTo(container, { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, "-=0.4")
-
-    // Pixel shader effect
-    const pixelEffect = () => {
-      const pixels = Array.from({ length: 100 }).map((_, i) => {
-        const pixel = document.createElement("div")
-        pixel.className = "absolute w-1 h-1 bg-black/20"
-        pixel.style.left = `${Math.random() * 100}%`
-        pixel.style.top = `${Math.random() * 100}%`
-        container.appendChild(pixel)
-
+    // Lightweight particle effects
+    const particleEffect = () => {
+      // Floating hearts (reduced amount)
+      const hearts = Array.from({ length: 6 }).map((_, i) => {
+        const heart = document.createElement("div")
+        heart.innerHTML = "♥"
+        heart.className = "absolute text-gray-300 text-2xl pointer-events-none"
+        heart.style.left = `${Math.random() * 100}%`
+        heart.style.top = `${Math.random() * 100}%`
+        mask.appendChild(heart)
+        
         gsap.fromTo(
-          pixel,
-          { scale: 0, opacity: 1 },
+          heart,
+          { scale: 0, opacity: 0 },
           {
-            scale: 1,
-            opacity: 0,
-            duration: 1,
+            scale: 1.2,
+            opacity: 0.7,
+            y: -80,
+            duration: 1.5,
             delay: Math.random() * 0.5,
             ease: "power2.out",
-            onComplete: () => pixel.remove(),
+            onComplete: () => heart.remove(),
+          },
+        )
+      })
+
+      // Simple geometric shapes (reduced)
+      const shapes = ['◆', '◇', '●', '○', '▲', '△']
+      Array.from({ length: 8 }).forEach((_, i) => {
+        const shape = document.createElement("div")
+        shape.innerHTML = shapes[Math.floor(Math.random() * shapes.length)]
+        shape.className = "absolute text-xl pointer-events-none text-white"
+        shape.style.left = `${Math.random() * 100}%`
+        shape.style.top = `${Math.random() * 100}%`
+        mask.appendChild(shape)
+        
+        gsap.fromTo(
+          shape,
+          { scale: 0, opacity: 0 },
+          {
+            scale: 1,
+            opacity: 0.8,
+            duration: 1.5,
+            delay: Math.random() * 0.8,
+            ease: "power2.out",
+            onComplete: () => shape.remove()
           },
         )
       })
     }
-
-    pixelEffect()
+    
+    particleEffect()
   }, [pathname])
 
   return (
@@ -56,10 +132,27 @@ export default function PageTransition({ children }: { children: React.ReactNode
       {/* Transition Mask */}
       <div
         ref={maskRef}
-        className="fixed inset-0 bg-black z-50 pointer-events-none"
+        className="fixed inset-0 bg-black z-50 pointer-events-none flex items-center justify-center"
         style={{ transformOrigin: "left center" }}
-      />
-
+      >
+        {/* Scrambling Text - clean and simple */}
+        <div
+          ref={textRef}
+          className="text-white text-6xl font-bold tracking-widest opacity-0"
+          style={{ fontFamily: "monospace" }}
+        >
+          {scrambledText}
+        </div>
+        
+        {/* Simple floating elements around text */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/4 left-1/4 text-2xl animate-bounce text-white">▲</div>
+          <div className="absolute top-1/3 right-1/4 text-2xl animate-pulse text-gray-300">●</div>
+          <div className="absolute bottom-1/4 left-1/3 text-2xl text-white">◆</div>
+          <div className="absolute bottom-1/3 right-1/3 text-2xl animate-bounce text-gray-400">○</div>
+        </div>
+      </div>
+      
       {/* Page Content */}
       <div ref={containerRef} className="relative">
         {children}
