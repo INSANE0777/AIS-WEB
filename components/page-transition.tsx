@@ -33,7 +33,7 @@ export default function PageTransition({ children }: { children: React.ReactNode
         clearInterval(interval)
       }
       
-      iteration += 1 / 4.5
+      iteration += 1 / 3
     }, 80)
   }
 
@@ -100,7 +100,7 @@ export default function PageTransition({ children }: { children: React.ReactNode
       })
 
       // Simple geometric shapes (reduced)
-      const shapes = ['◆', '◇', '●', '○', '▲', '△']
+      const shapes = ['◆', '◇', '▲', '△']
       Array.from({ length: 8 }).forEach((_, i) => {
         const shape = document.createElement("div")
         shape.innerHTML = shapes[Math.floor(Math.random() * shapes.length)]

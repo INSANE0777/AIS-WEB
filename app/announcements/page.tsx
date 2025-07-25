@@ -2,9 +2,17 @@
 
 import { useEffect, useRef } from "react"
 import { gsap } from "gsap"
-import { Megaphone, Calendar, Clock, Star, AlertCircle, Trophy, Zap } from "lucide-react"
+import {
+  Megaphone,
+  Calendar,
+  Clock,
+  Star,
+  AlertCircle,
+  Trophy,
+  Zap,
+} from "lucide-react"
 import TextReveal from "@/components/text-reveal"
-import MorphicHoverCard from "@/components/morphic-hover-card"
+import InteractiveCard from "@/components/InteractiveCard"
 import FluidGradient from "@/components/fluid-gradient"
 
 const announcements = [
@@ -50,20 +58,37 @@ const announcements = [
   },
 ]
 
+const spillColorMap: { [key: string]: string } = {
+  urgent: "rgba(239, 68, 68, 0.15)",
+  event: "rgba(59, 130, 246, 0.15)",
+  opportunity: "rgba(16, 185, 129, 0.15)",
+  general: "rgba(168, 85, 247, 0.15)",
+}
+
 export default function Announcements() {
   const pageRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const tl = gsap.timeline()
 
-    tl.fromTo(".page-header", { y: 100, opacity: 0 }, { y: 0, opacity: 1, duration: 1.2, ease: "power3.out" }).fromTo(
+    tl.fromTo(
+      ".page-header",
+      { y: 100, opacity: 0 },
+      { y: 0, opacity: 1, duration: 1.2, ease: "power3.out" },
+    ).fromTo(
       ".announcement-card",
       { y: 50, opacity: 0, scale: 0.9 },
-      { y: 0, opacity: 1, scale: 1, duration: 0.8, stagger: 0.15, ease: "back.out(1.7)" },
+      {
+        y: 0,
+        opacity: 1,
+        scale: 1,
+        duration: 0.8,
+        stagger: 0.15,
+        ease: "back.out(1.7)",
+      },
       "-=0.8",
     )
 
-    // Floating animations
     gsap.to(".float-element", {
       y: -20,
       rotation: 10,
@@ -79,7 +104,16 @@ export default function Announcements() {
     <div ref={pageRef} className="pt-32 pb-20 px-4 min-h-screen relative">
       <FluidGradient />
 
-      {/* Floating Elements */}
+      <div
+        className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20 cursor-pointer hover:scale-110 transition-transform duration-300"
+      >
+        <img
+          src="/images/BIAS.png"
+          alt="AI Society Logo"
+          className="w-12 h-12 sm:w-16 sm:h-16 object-contain drop-shadow-lg"
+        />
+      </div>
+
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <Megaphone className="float-element absolute top-20 left-10 w-8 h-8 text-black/10" />
         <Star className="float-element absolute top-40 right-20 w-10 h-10 text-black/10" />
@@ -88,40 +122,40 @@ export default function Announcements() {
       </div>
 
       <div className="max-w-6xl mx-auto relative z-10">
-        {/* Header */}
         <div className="page-header text-center mb-20">
           <div className="inline-flex items-center space-x-2 bg-black text-white px-6 py-3 rounded-full text-sm font-medium mb-8">
             <Megaphone size={16} />
             <span>Stay Updated</span>
           </div>
 
-          <TextReveal className="text-6xl md:text-7xl font-black text-black mb-6">Announcements</TextReveal>
+          <TextReveal className="text-6xl md:text-7xl font-black text-black mb-6">
+            Announcements
+          </TextReveal>
 
           <div className="w-24 h-1 bg-black mx-auto mb-8"></div>
           <p className="text-xl text-black/70 max-w-3xl mx-auto leading-relaxed">
-            Stay informed about the latest updates, opportunities, and events from the AI Society community.
+            Stay informed about the latest updates, opportunities, and events from
+            the AI Society community.
           </p>
         </div>
 
-        {/* Announcements Grid */}
         <div className="space-y-8">
-          {announcements.map((announcement, index) => {
+          {announcements.map((announcement) => {
             const Icon = announcement.icon
             return (
-              <MorphicHoverCard
+              <InteractiveCard
                 key={announcement.id}
-                className="announcement-card bg-white/90 backdrop-blur-sm rounded-2xl border border-black/10 hover:border-black/30 transition-all hover:shadow-2xl"
+                spillColor={spillColorMap[announcement.type]}
+                className="announcement-card bg-white/90 backdrop-blur-sm rounded-2xl border border-black/10 transition-all duration-300 group-hover:border-black/30 group-hover:shadow-xl"
               >
                 <div className="p-8">
                   <div className="flex items-start space-x-6">
-                    {/* Icon */}
                     <div
                       className={`w-16 h-16 bg-gradient-to-br ${announcement.color} rounded-full flex items-center justify-center flex-shrink-0 shadow-lg`}
                     >
                       <Icon size={24} className="text-white" />
                     </div>
 
-                    {/* Content */}
                     <div className="flex-1">
                       <div className="flex items-center space-x-3 mb-3">
                         <span
@@ -129,10 +163,10 @@ export default function Announcements() {
                             announcement.type === "urgent"
                               ? "bg-red-100 text-red-800"
                               : announcement.type === "event"
-                                ? "bg-blue-100 text-blue-800"
-                                : announcement.type === "opportunity"
-                                  ? "bg-green-100 text-green-800"
-                                  : "bg-gray-100 text-gray-800"
+                              ? "bg-blue-100 text-blue-800"
+                              : announcement.type === "opportunity"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-gray-100 text-gray-800"
                           }`}
                         >
                           {announcement.type}
@@ -149,13 +183,14 @@ export default function Announcements() {
                         </div>
                       </div>
 
-                      <h3 className="text-2xl font-bold text-black mb-3 hover:text-black/80 transition-colors">
+                      <h3 className="text-2xl font-bold text-black mb-3">
                         {announcement.title}
                       </h3>
-                      <p className="text-black/70 leading-relaxed">{announcement.description}</p>
+                      <p className="text-black/70 leading-relaxed">
+                        {announcement.description}
+                      </p>
                     </div>
 
-                    {/* Priority Indicator */}
                     {announcement.type === "urgent" && (
                       <div className="flex-shrink-0">
                         <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
@@ -163,34 +198,33 @@ export default function Announcements() {
                     )}
                   </div>
                 </div>
-              </MorphicHoverCard>
+              </InteractiveCard>
             )
           })}
         </div>
 
-        {/* Subscribe Section */}
         <div className="mt-20 text-center">
-          <MorphicHoverCard className="bg-black text-white p-12 rounded-2xl">
+          <InteractiveCard className="bg-black text-white p-12 rounded-2xl" spillColor="rgba(59, 130, 246, 0.2)">
             <div className="flex items-center justify-center space-x-2 mb-4">
               <Megaphone size={24} className="text-blue-400" />
               <h2 className="text-3xl font-bold">Never Miss an Update</h2>
               <Star size={24} className="text-yellow-400" />
             </div>
             <p className="text-white/80 mb-8 max-w-2xl mx-auto">
-              Subscribe to our announcement feed and get instant notifications about important updates, deadlines, and
-              opportunities.
+              Subscribe to our announcement feed and get instant notifications
+              about important updates, deadlines, and opportunities.
             </p>
             <div className="flex flex-col sm:flex-row max-w-md mx-auto gap-4">
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-1 px-4 py-3 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-white"
+                className="flex-1 px-4 py-3 rounded-full text-black focus:outline-none focus:ring-2 focus:ring-white"
               />
-              <button className="bg-white text-black px-6 py-3 rounded-lg font-semibold hover:bg-white/90 transition-colors">
+              <button className="bg-white text-black px-6 py-3 rounded-full font-semibold hover:bg-white/90 transition-colors">
                 Subscribe
               </button>
             </div>
-          </MorphicHoverCard>
+          </InteractiveCard>
         </div>
       </div>
     </div>

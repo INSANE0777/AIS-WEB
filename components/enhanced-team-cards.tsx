@@ -1,39 +1,38 @@
+
+
 "use client"
 
 import { useEffect, useRef } from "react"
 import { gsap } from "gsap"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { Code, Megaphone, Crown } from "lucide-react"
-import DirectionAwareHover from "./direction-aware-hover"
-import MorphicHoverCard from "./morphic-hover-card"
+
+gsap.registerPlugin(ScrollTrigger)
 
 const teamData = {
   executives: {
-    icon: Crown,
-    title: "Executive Leadership",
     members: [
       {
         name: "Samaksh Tyagi",
         role: "President",
         specialty: "AI Strategy & Vision",
-        avatar: "/placeholder.svg?height=100&width=100",
+        avatar: "/placeholder.svg?height=128&width=128&query=professional+man+in+suit",
       },
       {
         name: "Aviral Jain",
         role: "Vice President",
         specialty: "Operations & Growth",
-        avatar: "/placeholder.svg?height=100&width=100",
+        avatar: "/placeholder.svg?height=128&width=128&query=professional+man+with+glasses",
       },
       {
         name: "Mann Acharya",
         role: "Mentor / Ex-Chairperson",
         specialty: "Strategic Guidance",
-        avatar: "/placeholder.svg?height=100&width=100",
+        avatar: "/placeholder.svg?height=128&width=128&query=experienced+wise+mentor",
       },
     ],
   },
   technical: {
-    icon: Code,
-    title: "Technical Departments",
     departments: {
       "Natural Language Processing": ["Madhav Gupta", "Sanya Wadhawan"],
       "Reinforcement Learning": ["Afjal Hussein", "Gyanendra Prakash"],
@@ -42,8 +41,6 @@ const teamData = {
     },
   },
   community: {
-    icon: Megaphone,
-    title: "Community Outreach",
     departments: {
       "Social Media": ["Anvesh Mishra", "Palak Virk"],
       "Design Team": ["Dhruv Kumar", "Pragyan Pant"],
@@ -57,206 +54,184 @@ export default function EnhancedTeamCards() {
   const sectionRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
-    // Enhanced entrance animations
+    const cards = gsap.utils.toArray<HTMLElement>(".team-card")
+
     gsap.fromTo(
-      ".team-card",
+      cards,
       {
-        y: 100,
-        opacity: 0,
-        scale: 0.8,
-        rotationY: 45,
+        autoAlpha: 0,
+        y: 50,
+        scale: 0.9,
       },
       {
+        autoAlpha: 1,
         y: 0,
-        opacity: 1,
         scale: 1,
-        rotationY: 0,
-        duration: 1,
-        stagger: 0.2,
-        ease: "back.out(1.7)",
+        duration: 0.8,
+        stagger: 0.1,
+        ease: "power3.out",
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: "top 80%",
+          start: "top 75%",
           toggleActions: "play none none reverse",
         },
-      },
+      }
     )
 
-    // Floating animations
-    gsap.to(".team-card", {
-      y: -10,
-      duration: 3,
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut",
-      stagger: 0.3,
+    cards.forEach((card) => {
+      const q = gsap.utils.selector(card)
+      const content = q(".card-content")
+      const glare = q(".card-glare")
+      
+      const setX = gsap.quickSetter(card, "rotationY", "deg")
+      const setY = gsap.quickSetter(card, "rotationX", "deg")
+      const setGlareX = gsap.quickSetter(glare, "x", "%")
+      const setGlareY = gsap.quickSetter(glare, "y", "%")
+
+      gsap.set(card, { transformStyle: "preserve-3d", transformPerspective: 800 })
+      gsap.set(content, { transformStyle: "preserve-3d" })
+      gsap.set(q(".card-icon, .card-avatar"), { transform: "translateZ(80px) "})
+      gsap.set(q(".card-title"), { transform: "translateZ(60px)" })
+      gsap.set(q(".card-role, .card-members"), { transform: "translateZ(40px)" })
+      gsap.set(q(".card-specialty"), { transform: "translateZ(20px)" })
+
+
+      const onMouseMove = (e: MouseEvent) => {
+        const { left, top, width, height } = card.getBoundingClientRect()
+        const x = gsap.utils.clamp(-1, 1, (e.clientX - left) / width * 2 - 1)
+        const y = gsap.utils.clamp(-1, 1, (e.clientY - top) / height * 2 - 1)
+        
+        setX(x * 12)
+        setY(y * -12)
+        setGlareX(x * 100)
+        setGlareY(y * 100)
+      }
+
+      const onMouseEnter = () => {
+        gsap.to(card, { scale: 1.05, duration: 0.4, ease: "power2.out" })
+        gsap.to(glare, { autoAlpha: 1, duration: 0.3 })
+      }
+
+      const onMouseLeave = () => {
+        gsap.to(card, {
+          rotationX: 0,
+          rotationY: 0,
+          scale: 1,
+          duration: 1.2,
+          ease: "elastic.out(1, 0.5)",
+        })
+        gsap.to(glare, { autoAlpha: 0, duration: 0.5 })
+      }
+
+      card.addEventListener("mousemove", onMouseMove)
+      card.addEventListener("mouseenter", onMouseEnter)
+      card.addEventListener("mouseleave", onMouseLeave)
+      
+      return () => {
+        card.removeEventListener("mousemove", onMouseMove)
+        card.removeEventListener("mouseenter", onMouseEnter)
+        card.removeEventListener("mouseleave", onMouseLeave)
+      }
     })
 
-    // Particle effects
-    gsap.to(".particle", {
-      y: -50,
-      opacity: 0,
-      duration: 2,
-      repeat: -1,
-      ease: "power2.out",
-      stagger: {
-        amount: 2,
-        from: "random",
-      },
-    })
   }, [])
 
   return (
-    <section ref={sectionRef} className="py-32 px-4 relative overflow-hidden">
-      {/* Floating Particles */}
-      <div className="absolute inset-0 pointer-events-none">
-        {Array.from({ length: 20 }).map((_, i) => (
-          <div
-            key={i}
-            className="particle absolute w-1 h-1 bg-black/20 rounded-full"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-          />
-        ))}
-      </div>
+    <section ref={sectionRef} className="py-24 md:py-32 px-4 bg-white dark:bg-black relative overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,_rgba(128,128,128,0.08)_0%,_transparent_50%)] dark:bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.05)_0%,_transparent_60%)]"></div>
 
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-5xl md:text-6xl font-black text-black mb-6">
+      <div className="max-w-7xl mx-auto relative z-10">
+        <div className="text-center mb-16 md:mb-20">
+          <h2 className="text-5xl md:text-6xl font-black text-gray-900 dark:text-white mb-6">
             Meet Our
             <br />
-            <span className="text-black/60">Dream Team</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-600 to-gray-900 dark:from-gray-400 dark:to-white">
+              Dream Team
+            </span>
           </h2>
-          <p className="text-xl text-black/70 max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Passionate individuals driving innovation and excellence in artificial intelligence
           </p>
         </div>
 
-        {/* Executive Leadership */}
-        <div className="mb-20">
-          <h3 className="text-3xl font-bold text-black mb-8 text-center">Executive Leadership</h3>
+        <div className="mb-16 md:mb-20">
+          <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">Executive Leadership</h3>
           <div className="grid md:grid-cols-3 gap-8">
-            {teamData.executives.members.map((member, index) => (
-              <MorphicHoverCard key={index} className="team-card">
-                <DirectionAwareHover className="bg-white p-8 rounded-2xl border border-black/10 hover:border-black hover:shadow-2xl transition-all group text-center relative overflow-hidden">
-                  {/* Animated Background */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-                  {/* Avatar with 3D effect */}
-                  <div className="relative mb-6">
-                    <div className="w-24 h-24 mx-auto rounded-full overflow-hidden border-4 border-black group-hover:border-white transition-colors relative">
-                      <img
-                        src={member.avatar || "/placeholder.svg"}
-                        alt={member.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                      />
+            {teamData.executives.members.map((member) => (
+              <div key={member.name} className="team-card will-change-transform">
+                <div className="card-content w-full h-full bg-white/50 dark:bg-gray-900/50 p-8 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-xl backdrop-blur-md text-center relative overflow-hidden">
+                   <div className="card-glare absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_var(--mx)_var(--my),rgba(255,255,255,0.6),rgba(255,255,255,0)_40%)] dark:bg-[radial-gradient(circle_at_var(--mx)_var(--my),rgba(255,255,255,0.15),rgba(255,255,255,0)_50%)] opacity-0 pointer-events-none"></div>
+                   <div className="card-avatar relative mb-6">
+                    <div className="w-32 h-32 mx-auto rounded-full overflow-hidden border-4 border-gray-900 dark:border-white relative">
+                      <img src={member.avatar} alt={member.name} className="w-full h-full object-cover" />
                     </div>
-                    <div className="absolute -top-2 -right-2 w-8 h-8 bg-black group-hover:bg-white border-2 border-white group-hover:border-black rounded-full flex items-center justify-center transition-all">
-                      <Crown size={16} className="text-white group-hover:text-black transition-colors" />
+                    <div className="card-icon absolute -top-2 -right-2 w-10 h-10 bg-gray-900 dark:bg-white border-2 border-white dark:border-gray-900 rounded-full flex items-center justify-center">
+                      <Crown size={20} className="text-white dark:text-gray-900" />
                     </div>
                   </div>
-
-                  <h3 className="text-2xl font-bold text-black mb-2 group-hover:text-black/80 transition-colors">
-                    {member.name}
-                  </h3>
-                  <p className="text-lg text-black/60 mb-3 font-semibold">{member.role}</p>
-                  <p className="text-sm text-black/50">{member.specialty}</p>
-
-                  {/* Animated underline */}
-                  <div className="absolute bottom-0 left-0 w-0 h-1 bg-black group-hover:w-full transition-all duration-500" />
-                </DirectionAwareHover>
-              </MorphicHoverCard>
+                  <h3 className="card-title text-2xl font-bold text-gray-900 dark:text-white mb-2">{member.name}</h3>
+                  <p className="card-role text-lg text-gray-600 dark:text-gray-300 mb-3 font-semibold">{member.role}</p>
+                  <p className="card-specialty text-sm text-gray-500 dark:text-gray-400">{member.specialty}</p>
+                </div>
+              </div>
             ))}
           </div>
         </div>
 
-        {/* Technical Departments */}
-        <div className="mb-20">
-          <h3 className="text-3xl font-bold text-black mb-8 text-center">Technical Departments</h3>
-          <div className="grid md:grid-cols-2 gap-8">
-            {Object.entries(teamData.technical.departments).map(([dept, members], index) => (
-              <MorphicHoverCard key={dept} className="team-card">
-                <DirectionAwareHover className="bg-white p-8 rounded-2xl border border-black/10 hover:border-black hover:shadow-2xl transition-all group relative overflow-hidden">
-                  {/* Animated particles */}
-                  <div className="absolute inset-0 pointer-events-none">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <div
-                        key={i}
-                        className="absolute w-1 h-1 bg-black/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                        style={{
-                          left: `${20 + i * 15}%`,
-                          top: `${20 + i * 10}%`,
-                          animationDelay: `${i * 0.1}s`,
-                        }}
-                      />
+        <div className="grid md:grid-cols-2 gap-8">
+            <div className="mb-16 md:mb-0">
+                <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">Technical Departments</h3>
+                <div className="space-y-8">
+                    {Object.entries(teamData.technical.departments).map(([dept, members]) => (
+                        <div key={dept} className="team-card will-change-transform">
+                            <div className="card-content w-full h-full bg-white/50 dark:bg-gray-900/50 p-6 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-xl backdrop-blur-md relative overflow-hidden">
+                                <div className="card-glare absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_var(--mx)_var(--my),rgba(255,255,255,0.6),rgba(255,255,255,0)_40%)] dark:bg-[radial-gradient(circle_at_var(--mx)_var(--my),rgba(255,255,255,0.15),rgba(255,255,255,0)_50%)] opacity-0 pointer-events-none"></div>
+                                <div className="flex items-center space-x-4 mb-4">
+                                    <div className="card-icon w-12 h-12 bg-gray-900 dark:bg-white rounded-full flex items-center justify-center flex-shrink-0">
+                                        <Code size={20} className="text-white dark:text-gray-900" />
+                                    </div>
+                                    <h3 className="card-title text-xl font-bold text-gray-900 dark:text-white">{dept}</h3>
+                                </div>
+                                <div className="card-members grid grid-cols-2 gap-x-4 gap-y-2 pl-4">
+                                    {members.map((member) => (
+                                        <div key={member} className="flex items-center space-x-2.5">
+                                            <div className="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-600 rounded-full" />
+                                            <span className="text-gray-700 dark:text-gray-300 font-medium">{member}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
                     ))}
-                  </div>
+                </div>
+            </div>
 
-                  <div className="flex items-center space-x-3 mb-6">
-                    <div className="w-12 h-12 bg-black group-hover:bg-white border-2 border-black rounded-full flex items-center justify-center transition-all">
-                      <Code size={20} className="text-white group-hover:text-black transition-colors" />
-                    </div>
-                    <h3 className="text-xl font-bold text-black group-hover:text-black/80 transition-colors">{dept}</h3>
-                  </div>
-
-                  <div className="space-y-3">
-                    {members.map((member, i) => (
-                      <div key={i} className="flex items-center space-x-3 group/member">
-                        <div className="w-2 h-2 bg-black rounded-full group-hover/member:scale-150 transition-transform" />
-                        <span className="text-black/70 font-medium group-hover/member:text-black transition-colors">
-                          {member}
-                        </span>
-                      </div>
+            <div>
+                <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">Community Outreach</h3>
+                <div className="space-y-8">
+                    {Object.entries(teamData.community.departments).map(([dept, members]) => (
+                        <div key={dept} className="team-card will-change-transform">
+                             <div className="card-content w-full h-full bg-white/50 dark:bg-gray-900/50 p-6 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-xl backdrop-blur-md relative overflow-hidden">
+                                <div className="card-glare absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_var(--mx)_var(--my),rgba(255,255,255,0.6),rgba(255,255,255,0)_40%)] dark:bg-[radial-gradient(circle_at_var(--mx)_var(--my),rgba(255,255,255,0.15),rgba(255,255,255,0)_50%)] opacity-0 pointer-events-none"></div>
+                                <div className="flex items-center space-x-4 mb-4">
+                                    <div className="card-icon w-12 h-12 bg-gray-900 dark:bg-white rounded-full flex items-center justify-center flex-shrink-0">
+                                        <Megaphone size={20} className="text-white dark:text-gray-900" />
+                                    </div>
+                                    <h3 className="card-title text-xl font-bold text-gray-900 dark:text-white">{dept}</h3>
+                                </div>
+                                <div className="card-members grid grid-cols-2 gap-x-4 gap-y-2 pl-4">
+                                    {members.map((member) => (
+                                        <div key={member} className="flex items-center space-x-2.5">
+                                            <div className="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-600 rounded-full" />
+                                            <span className="text-gray-700 dark:text-gray-300 font-medium">{member}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
                     ))}
-                  </div>
-
-                  {/* Morphing border effect */}
-                  <div className="absolute inset-0 rounded-2xl border-2 border-transparent group-hover:border-black/20 transition-all duration-500" />
-                </DirectionAwareHover>
-              </MorphicHoverCard>
-            ))}
-          </div>
-        </div>
-
-        {/* Community Outreach */}
-        <div>
-          <h3 className="text-3xl font-bold text-black mb-8 text-center">Community Outreach</h3>
-          <div className="grid md:grid-cols-2 gap-8">
-            {Object.entries(teamData.community.departments).map(([dept, members], index) => (
-              <MorphicHoverCard key={dept} className="team-card">
-                <DirectionAwareHover className="bg-white p-8 rounded-2xl border border-black/10 hover:border-black hover:shadow-2xl transition-all group relative overflow-hidden">
-                  {/* Glowing effect */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-black/5 via-transparent to-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-
-                  <div className="flex items-center space-x-3 mb-6">
-                    <div className="w-12 h-12 bg-black group-hover:bg-white border-2 border-black rounded-full flex items-center justify-center transition-all relative">
-                      <Megaphone size={20} className="text-white group-hover:text-black transition-colors" />
-                      {/* Pulse effect */}
-                      <div className="absolute inset-0 rounded-full bg-black/20 scale-0 group-hover:scale-150 opacity-0 group-hover:opacity-100 transition-all duration-500" />
-                    </div>
-                    <h3 className="text-xl font-bold text-black group-hover:text-black/80 transition-colors">{dept}</h3>
-                  </div>
-
-                  <div className="space-y-3">
-                    {members.map((member, i) => (
-                      <div key={i} className="flex items-center space-x-3 group/member">
-                        <div className="w-2 h-2 bg-black rounded-full group-hover/member:scale-150 group-hover/member:bg-blue-500 transition-all" />
-                        <span className="text-black/70 font-medium group-hover/member:text-black group-hover/member:translate-x-1 transition-all">
-                          {member}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Animated corner accents */}
-                  <div className="absolute top-0 right-0 w-0 h-0 border-l-8 border-b-8 border-transparent border-r-black/0 group-hover:border-r-black/20 transition-all duration-300" />
-                  <div className="absolute bottom-0 left-0 w-0 h-0 border-r-8 border-t-8 border-transparent border-l-black/0 group-hover:border-l-black/20 transition-all duration-300" />
-                </DirectionAwareHover>
-              </MorphicHoverCard>
-            ))}
-          </div>
+                </div>
+            </div>
         </div>
       </div>
     </section>

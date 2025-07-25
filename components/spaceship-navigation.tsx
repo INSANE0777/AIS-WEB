@@ -4,44 +4,55 @@ import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import {
-  Menu,
-  X,
   Home,
   Calendar,
-  Users,
   Github,
   Instagram,
   Linkedin,
   FolderOpen,
-  Info,
-  CarIcon as Career,
+  Car,
   Megaphone,
   Youtube,
 } from "lucide-react"
 import { gsap } from "gsap"
 
+// A simple hook to detect mobile screen sizes
+const useIsMobile = (breakpoint = 768) => {
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < breakpoint)
+    }
+    checkScreenSize()
+    window.addEventListener("resize", checkScreenSize)
+    return () => window.removeEventListener("resize", checkScreenSize)
+  }, [breakpoint])
+  return isMobile
+}
+
 const navItems = [
   { name: "Home", href: "/", icon: Home, angle: -90 },
   { name: "Projects", href: "/projects", icon: FolderOpen, angle: -18 },
-  { name: "Events", href: "/events", icon: Calendar, angle: 54 },
-  { name: "Join Us", href: "/join", icon: Career, angle: 126 },
+  { name: "Events", href: "/event", icon: Calendar, angle: 54 },
+  { name: "Join Us", href: "/join", icon: Car, angle: 126 },
   { name: "Announcements", href: "/announcements", icon: Megaphone, angle: 198 },
 ]
 
 const socialLinks = [
-  { icon: Github, href: "#", label: "GitHub" },
-  { icon: Instagram, href: "#", label: "Instagram" },
-  { icon: Linkedin, href: "#", label: "LinkedIn" },
+  { icon: Github, href: "https://github.com/AIS-B", label: "GitHub" },
+  { icon: Instagram, href: "https://www.instagram.com/ais.bennett/", label: "Instagram" },
+  { icon: Linkedin, href: "https://www.linkedin.com/company/ais-bennett/", label: "LinkedIn" },
   { icon: Youtube, href: "#", label: "YouTube" },
 ]
 
 const MAX_DRAG_RADIUS = 40;
-const NAVIGATION_HOLD_TIME = 1000; // Timer set to 1 second
+const NAVIGATION_HOLD_TIME = 1000;
 
 export default function SpaceshipNavigation() {
   const [isOpen, setIsOpen] = useState(false)
   const [hoveredItem, setHoveredItem] = useState<number | null>(null)
   const router = useRouter()
+  const isMobile = useIsMobile(); // Use the mobile detection hook
 
   const [isDragging, setIsDragging] = useState(false)
   const [hubPosition, setHubPosition] = useState({ x: 0, y: 0 })
@@ -49,55 +60,74 @@ export default function SpaceshipNavigation() {
   const hubPositionRef = useRef({ x: 0, y: 0 });
   const navigationTimerRef = useRef<NodeJS.Timeout | null>(null);
 
+  const topBarRef = useRef<SVGRectElement>(null);
+  const middleBarRef = useRef<SVGRectElement>(null);
+  const bottomBarRef = useRef<SVGRectElement>(null);
+  const hamburgerTimeline = useRef<gsap.core.Timeline | null>(null);
+  const rippleTimeline = useRef<gsap.core.Timeline | null>(null);
+
+  // Responsive constants
+  const navSize = isMobile ? 340 : 500;
+  const navItemRadius = isMobile ? 120 : 180;
+  const pieOuterRadius = isMobile ? 170 : 250;
+  const pieInnerRadius = isMobile ? 60 : 80;
+  const hubSize = isMobile ? 70 : 80;
+
+  useEffect(() => {
+    gsap.set([topBarRef.current, middleBarRef.current, bottomBarRef.current], { transformOrigin: '50% 50%' });
+    hamburgerTimeline.current = gsap.timeline({ paused: true })
+      .to([topBarRef.current, bottomBarRef.current], { fill: '#FFFFFF', duration: 0.4 }, 0)
+      .to(middleBarRef.current, { scaleX: 0, opacity: 0, duration: 0.2, ease: 'power2.in' }, 0)
+      .to(topBarRef.current, { y: 10, duration: 0.4, ease: 'power3.inOut' }, 0)
+      .to(bottomBarRef.current, { y: -10, duration: 0.4, ease: 'power3.inOut' }, 0)
+      .to(topBarRef.current, { rotation: 45, duration: 0.4, ease: 'power3.out' }, 0.2)
+      .to(bottomBarRef.current, { rotation: -45, duration: 0.4, ease: 'power3.out' }, 0.2);
+
+    rippleTimeline.current = gsap.timeline({ paused: true, repeat: -1 });
+    rippleTimeline.current.fromTo(".ripple-circle", 
+        { scale: 1, opacity: 0.5 },
+        { 
+            scale: isMobile ? 4.5 : 6, // Ripples scale relative to container size
+            opacity: 0, 
+            duration: 5, // SLOWER RIPPLE DURATION
+            stagger: 1.5, // SLOWER STAGGER
+            ease: "power1.out" 
+        }
+    );
+  }, [isMobile]); // Re-run effect if isMobile changes to adjust animations
+
   useEffect(() => {
     if (isOpen) {
+      hamburgerTimeline.current?.play();
+      rippleTimeline.current?.play(0);
       setHubPosition({ x: 0, y: 0 });
       hubPositionRef.current = { x: 0, y: 0 };
-      gsap.fromTo(".nav-overlay", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.5, ease: "power3.out" });
-      gsap.fromTo(".grid-line", { opacity: 0 }, { opacity: 0.3, duration: 1, stagger: 0.05, ease: "power2.out" });
+      gsap.to(".nav-overlay", { autoAlpha: 1, duration: 0.5, ease: "power3.out" });
+      gsap.fromTo(".grid-line", { opacity: 0 }, { opacity: 0.1, duration: 1, stagger: 0.05, ease: "power2.out" });
       gsap.fromTo(".central-hub", { scale: 0, rotation: -180 }, { scale: 1, rotation: 0, duration: 0.8, ease: "back.out(1.7)", delay: 0.2 });
       gsap.fromTo(".nav-item", { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, stagger: 0.1, ease: "back.out(1.7)", delay: 0.4 });
       gsap.fromTo(".social-icon", { y: -50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, stagger: 0.1, ease: "power3.out", delay: 0.6 });
+    } else {
+      hamburgerTimeline.current?.reverse();
+      rippleTimeline.current?.pause().progress(0);
+      gsap.to(".nav-overlay", { autoAlpha: 0, duration: 0.3, ease: "power3.in" });
     }
-  }, [isOpen])
+  }, [isOpen]);
 
   const clearNavigationTimer = () => {
-    if (navigationTimerRef.current) {
-      clearTimeout(navigationTimerRef.current);
-      navigationTimerRef.current = null;
-    }
+    if (navigationTimerRef.current) clearTimeout(navigationTimerRef.current);
+    navigationTimerRef.current = null;
     gsap.killTweensOf(".timer-slice");
     gsap.set(".timer-slice", { opacity: 0 });
   }
 
   const handleAutoNavigate = (href: string) => {
     if (!isOpen) return;
-    clearNavigationTimer();
-    
-    gsap.to(".nav-overlay", {
-      opacity: 0, scale: 0.8, duration: 0.3, ease: "power3.in",
-      onComplete: () => {
-        router.push(href);
-        setIsOpen(false);
-        setHoveredItem(null);
-      },
-    });
+    setIsOpen(false);
+    setTimeout(() => router.push(href), 300);
   };
 
-  const toggleMenu = () => {
-    if (isOpen) {
-      gsap.to(".nav-overlay", {
-        opacity: 0, scale: 0.8, duration: 0.3, ease: "power3.in",
-        onComplete: () => {
-          setIsOpen(false);
-          setHoveredItem(null);
-          clearNavigationTimer();
-        },
-      })
-    } else {
-      setIsOpen(true);
-    }
-  }
+  const toggleMenu = () => setIsOpen(!isOpen);
 
   const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
@@ -133,24 +163,16 @@ export default function SpaceshipNavigation() {
     navItems.forEach((item, index) => {
       let diff = Math.abs(dragAngleDegrees - item.angle);
       if (diff > 180) diff = 360 - diff;
-      if (diff < minDiff) {
-        minDiff = diff;
-        closestIndex = index;
-      }
+      if (diff < minDiff) { minDiff = diff; closestIndex = index; }
     });
     
     if (hoveredItem !== closestIndex) {
       setHoveredItem(closestIndex);
       clearNavigationTimer();
-
       navigationTimerRef.current = setTimeout(() => {
         handleAutoNavigate(navItems[closestIndex].href);
       }, NAVIGATION_HOLD_TIME);
-      
-      gsap.fromTo(`.timer-slice-${closestIndex}`, 
-        { opacity: 0 }, 
-        { opacity: 1, duration: NAVIGATION_HOLD_TIME / 1000, ease: "power1.inOut" }
-      );
+      gsap.fromTo(`.timer-slice-${closestIndex}`, { opacity: 0 }, { opacity: 1, duration: NAVIGATION_HOLD_TIME / 1000, ease: "power1.inOut" });
     }
   };
   
@@ -158,89 +180,89 @@ export default function SpaceshipNavigation() {
     if (!isDragging) return;
     setIsDragging(false);
     clearNavigationTimer();
-
-    gsap.to(hubPositionRef.current, {
-      x: 0, y: 0, duration: 0.6, ease: "elastic.out(1, 0.5)",
-      onUpdate: () => setHubPosition({ ...hubPositionRef.current }),
-    });
+    setHoveredItem(null);
+    gsap.to(hubPositionRef.current, { x: 0, y: 0, duration: 0.6, ease: "elastic.out(1, 0.5)", onUpdate: () => setHubPosition({ ...hubPositionRef.current }) });
   };
 
   useEffect(() => {
+    const moveHandler = handleDragMove as any;
+    const endHandler = handleDragEnd as any;
     if (isDragging) {
-      window.addEventListener("mousemove", handleDragMove as any);
-      window.addEventListener("touchmove", handleDragMove as any);
-      window.addEventListener("mouseup", handleDragEnd);
-      window.addEventListener("touchend", handleDragEnd);
+      window.addEventListener("mousemove", moveHandler);
+      window.addEventListener("touchmove", moveHandler);
+      window.addEventListener("mouseup", endHandler);
+      window.addEventListener("touchend", endHandler);
     }
     return () => {
-      window.removeEventListener("mousemove", handleDragMove as any);
-      window.removeEventListener("touchmove", handleDragMove as any);
-      window.removeEventListener("mouseup", handleDragEnd);
-      window.removeEventListener("touchend", handleDragEnd);
+      window.removeEventListener("mousemove", moveHandler);
+      window.removeEventListener("touchmove", moveHandler);
+      window.removeEventListener("mouseup", endHandler);
+      window.removeEventListener("touchend", endHandler);
     };
   }, [isDragging, hoveredItem]);
 
-  const getItemPosition = (angle: number, radius: number = 180) => ({ left: `calc(50% + ${radius * Math.cos(angle*Math.PI/180)}px)`, top: `calc(50% + ${radius * Math.sin(angle*Math.PI/180)}px)`, transform: 'translate(-50%, -50%)' });
-  const createPieSlice = (angle: number) => { const s=angle-36,e=angle+36,sr=(s*Math.PI)/180,er=(e*Math.PI)/180,rO=250,rI=80,x1=rO*Math.cos(sr),y1=rO*Math.sin(sr),x2=rO*Math.cos(er),y2=rO*Math.sin(er),x3=rI*Math.cos(er),y3=rI*Math.sin(er),x4=rI*Math.cos(sr),y4=rI*Math.sin(sr);return`M ${x1} ${y1} A ${rO} ${rO} 0 0 1 ${x2} ${y2} L ${x3} ${y3} A ${rI} ${rI} 0 0 0 ${x4} ${y4} Z` };
+  const getItemPosition = (angle: number, radius: number) => ({ left: `calc(50% + ${radius * Math.cos(angle*Math.PI/180)}px)`, top: `calc(50% + ${radius * Math.sin(angle*Math.PI/180)}px)`, transform: 'translate(-50%, -50%)' });
+  const createPieSlice = (angle: number, rO: number, rI: number) => { const s=angle-36,e=angle+36,sr=(s*Math.PI)/180,er=(e*Math.PI)/180,x1=rO*Math.cos(sr),y1=rO*Math.sin(sr),x2=rO*Math.cos(er),y2=rO*Math.sin(er),x3=rI*Math.cos(er),y3=rI*Math.sin(er),x4=rI*Math.cos(sr),y4=rI*Math.sin(sr);return`M ${x1} ${y1} A ${rO} ${rO} 0 0 1 ${x2} ${y2} L ${x3} ${y3} A ${rI} ${rI} 0 0 0 ${x4} ${y4} Z` };
 
   return (
     <>
-      {!isOpen && ( <button onClick={toggleMenu} className="fixed top-8 right-8 z-50 w-12 h-12 bg-black text-white rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-lg focus:outline-none"><Menu size={24} /></button> )}
+      <button onClick={toggleMenu} className="fixed top-4 right-4 sm:top-8 sm:right-8 z-50 w-16 h-16 flex items-center justify-center focus:outline-none group" aria-label="Toggle Navigation">
+        <svg width="32" height="32" viewBox="0 0 32 32" className="overflow-visible">
+          <rect ref={topBarRef} width="32" height="4" y="4" fill="black" rx="2" />
+          <rect ref={middleBarRef} width="32" height="4" y="14" fill="black" rx="2" />
+          <rect ref={bottomBarRef} width="32" height="4" y="24" fill="black" rx="2" />
+        </svg>
+      </button>
 
-      {isOpen && (
-        <div className="nav-overlay fixed inset-0 z-40 bg-black">
-          <div className="absolute inset-0 overflow-hidden">
-            {Array.from({ length: 20 }).map((_, i) => (<div key={`v-${i}`} className="grid-line absolute top-0 bottom-0 w-px bg-white/20" style={{ left: `${(i + 1) * 5}%` }}/>))}
-            {Array.from({ length: 12 }).map((_, i) => (<div key={`h-${i}`} className="grid-line absolute left-0 right-0 h-px bg-white/20" style={{ top: `${(i + 1) * 8.33}%` }}/>))}
+      {/* DARKER BLACK GLASS MORPHISM */}
+      <div className="nav-overlay fixed inset-0 z-40 bg-black/75 backdrop-blur-2xl invisible">
+        <div className="absolute inset-0 overflow-hidden">
+          {Array.from({ length: 20 }).map((_, i) => (<div key={`v-${i}`} className="grid-line absolute top-0 bottom-0 w-px bg-white/10" style={{ left: `${(i + 1) * 5}%` }}/>))}
+          {Array.from({ length: 12 }).map((_, i) => (<div key={`h-${i}`} className="grid-line absolute left-0 right-0 h-px bg-white/10" style={{ top: `${(i + 1) * 8.33}%` }}/>))}
+        </div>
+
+        <div className="absolute top-4 left-4 sm:top-8 sm:left-8 flex space-x-2 sm:space-x-4">
+          {socialLinks.map((social, index) => { const Icon = social.icon; return (<a key={index} href={social.href} target="_blank" rel="noopener noreferrer" className="social-icon w-8 h-8 sm:w-10 sm:h-10 text-white hover:text-gray-300 transition-colors focus:outline-none flex items-center justify-center"><Icon size={isMobile ? 20 : 24} /></a>)})}
+        </div>
+
+        <div ref={navContainerRef} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" style={{ width: navSize, height: navSize }}>
+          <div className="absolute inset-0 pointer-events-none">
+            <svg className="w-full h-full" viewBox={`-${navSize/2} -${navSize/2} ${navSize} ${navSize}`}>
+              {navItems.map((item, index) => (
+                <path key={`highlight-${index}`} d={createPieSlice(item.angle, pieOuterRadius, pieInnerRadius)} fill="rgba(255, 255, 255, 1)" className={`transition-opacity duration-300 ${hoveredItem === index ? 'opacity-100' : 'opacity-0'}`} />
+              ))}
+              {navItems.map((item, index) => (
+                <path key={`timer-${index}`} className={`timer-slice timer-slice-${index}`} d={createPieSlice(item.angle, pieOuterRadius, pieInnerRadius)} fill="rgb(115, 115, 115)" style={{ opacity: 0 }} pointerEvents="none" />
+              ))}
+            </svg>
           </div>
 
-          <button onClick={toggleMenu} className="absolute top-8 left-8 z-50 w-12 h-12 text-white hover:scale-110 transition-transform focus:outline-none"><X size={32} /></button>
-          <div className="absolute top-8 right-8 flex space-x-4">
-            {socialLinks.map((social, index) => { const Icon = social.icon; return (<a key={index} href={social.href} className="social-icon w-10 h-10 text-white hover:text-gray-300 transition-colors focus:outline-none"><Icon size={24} /></a>)})}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="ripple-circle absolute border-2 border-white/50 rounded-full opacity-0" style={{ width: hubSize, height: hubSize }}></div>
+            <div className="ripple-circle absolute border-2 border-white/50 rounded-full opacity-0" style={{ width: hubSize, height: hubSize }}></div>
+            <div className="ripple-circle absolute border-2 border-white/50 rounded-full opacity-0" style={{ width: hubSize, height: hubSize }}></div>
           </div>
-
-          <div ref={navContainerRef} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px]">
-            <div className="absolute inset-0 pointer-events-none">
-              <svg className="w-[500px] h-[500px]" viewBox="-250 -250 500 500">
-                {/* Layer 1: White Highlight Slices */}
-                {navItems.map((item, index) => (
-                  <path key={index} d={createPieSlice(item.angle)} fill={hoveredItem === index ? "rgba(255, 255, 255, 1)" : "transparent"} className="transition-all duration-300"/>
-                ))}
-                {/* Layer 2: Grey Timer Overlay Slices */}
-                {navItems.map((item, index) => (
-                  <path
-                    key={`timer-${index}`}
-                    className={`timer-slice timer-slice-${index}`}
-                    d={createPieSlice(item.angle)}
-                    fill="rgb(115, 115, 115)" // FIX: A true neutral grey color
-                    style={{ opacity: 0 }}
-                    pointerEvents="none"
-                  />
-                ))}
-              </svg>
-            </div>
-            
-            <div className="central-hub absolute top-1/2 left-1/2 z-10" style={{ transform: `translate(calc(-50% + ${hubPosition.x}px), calc(-50% + ${hubPosition.y}px))`, cursor: isDragging ? 'grabbing' : 'grab' }} onMouseDown={handleDragStart} onTouchStart={handleDragStart}>
-              <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center relative pointer-events-none">
+          
+          <div className="central-hub absolute top-1/2 left-1/2 z-10" style={{ transform: `translate(calc(-50% + ${hubPosition.x}px), calc(-50% + ${hubPosition.y}px))`, cursor: isDragging ? 'grabbing' : 'grab' }} onMouseDown={handleDragStart} onTouchStart={handleDragStart}>
+              <div className="bg-white rounded-full flex items-center justify-center relative pointer-events-none" style={{ width: hubSize, height: hubSize }}>
                 <div className="relative z-10 w-6 h-6 bg-black rounded-sm flex items-center justify-center"><div className="w-1.5 h-1.5 bg-white rounded-full"></div></div>
                 <div className="absolute z-10 -top-1 left-1/2 -translate-x-1/2"><div className="w-0 h-0 border-l-[3px] border-r-[3px] border-b-[6px] border-transparent border-b-black"></div></div>
                 <div className="absolute z-10 -bottom-1 left-1/2 -translate-x-1/2"><div className="w-0 h-0 border-l-[3px] border-r-[3px] border-t-[6px] border-transparent border-t-black"></div></div>
                 <div className="absolute z-10 -left-1 top-1/2 -translate-y-1/2"><div className="w-0 h-0 border-t-[3px] border-b-[3px] border-r-[6px] border-transparent border-r-black"></div></div>
                 <div className="absolute z-10 -right-1 top-1/2 -translate-y-1/2"><div className="w-0 h-0 border-t-[3px] border-b-[3px] border-l-[6px] border-transparent border-l-black"></div></div>
               </div>
-            </div>
-              
-            {navItems.map((item, index) => { const Icon = item.icon, position = getItemPosition(item.angle), isHovered = hoveredItem === index; return ( <Link key={index} href={item.href} className="nav-item absolute z-20 cursor-pointer focus:outline-none" style={position} onClickCapture={(e) => { if (isDragging) e.preventDefault() }} onClick={toggleMenu} onMouseEnter={() => { if (!isDragging) setHoveredItem(index) }} onMouseLeave={() => { if (!isDragging) setHoveredItem(null) }}> <div className="flex flex-col items-center space-y-2 text-center p-4"> <div className="relative w-12 h-12 flex items-center justify-center"><Icon size={28} className={`transition-colors duration-300 ${isHovered ? 'text-black' : 'text-white'}`}/></div> <span className={`text-sm font-medium transition-colors duration-300 ${isHovered ? 'text-black' : 'text-white'}`}>{item.name}</span> </div> </Link> )})}
-
-            <div className="absolute inset-0 border border-white/20 rounded-full pointer-events-none"></div>
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[360px] h-[360px] border border-white/10 rounded-full pointer-events-none"></div>
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[480px] h-[480px] bg-white/5 rounded-full blur-3xl pointer-events-none"></div>
           </div>
+            
+          {navItems.map((item, index) => { const Icon = item.icon, position = getItemPosition(item.angle, navItemRadius), isHovered = hoveredItem === index; return ( <Link key={index} href={item.href} className="nav-item absolute z-20 cursor-pointer focus:outline-none" style={position} onClick={(e) => { e.preventDefault(); handleAutoNavigate(item.href); }} onMouseEnter={() => { if (!isDragging) setHoveredItem(index) }} onMouseLeave={() => { if (!isDragging) setHoveredItem(null) }}> <div className="flex flex-col items-center space-y-1 text-center"> <div className={`relative flex items-center justify-center rounded-full transition-colors duration-300 ${isHovered ? 'bg-white' : 'bg-transparent'}`} style={{width: isMobile? 40: 48, height: isMobile ? 40 : 48}}><Icon size={isMobile ? 22: 28} className={`transition-colors duration-300 ${isHovered ? 'text-black' : 'text-white'}`}/></div> <span className={`font-medium transition-colors duration-300 ${isHovered ? 'text-black' : 'text-white'} ${isMobile ? 'text-xs' : 'text-sm'}`}>{item.name}</span> </div> </Link> )})}
 
-          <div className="absolute bottom-8 left-8 text-white/60 text-xs">COPYRIGHT© 2024 ALL RIGHTS RESERVED</div>
-          <div className="absolute bottom-8 right-8 flex space-x-6 text-white/60 text-xs"><span>COOKIE SETTINGS</span><span>PRIVACY POLICY</span><span>LEGAL DISCLAIMER</span></div>
+          <div className="absolute inset-0 border border-white/20 rounded-full pointer-events-none"></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border border-white/10 rounded-full pointer-events-none" style={{width: navItemRadius * 2, height: navItemRadius * 2}}></div>
         </div>
-      )}
+
+        <div className="absolute bottom-4 left-4 sm:bottom-8 sm:left-8 text-white/60 text-[10px] sm:text-xs">COPYRIGHT© 2024 ALL RIGHTS RESERVED</div>
+        {/* Hide footer links on mobile for a cleaner look */}
+        <div className="hidden sm:flex absolute bottom-8 right-8 space-x-6 text-white/60 text-xs"><span>COOKIE SETTINGS</span><span>PRIVACY POLICY</span><span>LEGAL DISCLAIMER</span></div>
+      </div>
     </>
   )
-}
+}                                         

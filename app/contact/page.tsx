@@ -87,6 +87,16 @@ export default function Contact() {
   return (
     <div ref={pageRef} className="pt-32 pb-20 px-4 min-h-screen" style={{ opacity: 1, visibility: "visible" }}>
       <div className="max-w-7xl mx-auto">
+        <div
+          className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20 cursor-pointer hover:scale-110 transition-transform duration-300"
+          style={{ opacity: 1, visibility: "visible" }}
+        >
+          <img
+            src="/images/BIAS.png"
+            alt="AI Society Logo"
+            className="w-12 h-12 sm:w-16 sm:h-16 object-contain drop-shadow-lg hover:drop-shadow-xl transition-all duration-300"
+          />
+        </div>
         {/* Header */}
         <div className="page-header text-center mb-20" style={{ opacity: 1, visibility: "visible" }}>
           <div className="inline-flex items-center space-x-2 bg-black text-white px-6 py-3 rounded-full text-sm font-medium mb-8">

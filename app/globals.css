@@ -281,3 +281,98 @@ img {
   content-visibility: auto;
   contain-intrinsic-size: 200px;
 }
+/* Hide scrollbar for all browsers */
+html, body {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
+}
+
+html::-webkit-scrollbar, 
+body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+/* Add these rules to your globals.css to fix the white space issue */
+
+/* Force remove any extra spacing at document level */
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: 100vh;
+  overflow-x: hidden;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
+}
+
+html::-webkit-scrollbar, 
+body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Main page container fixes */
+.page-content {
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: 100vh;
+}
+
+/* Fix for Leadership section specifically */
+section[class*="leadership"],
+section:last-child,
+.leadership-section {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* Fix for any section that might be adding extra space */
+section:last-of-type {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* Fix for GSAP/ScrollTrigger potential spacing issues */
+.gsap-marker-start,
+.gsap-marker-end,
+.gsap-marker-scroller-start,
+.gsap-marker-scroller-end {
+  display: none !important;
+}
+
+/* Fix for Lenis smooth scroll potential issues */
+[data-lenis-prevent] {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* Remove any default margin/padding from main elements */
+main {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Ensure no extra space from viewport calculations */
+.min-h-screen {
+  min-height: 100vh !important;
+  margin-bottom: 0 !important;
+}
+
+/* Fix for any transform or animation residual spacing */
+.transform-gpu,
+.will-change-transform {
+  margin-bottom: 0 !important;
+}
+
+/* Debug styles - uncomment these to see what's causing the space */
+/*
+section {
+  outline: 1px solid red !important;
+  margin: 0 !important;
+}
+
+main {
+  outline: 2px solid blue !important;
+}
+
+body {
+  outline: 3px solid green !important;
+}
+*/

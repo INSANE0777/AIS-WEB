@@ -56,7 +56,7 @@ export default function Teams() {
 
   return (
     <section ref={sectionRef} className="py-32 px-4" id="team">
-      <EnhancedTeamCards teamData={teamData} />
+      <EnhancedTeamCards  />
     </section>
   )
 }

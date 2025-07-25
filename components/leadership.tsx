@@ -44,6 +44,9 @@ export default function Leadership() {
         start: "top 80%",
         end: "bottom 20%",
         toggleActions: "play none none reverse",
+        // Prevent ScrollTrigger from adding extra space
+        invalidateOnRefresh: true,
+        refreshPriority: -1,
       },
     })
 
@@ -55,11 +58,37 @@ export default function Leadership() {
         "-=0.5",
       )
       .fromTo(".developed-by", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }, "-=0.3")
+
+    // Force remove any spacing after animation
+    tl.call(() => {
+      if (sectionRef.current) {
+        gsap.set(sectionRef.current, { 
+          marginBottom: 0, 
+          paddingBottom: 0,
+          clearProps: "margin-bottom,padding-bottom" 
+        })
+      }
+    })
+
   }, [])
 
   return (
-    <section ref={sectionRef} className="py-20 px-4 bg-black text-white" style={{ opacity: 1, visibility: "visible" }}>
-      <div className="max-w-6xl mx-auto">
+    <section 
+      ref={sectionRef} 
+      className="leadership-section bg-black text-white" 
+      style={{ 
+        opacity: 1, 
+        visibility: "visible",
+        margin: 0,
+        padding: 0,
+        paddingTop: '5rem',
+        paddingLeft: '1rem',
+        paddingRight: '1rem',
+        paddingBottom: 0,
+        marginBottom: 0
+      }}
+    >
+      <div className="max-w-6xl mx-auto" style={{ paddingBottom: 0, marginBottom: 0 }}>
         <div className="leadership-header text-center mb-16" style={{ opacity: 1, visibility: "visible" }}>
           <h2 className="text-5xl md:text-6xl font-black mb-6">
             Leadership
@@ -72,7 +101,7 @@ export default function Leadership() {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8 mb-16">
+        <div className="grid lg:grid-cols-3 gap-8 mb-12">
           {leaders.map((leader, index) => {
             const Icon = leader.icon
             return (
@@ -104,9 +133,22 @@ export default function Leadership() {
           })}
         </div>
 
-        {/* Developed By Section - Reduced spacing */}
-        <div className="developed-by text-center" style={{ opacity: 1, visibility: "visible" }}>
-          <div className="inline-block bg-white/10 backdrop-blur-sm p-8 rounded-2xl border border-white/20">
+        {/* Final element with absolute zero bottom space */}
+        <div 
+          className="developed-by text-center" 
+          style={{ 
+            opacity: 1, 
+            visibility: "visible",
+            margin: 0,
+            padding: 0,
+            marginBottom: 0,
+            paddingBottom: 0
+          }}
+        >
+          <div 
+            className="inline-block bg-white/10 backdrop-blur-sm p-8 rounded-2xl border border-white/20"
+            style={{ marginBottom: 0 }}
+          >
             <div className="flex items-center justify-center space-x-2 mb-4">
               <Heart size={20} className="text-red-500 animate-pulse" />
               <p className="text-lg text-white/80">
@@ -114,7 +156,7 @@ export default function Leadership() {
               </p>
               <Zap size={20} className="text-yellow-500 animate-bounce" />
             </div>
-            <div className="flex flex-wrap justify-center gap-4">
+            <div className="flex flex-wrap justify-center gap-4" style={{ marginBottom: 0 }}>
               {["Afjal", "Gyanendra", "Anvesh", "Arisha"].map((name, index) => (
                 <span
                   key={index}

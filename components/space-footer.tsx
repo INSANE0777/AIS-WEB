@@ -4,8 +4,11 @@ import { useEffect, useRef, useState } from "react"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { Github, Instagram, Linkedin, ArrowRight, Zap, Rocket } from "lucide-react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
 import MagneticButton from "./magnetic-button"
 import { useMobileOptimization, getOptimizedDuration } from "./mobile-optimized-animations"
+import type { FormEvent } from "react";
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -14,6 +17,7 @@ export default function SpaceFooter() {
   const titleRef = useRef<HTMLDivElement>(null)
   const [email, setEmail] = useState("")
   const { isMobile, reducedMotion } = useMobileOptimization()
+  const router = useRouter()
 
   useEffect(() => {
     const footer = footerRef.current
@@ -70,8 +74,15 @@ export default function SpaceFooter() {
     })
   }, [isMobile, reducedMotion])
 
+const handleNewsletterSubmit = (e: FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  // Add your newsletter subscription logic here
+  console.log('Newsletter signup:', email);
+  setEmail('');
+};
+
   return (
-    <footer ref={footerRef} className="relative bg-black text-white py-12 sm:py-20 px-4 overflow-hidden">
+    <footer ref={footerRef} className="relative bg-black text-white pt-12 pb-8 px-4 overflow-hidden border-t border-white/20">
       {/* Optimized Animated Grid Background */}
       <div className="absolute inset-0 opacity-10 sm:opacity-20">
         {Array.from({ length: isMobile ? 36 : 100 }).map((_, i) => (
@@ -111,11 +122,11 @@ export default function SpaceFooter() {
             <div className="space-y-3 sm:space-y-4">
               <h3 className="text-base sm:text-lg font-bold tracking-wider">AI SOCIETY</h3>
               <div className="grid grid-cols-2 lg:grid-cols-1 gap-2 text-xs sm:text-sm text-white/60">
-                <div>HOME</div>
-                <div>ABOUT</div>
-                <div>PROJECTS</div>
-                <div>CONTACT</div>
-                <div>EVENTS</div>
+                <Link href="/" className="hover:text-white transition-colors cursor-pointer">HOME</Link>
+                <Link href="/about" className="hover:text-white transition-colors cursor-pointer">ABOUT</Link>
+                <Link href="/projects" className="hover:text-white transition-colors cursor-pointer">PROJECTS</Link>
+                <Link href="/contact" className="hover:text-white transition-colors cursor-pointer">CONTACT</Link>
+                <Link href="/events" className="hover:text-white transition-colors cursor-pointer">EVENTS</Link>
               </div>
             </div>
           </div>
@@ -124,13 +135,14 @@ export default function SpaceFooter() {
           <div className="lg:col-span-8 text-center order-first lg:order-none">
             <div
               ref={titleRef}
-              className="text-3xl sm:text-6xl md:text-8xl lg:text-9xl font-black leading-none tracking-tighter"
+              className="text-3xl sm:text-6xl md:text-8xl lg:text-9xl font-black leading-none tracking-tighter cursor-pointer"
               style={{
                 background: "linear-gradient(135deg, #ffffff 0%, #cccccc 50%, #ffffff 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
               }}
+              onClick={() => router.push('/')}
             >
               AI SOCIETY
             </div>
@@ -144,18 +156,22 @@ export default function SpaceFooter() {
                 <div className="text-sm sm:text-lg font-bold">TO OUR</div>
                 <div className="text-sm sm:text-lg font-bold">NEWSLETTER</div>
               </div>
-              <div className="relative max-w-xs mx-auto lg:mx-0 lg:ml-auto">
+              <form onSubmit={handleNewsletterSubmit} className="relative max-w-xs mx-auto lg:mx-0 lg:ml-auto">
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="YOUR EMAIL"
-                  className="w-full bg-gradient-to-r from-green-400 to-green-300 text-black px-3 sm:px-4 py-2 sm:py-3 rounded-full font-semibold placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-white text-sm sm:text-base"
+                  className="w-full bg-white text-black px-3 sm:px-4 py-2 sm:py-3 rounded-full font-semibold placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-white/50 text-sm sm:text-base"
+                  required
                 />
-                <MagneticButton className="absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 w-6 h-6 sm:w-8 sm:h-8 bg-black rounded-full flex items-center justify-center hover:scale-110 transition-transform">
+                <MagneticButton 
+                  type="submit"
+                  className="absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 w-6 h-6 sm:w-8 sm:h-8 bg-black border border-white rounded-full flex items-center justify-center hover:scale-110 hover:bg-white hover:text-black transition-all"
+                >
                   <ArrowRight size={12} className="sm:w-4 sm:h-4 text-white" />
                 </MagneticButton>
-              </div>
+              </form>
             </div>
           </div>
         </div>
@@ -170,36 +186,71 @@ export default function SpaceFooter() {
 
             {/* Legal Links - Hidden on mobile for space */}
             <div className="hidden sm:flex space-x-4 lg:space-x-6 text-xs sm:text-sm text-white/60 justify-center">
-              <span>SHIPPING HANDLING DISCLAIMER</span>
-              <span>PUBLIC OFFER</span>
+              <Link href="/shipping-disclaimer" className="hover:text-white transition-colors cursor-pointer">SHIPPING HANDLING DISCLAIMER</Link>
+              <Link href="/public-offer" className="hover:text-white transition-colors cursor-pointer">PUBLIC OFFER</Link>
             </div>
 
             {/* Social Links */}
             <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4">
               <div className="flex space-x-4 text-xs sm:text-sm">
-                <span className="text-green-400 font-semibold">FACEBOOK</span>
-                <span className="text-green-400 font-semibold">INSTAGRAM</span>
+                <a 
+                  href="https://facebook.com/aisociety" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-white font-semibold hover:text-white/70 transition-colors cursor-pointer underline"
+                >
+                  FACEBOOK
+                </a>
+                <a 
+                  href="https://instagram.com/aisociety" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-white font-semibold hover:text-white/70 transition-colors cursor-pointer underline"
+                >
+                  INSTAGRAM
+                </a>
               </div>
               <div className="flex items-center space-x-2">
-                <Github className="social-float w-4 h-4 sm:w-5 sm:h-5 text-white hover:text-green-400 transition-colors cursor-pointer" />
-                <Instagram className="social-float w-4 h-4 sm:w-5 sm:h-5 text-white hover:text-green-400 transition-colors cursor-pointer" />
-                <Linkedin className="social-float w-4 h-4 sm:w-5 sm:h-5 text-white hover:text-green-400 transition-colors cursor-pointer" />
+                <a 
+                  href="https://github.com/aisociety" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="social-float"
+                >
+                  <Github className="w-4 h-4 sm:w-5 sm:h-5 text-white hover:text-white/70 transition-colors cursor-pointer" />
+                </a>
+                <a 
+                  href="https://instagram.com/aisociety" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="social-float"
+                >
+                  <Instagram className="w-4 h-4 sm:w-5 sm:h-5 text-white hover:text-white/70 transition-colors cursor-pointer" />
+                </a>
+                <a 
+                  href="https://linkedin.com/company/aisociety" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="social-float"
+                >
+                  <Linkedin className="w-4 h-4 sm:w-5 sm:h-5 text-white hover:text-white/70 transition-colors cursor-pointer" />
+                </a>
               </div>
             </div>
 
             {/* Design Credit */}
             <div className="text-xs sm:text-sm text-white/60 text-center lg:text-right">
-              DESIGN BY <span className="underline">AI SOCIETY TEAM</span>
+              DESIGN BY <Link href="/team" className="underline hover:text-white transition-colors cursor-pointer">AI SOCIETY TEAM</Link>
             </div>
           </div>
         </div>
 
         {/* Optimized Floating Elements */}
         <div className="absolute top-6 sm:top-10 right-6 sm:right-10">
-          <Rocket className="w-6 h-6 sm:w-8 sm:h-8 text-white/30 animate-bounce" />
+          <Rocket className="w-6 h-6 sm:w-8 sm:h-8 text-white/30 animate-bounce cursor-pointer hover:text-white/70 transition-colors" />
         </div>
         <div className="absolute bottom-12 sm:bottom-20 left-6 sm:left-10">
-          <Zap className="w-4 h-4 sm:w-6 sm:h-6 text-white/30 animate-pulse" />
+          <Zap className="w-4 h-4 sm:w-6 sm:h-6 text-white/30 animate-pulse cursor-pointer hover:text-white/70 transition-colors" />
         </div>
       </div>
     </footer>
