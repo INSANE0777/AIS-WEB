@@ -96,7 +96,7 @@ export default function Home() {
             margin: 0, 
             padding: 0,
             marginBottom: 0,
-            paddingBottom: 0
+            paddingBottom: 25
           }}
         >
           <Leadership />
