@@ -78,7 +78,7 @@ export default function PageTransition({ children }: { children: React.ReactNode
       // Floating hearts (reduced amount)
       const hearts = Array.from({ length: 6 }).map((_, i) => {
         const heart = document.createElement("div")
-        heart.innerHTML = "♥"
+        heart.innerHTML = "◆"
         heart.className = "absolute text-gray-300 text-2xl pointer-events-none"
         heart.style.left = `${Math.random() * 100}%`
         heart.style.top = `${Math.random() * 100}%`
@@ -100,7 +100,7 @@ export default function PageTransition({ children }: { children: React.ReactNode
       })
 
       // Simple geometric shapes (reduced)
-      const shapes = ['◆', '◇', '▲', '△']
+      const shapes = ['◆']
       Array.from({ length: 8 }).forEach((_, i) => {
         const shape = document.createElement("div")
         shape.innerHTML = shapes[Math.floor(Math.random() * shapes.length)]
@@ -144,13 +144,7 @@ export default function PageTransition({ children }: { children: React.ReactNode
           {scrambledText}
         </div>
         
-        {/* Simple floating elements around text */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 text-2xl animate-bounce text-white">▲</div>
-          <div className="absolute top-1/3 right-1/4 text-2xl animate-pulse text-gray-300">●</div>
-          <div className="absolute bottom-1/4 left-1/3 text-2xl text-white">◆</div>
-          <div className="absolute bottom-1/3 right-1/3 text-2xl animate-bounce text-gray-400">○</div>
-        </div>
+      
       </div>
       
       {/* Page Content */}

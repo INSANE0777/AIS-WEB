@@ -30,6 +30,10 @@ import {
   Code,
   Megaphone,
   Globe,
+  Eye,
+  Cpu,
+  MessageSquare,
+  Bot,
 } from "lucide-react"
 import toast from "react-hot-toast"
 
@@ -116,8 +120,20 @@ interface DepartmentInfo {
   skills: string[]
 }
 
+interface TechDepartmentInfo {
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
+  description: string
+  skills: string[]
+  projects: string[]
+  requirements: string[]
+}
+
 interface Departments {
   [key: string]: DepartmentInfo
+}
+
+interface TechDepartments {
+  [key: string]: TechDepartmentInfo
 }
 
 interface AllDepartments {
@@ -132,6 +148,81 @@ interface FAQItem {
 }
 
 // --- Page Constants ---
+const TECH_DEPARTMENTS: TechDepartments = {
+  "Natural Language Processing (NLP)": {
+    icon: MessageSquare,
+    description: "Work with language models, text analysis, chatbots, and language understanding systems.",
+    skills: ["Python", "Transformers", "NLTK", "spaCy", "Hugging Face", "LangChain", "OpenAI APIs"],
+    projects: [
+      "Conversational AI Chatbots",
+      "Sentiment Analysis Systems",
+      "Text Summarization Tools",
+      "Language Translation Models",
+      "Question-Answering Systems"
+    ],
+    requirements: [
+      "Strong foundation in Python programming",
+      "Understanding of language processing concepts",
+      "Familiarity with machine learning basics",
+      "Interest in linguistics and communication"
+    ]
+  },
+  "Generative AI (GenAI)": {
+    icon: Bot,
+    description: "Create AI systems that generate content - text, images, code, and multimedia using cutting-edge generative models.",
+    skills: ["Python", "PyTorch/TensorFlow", "Stable Diffusion", "GPT APIs", "LangChain", "Prompt Engineering"],
+    projects: [
+      "AI Art Generation Applications",
+      "Code Generation Tools",
+      "Creative Writing Assistants",
+      "Music and Audio Generation",
+      "Multi-modal Content Creation"
+    ],
+    requirements: [
+      "Strong programming skills in Python",
+      "Understanding of neural networks",
+      "Creative mindset and artistic sensibility",
+      "Interest in emerging AI technologies"
+    ]
+  },
+  "Reinforcement Learning (RL)": {
+    icon: Cpu,
+    description: "Develop AI agents that learn through interaction with environments, perfect for game AI, robotics, and decision-making systems.",
+    skills: ["Python", "OpenAI Gym", "Stable Baselines3", "PyTorch", "Unity ML-Agents", "Ray RLlib"],
+    projects: [
+      "Game AI Agents (Chess, Go, Atari)",
+      "Autonomous Navigation Systems",
+      "Trading and Finance Bots",
+      "Robotics Control Systems",
+      "Multi-agent Simulations"
+    ],
+    requirements: [
+      "Strong mathematical background",
+      "Programming experience in Python",
+      "Interest in game theory and optimization",
+      "Patience for iterative learning processes"
+    ]
+  },
+  "Computer Vision (CV)": {
+    icon: Eye,
+    description: "Build AI systems that can see, understand, and interpret visual information from images and videos.",
+    skills: ["Python", "OpenCV", "PyTorch/TensorFlow", "YOLO", "Detectron2", "Pillow", "Scikit-image"],
+    projects: [
+      "Object Detection and Recognition",
+      "Face Recognition Systems",
+      "Medical Image Analysis",
+      "Autonomous Vehicle Vision",
+      "Augmented Reality Applications"
+    ],
+    requirements: [
+      "Strong programming skills",
+      "Basic understanding of linear algebra",
+      "Interest in image processing",
+      "Attention to detail and visual patterns"
+    ]
+  }
+}
+
 const NON_TECH_DEPARTMENTS: Departments = {
   "Community Outreach": {
     icon: Users,
@@ -161,12 +252,7 @@ const NON_TECH_DEPARTMENTS: Departments = {
 }
 
 const ALL_DEPARTMENTS: AllDepartments = {
-  Tech: [
-    "Natural Language Processing (NLP)",
-    "Generative AI (GenAI)",
-    "Reinforcement Learning (RL)",
-    "Computer Vision (CV)",
-  ],
+  Tech: Object.keys(TECH_DEPARTMENTS),
   NonTech: Object.keys(NON_TECH_DEPARTMENTS),
 }
 
@@ -389,14 +475,7 @@ export default function JoinUs() {
   return (
     <div ref={pageRef} className="pt-32 pb-20 px-4 min-h-screen relative overflow-hidden bg-gray-50">
       {/* Floating Icons */}
-      <div className="absolute inset-0 pointer-events-none">
-        <Users className="float-icon absolute top-20 left-10 w-8 h-8 text-black/10" />
-        <Brain className="float-icon absolute top-40 right-20 w-10 h-10 text-black/10" />
-        <Rocket className="float-icon absolute bottom-40 left-20 w-6 h-6 text-black/10" />
-        <Star className="float-icon absolute bottom-20 right-40 w-8 h-8 text-black/10" />
-        <Heart className="float-icon absolute top-1/2 left-1/4 w-6 h-6 text-black/10" />
-        <Zap className="float-icon absolute top-3/4 right-1/3 w-8 h-8 text-black/10" />
-      </div>
+      
 
       {/* Logo */}
       <div className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20 cursor-pointer hover:scale-110 transition-transform duration-300">
@@ -428,8 +507,6 @@ export default function JoinUs() {
             </p>
           </div>
         </div>
-
-    
 
         {/* Organizational Structure */}
         <div className="form-section mb-12">
@@ -463,6 +540,51 @@ export default function JoinUs() {
           </p>
         </div>
 
+        {/* Technical Departments */}
+        <div className="form-section mb-12">
+          <h2 className="text-3xl font-bold text-black mb-8 text-center">Technical Departments</h2>
+          <div className="grid md:grid-cols-2 gap-6">
+            {Object.entries(TECH_DEPARTMENTS).map(([dept, info]) => {
+              const Icon = info.icon
+              return (
+                <div
+                  key={dept}
+                  className="bg-white p-6 rounded-xl border border-black/10 hover:border-black hover:shadow-lg transition-all group"
+                >
+                  <div className="flex items-center space-x-3 mb-4">
+                    <div className="w-10 h-10 bg-black group-hover:bg-white border-2 border-black rounded-full flex items-center justify-center transition-all">
+                      <Icon width={20} height={20} className="text-white group-hover:text-black transition-colors" />
+                    </div>
+                    <h3 className="font-bold text-black">{dept}</h3>
+                  </div>
+                  <p className="text-black/70 text-sm mb-4">{info.description}</p>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {info.skills.slice(0, 3).map((skill) => (
+                      <span key={skill} className="px-2 py-1 bg-black/5 text-black text-xs rounded-full">
+                        {skill}
+                      </span>
+                    ))}
+                    {info.skills.length > 3 && (
+                      <span className="px-2 py-1 bg-black/5 text-black text-xs rounded-full">
+                        +{info.skills.length - 3} more
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-xs text-black/60">
+                    <div className="mb-2">
+                      <strong>Projects:</strong> {info.projects.slice(0, 2).join(", ")}
+                      {info.projects.length > 2 && "..."}
+                    </div>
+                    <div>
+                      <strong>Looking for:</strong> {info.requirements[0]}
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
         {/* Non-Technical Departments */}
         <div className="form-section mb-12">
           <h2 className="text-3xl font-bold text-black mb-8 text-center">Non-Technical Departments</h2>
@@ -487,6 +609,50 @@ export default function JoinUs() {
                         {skill}
                       </span>
                     ))}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Timeline Section - Moved before form */}
+        <div className="form-section mb-12">
+          <h2 className="text-3xl font-bold text-black mb-8 text-center flex items-center justify-center space-x-3">
+            <Calendar className="text-black" />
+            <span>How to Join</span>
+          </h2>
+          <div className="space-y-6">
+            {TIMELINE_ITEMS.map((item, index) => {
+              const Icon = item.icon
+              return (
+                <div
+                  key={index}
+                  className="bg-white p-6 rounded-2xl border border-black/10 hover:border-black/20 transition-all group"
+                >
+                  <div className="flex items-start space-x-4">
+                    <div
+                      className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${
+                        item.status === "ongoing" ? "bg-green-500" : "bg-black/10"
+                      }`}
+                    >
+                      <Icon size={24} className={item.status === "ongoing" ? "text-white" : "text-black/60"} />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-xl font-bold text-black">{item.title}</h3>
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            item.status === "ongoing" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-600"
+                          }`}
+                        >
+                          {item.status === "ongoing" ? "📝 Ongoing" : "🔍 Upcoming"}
+                        </span>
+                      </div>
+                      <p className="text-black/70 mb-2">{item.subtitle}</p>
+                      <p className="text-sm text-black/60 mb-2">{item.description}</p>
+                      <p className="text-sm font-medium text-black">{item.date}</p>
+                    </div>
                   </div>
                 </div>
               )
@@ -796,50 +962,6 @@ export default function JoinUs() {
             </form>
           )}
         </div>
-        
-              {/* Timeline Section */}
-        <div className="form-section mb-12">
-          <h2 className="text-3xl font-bold text-black mb-8 text-center flex items-center justify-center space-x-3">
-            <Calendar className="text-black" />
-            <span>How to Join</span>
-          </h2>
-          <div className="space-y-6">
-            {TIMELINE_ITEMS.map((item, index) => {
-              const Icon = item.icon
-              return (
-                <div
-                  key={index}
-                  className="bg-white p-6 rounded-2xl border border-black/10 hover:border-black/20 transition-all group"
-                >
-                  <div className="flex items-start space-x-4">
-                    <div
-                      className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${
-                        item.status === "ongoing" ? "bg-green-500" : "bg-black/10"
-                      }`}
-                    >
-                      <Icon size={24} className={item.status === "ongoing" ? "text-white" : "text-black/60"} />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-xl font-bold text-black">{item.title}</h3>
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-medium ${
-                            item.status === "ongoing" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-600"
-                          }`}
-                        >
-                          {item.status === "ongoing" ? "📝 Ongoing" : "🔍 Upcoming"}
-                        </span>
-                      </div>
-                      <p className="text-black/70 mb-2">{item.subtitle}</p>
-                      <p className="text-sm text-black/60 mb-2">{item.description}</p>
-                      <p className="text-sm font-medium text-black">{item.date}</p>
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
 
         {/* Interview Guidelines Section */}
         <div className="form-section mb-12">
@@ -1114,6 +1236,7 @@ export default function JoinUs() {
             ))}
           </div>
         </div>
+
         {/* Why Join AIS */}
         <div className="form-section mt-12 bg-black text-white p-8 rounded-2xl">
           <div className="text-center mb-8">

@@ -165,6 +165,77 @@ const useImagePreloader = (imageSources: string[]) => {
   return { loadedImages, isLoading }
 }
 
+// --- Enhanced Scroll Animation Hook ---
+const useScrollAnimation = () => {
+  const [visibleCards, setVisibleCards] = useState<Set<number>>(new Set())
+  const [scrollProgress, setScrollProgress] = useState<Map<number, number>>(new Map())
+  const observerRef = useRef<IntersectionObserver | null>(null)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY
+      const windowHeight = window.innerHeight
+      
+      visibleCards.forEach(cardIndex => {
+        const element = document.querySelector(`[data-card-index="${cardIndex}"]`)
+        if (element) {
+          const rect = element.getBoundingClientRect()
+          const elementTop = rect.top + scrollY
+          const elementCenter = elementTop + rect.height / 2
+          const viewportCenter = scrollY + windowHeight / 2
+          
+          // Calculate distance from viewport center (-1 to 1)
+          const distance = (viewportCenter - elementCenter) / windowHeight
+          const progress = Math.max(0, Math.min(1, 1 - Math.abs(distance)))
+          
+          setScrollProgress(prev => new Map(prev.set(cardIndex, progress)))
+        }
+      })
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [visibleCards])
+
+  useEffect(() => {
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const cardIndex = parseInt(entry.target.getAttribute('data-card-index') || '0')
+          if (entry.isIntersecting) {
+            setVisibleCards(prev => new Set([...prev, cardIndex]))
+          } else {
+            setVisibleCards(prev => {
+              const newSet = new Set(prev)
+              newSet.delete(cardIndex)
+              return newSet
+            })
+          }
+        })
+      },
+      { 
+        threshold: 0.1,
+        rootMargin: '100px 0px'
+      }
+    )
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect()
+      }
+    }
+  }, [])
+
+  const observeElement = useCallback((element: HTMLElement | null, index: number) => {
+    if (element && observerRef.current) {
+      element.setAttribute('data-card-index', index.toString())
+      observerRef.current.observe(element)
+    }
+  }, [])
+
+  return { visibleCards, observeElement, scrollProgress }
+}
+
 // --- Optimized Scroll Progress Component ---
 const ScrollProgress: React.FC = () => {
   const [progress, setProgress] = useState<number>(0)
@@ -222,61 +293,101 @@ const ScrollProgress: React.FC = () => {
   )
 }
 
-// --- Optimized Event Card Component ---
+// --- Enhanced Event Card Component ---
 interface EventCardProps {
   image: ImageType;
   isLeft?: boolean;
   index: number;
   isLoaded: boolean;
+  isVisible: boolean;
+  scrollProgress: number;
+  onRef: (element: HTMLElement | null) => void;
 }
 
-const EventCard: React.FC<EventCardProps> = ({ image, isLeft = false, index, isLoaded }) => (
-  <div 
-    className={`relative w-full max-w-md md:w-2/5 h-80 md:h-96 rounded-xl overflow-hidden cursor-pointer group shadow-2xl mx-auto transform transition-all duration-700 hover:scale-110 hover:rotate-1 ${
-      isLeft ? 'hover:-rotate-1' : 'hover:rotate-1'
-    }`}
-    style={{
-      animation: `slideIn${isLeft ? 'Left' : 'Right'} 0.8s ease-out ${index * 0.2}s both`
-    }}
-  >
-    <div className="relative w-full h-full">
-      {!isLoaded && (
-        <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-xl flex items-center justify-center">
-          <div className="text-gray-500">Loading...</div>
-        </div>
-      )}
-      <img 
-        src={image.src} 
-        alt={image.alt} 
-        className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-125 group-hover:brightness-110 ${
-          isLoaded ? 'opacity-100' : 'opacity-0'
-        }`}
-        loading="lazy"
-        decoding="async"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500">
-        <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 transform translate-y-full transition-all duration-500 ease-out group-hover:translate-y-0">
-          <h3 className="text-lg md:text-xl font-bold text-white mb-2 md:mb-3 tracking-wide transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-100">
-            {image.alt}
-          </h3>
-          <p className="text-xs md:text-sm text-white/90 leading-relaxed line-clamp-3 md:line-clamp-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-200">
-            {image.overlayText}
-          </p>
-        </div>
-      </div>
-      <div className="absolute inset-0 border-2 border-transparent group-hover:border-white/30 rounded-xl transition-all duration-500"></div>
-    </div>
-  </div>
-)
+const EventCard: React.FC<EventCardProps> = ({ 
+  image, 
+  isLeft = false, 
+  index, 
+  isLoaded, 
+  isVisible,
+  scrollProgress,
+  onRef 
+}) => {
+  // Calculate smooth entrance animation values
+  const translateX = isVisible 
+    ? 0 
+    : isLeft ? -120 : 120
+  
+  const translateY = isVisible 
+    ? 0 
+    : 80
+    
+  const opacity = isVisible ? 1 : 0
+  const scale = isVisible ? 1 : 0.85
+  
+  // Parallax effect based on scroll progress
+  const parallaxY = (scrollProgress - 0.5) * 30
+  const parallaxRotation = (scrollProgress - 0.5) * 2
+  const parallaxScale = 0.95 + (scrollProgress * 0.1)
 
-// --- Optimized 3D Cube Component ---
+  return (
+    <div 
+      ref={onRef}
+      className="relative w-full max-w-md md:w-2/5 h-80 md:h-96 rounded-xl overflow-hidden cursor-pointer group shadow-2xl mx-auto"
+      style={{
+        transform: `
+          translate3d(${translateX}px, ${translateY + parallaxY}px, 0) 
+          scale3d(${scale * parallaxScale}, ${scale * parallaxScale}, 1) 
+          rotate3d(0, 0, 1, ${parallaxRotation}deg)
+        `,
+        opacity,
+        transition: isVisible 
+          ? 'transform 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.1s ease-out' 
+          : 'all 1.2s cubic-bezier(0.23, 1, 0.32, 1)',
+        transitionDelay: isVisible ? '0s' : `${index * 0.15}s`,
+        willChange: 'transform, opacity'
+      }}
+    >
+      <div className="relative w-full h-full">
+        {!isLoaded && (
+          <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-xl flex items-center justify-center">
+            <div className="text-gray-500">Loading...</div>
+          </div>
+        )}
+        <img 
+          src={image.src} 
+          alt={image.alt} 
+          className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110 ${
+            isLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
+          loading="lazy"
+          decoding="async"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500">
+          <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 transform translate-y-full transition-all duration-500 ease-out group-hover:translate-y-0">
+            <h3 className="text-lg md:text-xl font-bold text-white mb-2 md:mb-3 tracking-wide transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-100">
+              {image.alt}
+            </h3>
+            <p className="text-xs md:text-sm text-white/90 leading-relaxed line-clamp-3 md:line-clamp-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-200">
+              {image.overlayText}
+            </p>
+          </div>
+        </div>
+        <div className="absolute inset-0 border-2 border-transparent group-hover:border-white/30 rounded-xl transition-all duration-500"></div>
+      </div>
+    </div>
+  )
+}
+
+// --- Improved 3D Cube Component for Mobile ---
 interface ThreeDCubeProps {
   images: ImageType[];
   className?: string;
   loadedImages: Set<string>;
+  isMobile: boolean;
 }
 
-const ThreeDCube: React.FC<ThreeDCubeProps> = ({ images, className, loadedImages }) => {
+const ThreeDCube: React.FC<ThreeDCubeProps> = ({ images, className, loadedImages, isMobile }) => {
   const [rotationX, setRotationX] = useState<number>(0)
   const [rotationY, setRotationY] = useState<number>(0)
   const animationRef = useRef<number | null>(null)
@@ -289,7 +400,7 @@ const ThreeDCube: React.FC<ThreeDCubeProps> = ({ images, className, loadedImages
       ([entry]) => {
         setIsVisible(entry.isIntersecting)
       },
-      { threshold: 0.1, rootMargin: '50px' }
+      { threshold: 0.1, rootMargin: '100px' }
     )
 
     if (cubeRef.current) {
@@ -303,8 +414,8 @@ const ThreeDCube: React.FC<ThreeDCubeProps> = ({ images, className, loadedImages
     if (!isVisible) return
 
     const animate = () => {
-      setRotationY(prev => prev + 0.3)
-      setRotationX(prev => prev + 0.15)
+      setRotationY(prev => prev + (isMobile ? 0.5 : 0.3))
+      setRotationX(prev => prev + (isMobile ? 0.25 : 0.15))
       animationRef.current = requestAnimationFrame(animate)
     }
     animationRef.current = requestAnimationFrame(animate)
@@ -314,15 +425,23 @@ const ThreeDCube: React.FC<ThreeDCubeProps> = ({ images, className, loadedImages
         cancelAnimationFrame(animationRef.current)
       }
     }
-  }, [isVisible])
+  }, [isVisible, isMobile])
 
-  const cubeSize = 'w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 lg:w-40 lg:h-40'
+  // Better mobile sizing and positioning
+  const cubeSize = isMobile 
+    ? 'w-20 h-20 sm:w-24 sm:h-24' 
+    : 'w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:w-40'
+  
+  const cubeDepth = isMobile ? 40 : 40
 
   return (
     <div className={`${className} relative`} ref={cubeRef}>
       <div 
         className={`relative ${cubeSize} mx-auto`}
-        style={{ perspective: '1000px' }}
+        style={{ 
+          perspective: isMobile ? '800px' : '1000px',
+          filter: isMobile ? 'brightness(1.2) contrast(1.1)' : 'none'
+        }}
       >
         <div 
           className="relative w-full h-full transition-transform duration-100 ease-linear"
@@ -333,12 +452,12 @@ const ThreeDCube: React.FC<ThreeDCubeProps> = ({ images, className, loadedImages
         >
           {images.slice(0, 6).map((image, index) => {
             const transforms = [
-              'translateZ(40px)', // front (reduced from 80px)
-              'translateZ(-40px) rotateY(180deg)', // back
-              'rotateY(90deg) translateZ(40px)', // right
-              'rotateY(-90deg) translateZ(40px)', // left
-              'rotateX(90deg) translateZ(40px)', // top
-              'rotateX(-90deg) translateZ(40px)' // bottom
+              `translateZ(${cubeDepth}px)`, // front
+              `translateZ(-${cubeDepth}px) rotateY(180deg)`, // back
+              `rotateY(90deg) translateZ(${cubeDepth}px)`, // right
+              `rotateY(-90deg) translateZ(${cubeDepth}px)`, // left
+              `rotateX(90deg) translateZ(${cubeDepth}px)`, // top
+              `rotateX(-90deg) translateZ(${cubeDepth}px)` // bottom
             ]
 
             return (
@@ -349,8 +468,10 @@ const ThreeDCube: React.FC<ThreeDCubeProps> = ({ images, className, loadedImages
                   backgroundImage: loadedImages.has(image.src) ? `url(${image.src})` : 'none',
                   backgroundColor: loadedImages.has(image.src) ? 'transparent' : '#e5e7eb',
                   transform: transforms[index],
-                  border: '2px solid rgba(255,255,255,0.2)',
-                  boxShadow: '0 0 20px rgba(255,255,255,0.1)'
+                  border: isMobile ? '2px solid rgba(255,255,255,0.4)' : '2px solid rgba(255,255,255,0.2)',
+                  boxShadow: isMobile 
+                    ? '0 0 25px rgba(255,255,255,0.3), inset 0 0 10px rgba(255,255,255,0.1)' 
+                    : '0 0 20px rgba(255,255,255,0.1)'
                 }}
               >
                 {!loadedImages.has(image.src) && (
@@ -453,6 +574,7 @@ export default function Events() {
   ], [])
 
   const { loadedImages, isLoading } = useImagePreloader(allImageSources)
+  const { visibleCards, observeElement, scrollProgress } = useScrollAnimation()
 
   const handleResize = useCallback(() => {
     setIsMobile(window.innerWidth < 768)
@@ -469,19 +591,8 @@ export default function Events() {
     }
   }, [handleResize])
 
-  const leftCubeFaces: ImageType[] = useMemo(() => 
-    isMobile 
-      ? [...leftImages.slice(0, 3), ...leftImages.slice(0, 3)]
-      : leftCubeImages,
-    [isMobile]
-  )
-    
-  const rightCubeFaces: ImageType[] = useMemo(() => 
-    isMobile 
-      ? [...rightImages.slice(0, 3), ...rightImages.slice(0, 3)]
-      : rightCubeImages,
-    [isMobile]
-  )
+  const leftCubeFaces: ImageType[] = useMemo(() => leftCubeImages, [])
+  const rightCubeFaces: ImageType[] = useMemo(() => rightCubeImages, [])
 
   if (!isComponentLoaded) {
     return (
@@ -492,27 +603,39 @@ export default function Events() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-white overflow-x-hidden">
+    <div className="w-full bg-white overflow-x-hidden">
       <ScrollProgress />
       
       <div className="content relative z-10 w-full">
         {/* Hero Section */}
-        <section className="hero relative w-full min-h-screen flex items-center justify-center px-4 bg-white">
-          {/* Background Cubes - Better Positioning */}
+        <section className="hero relative w-full h-screen flex items-center justify-center px-4 bg-white">
+          {/* Background Cubes - Desktop: Top corners, Mobile: Above and below text */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {/* Desktop Layout: Top Left and Top Right */}
+            {/* Mobile Layout: Above and Below Events Text */}
             <ThreeDCube 
               images={leftCubeFaces} 
               loadedImages={loadedImages}
-              className="absolute top-1/2 -left-8 sm:-left-4 md:left-2 lg:left-8 xl:left-16 transform -translate-y-1/2 opacity-70"
+              isMobile={isMobile}
+              className={`absolute z-0 ${
+                isMobile 
+                  ? 'top-[75%] left-0 transform -translate-y-1/2' 
+                  : 'top-8 left-8 md:top-20 md:left-80 lg:bottom-20 lg:left-96'
+              }`}
             />
             <ThreeDCube 
               images={rightCubeFaces} 
               loadedImages={loadedImages}
-              className="absolute top-1/2 -right-8 sm:-right-4 md:right-2 lg:right-8 xl:right-16 transform -translate-y-1/2 opacity-70"
+              isMobile={isMobile}
+              className={`absolute z-0 ${
+                isMobile 
+                  ? 'top-[1%] right-[2%] transform -translate-y-1/2' 
+                  : 'bottom-8 right-8 md:bottom-20 md:right-60 lg:bottom-20 lg:right-96'
+              }`}
             />
           </div>
 
-          <div className="hero-text text-center relative z-10 px-4">
+          <div className="hero-text text-center relative z-10 px-4 py-8">
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl xl:text-9xl font-black leading-none text-black drop-shadow-2xl">
               Events
             </h1>
@@ -530,8 +653,8 @@ export default function Events() {
             </h1>
           </div>
           
-          {/* Event Cards */}
-          <div className="cards-container w-full max-w-7xl mx-auto pb-8">
+          {/* Event Cards with Enhanced Scroll Animation */}
+          <div className="cards-container w-full max-w-7xl mx-auto">
             {leftImages.map((leftImage, index) => (
               <div 
                 className="row flex flex-col md:flex-row justify-center items-center w-full gap-6 md:gap-8 mb-16"
@@ -542,12 +665,18 @@ export default function Events() {
                   isLeft={true} 
                   index={index} 
                   isLoaded={loadedImages.has(leftImage.src)}
+                  isVisible={visibleCards.has(index * 2)}
+                  scrollProgress={scrollProgress.get(index * 2) || 0}
+                  onRef={(el) => observeElement(el, index * 2)}
                 />
                 <EventCard 
                   image={rightImages[index]} 
                   isLeft={false} 
                   index={index}
                   isLoaded={loadedImages.has(rightImages[index].src)}
+                  isVisible={visibleCards.has(index * 2 + 1)}
+                  scrollProgress={scrollProgress.get(index * 2 + 1) || 0}
+                  onRef={(el) => observeElement(el, index * 2 + 1)}
                 />
               </div>
             ))}
@@ -563,28 +692,6 @@ export default function Events() {
       </div>
 
       <style jsx>{`
-        @keyframes slideInLeft {
-          0% { 
-            transform: translateX(-100px) rotate(-5deg) scale(0.8);
-            opacity: 0;
-          }
-          100% { 
-            transform: translateX(0) rotate(0deg) scale(1);
-            opacity: 1;
-          }
-        }
-        
-        @keyframes slideInRight {
-          0% { 
-            transform: translateX(100px) rotate(5deg) scale(0.8);
-            opacity: 0;
-          }
-          100% { 
-            transform: translateX(0) rotate(0deg) scale(1);
-            opacity: 1;
-          }
-        }
-        
         .line-clamp-2 {
           display: -webkit-box;
           -webkit-line-clamp: 2;

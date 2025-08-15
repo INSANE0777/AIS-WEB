@@ -150,11 +150,11 @@ export default function Leadership() {
             style={{ marginBottom: 0 }}
           >
             <div className="flex items-center justify-center space-x-2 mb-4">
-              <Heart size={20} className="text-red-500 animate-pulse" />
+              
               <p className="text-lg text-white/80">
                 <span className="font-semibold">Developed with love by:</span>
               </p>
-              <Zap size={20} className="text-yellow-500 animate-bounce" />
+              
             </div>
             <div className="flex flex-wrap justify-center gap-4" style={{ marginBottom: 0 }}>
               {["Afjal", "Gyanendra", "Anvesh", "Arisha"].map((name, index) => (

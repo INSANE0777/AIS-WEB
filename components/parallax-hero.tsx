@@ -419,29 +419,27 @@ export default function ParallaxHero() {
           </TechLogo>
 
           {/* HuggingFace Logo */}
-          <TechLogo className="tech-logo-hf absolute top-32 right-32 text-black/30 hover:text-black/80 transition-colors cursor-pointer pointer-events-auto">
+          <TechLogo className="tech-logo-hf absolute top-32 right-32 text-black hover:text-black/80 transition-colors cursor-pointer pointer-events-auto">
             <HuggingFaceLogo />
           </TechLogo>
 
           {/* TensorFlow Logo */}
-          <TechLogo className="tech-logo-tf absolute bottom-40 left-32 text-black/30 hover:text-black/80 transition-colors cursor-pointer pointer-events-auto">
+          <TechLogo className="tech-logo-tf absolute bottom-40 left-32 text-black hover:text-black/80 transition-colors cursor-pointer pointer-events-auto">
             <TensorFlowLogo />
           </TechLogo>
 
           {/* PyTorch Logo */}
-          <TechLogo className="tech-logo-pytorch absolute bottom-32 right-24 text-black/30 hover:text-black/80 transition-colors cursor-pointer pointer-events-auto">
+          <TechLogo className="tech-logo-pytorch absolute bottom-32 right-24 text-black hover:text-black/80 transition-colors cursor-pointer pointer-events-auto">
             <PyTorchLogo />
           </TechLogo>
 
           {/* Keras Logo */}
-          <TechLogo className="tech-logo-keras absolute top-1/2 left-16 text-black/30 hover:text-black/80 transition-colors cursor-pointer pointer-events-auto">
+          <TechLogo className="tech-logo-keras absolute top-1/2 left-16 text-black hover:text-black/80 transition-colors cursor-pointer pointer-events-auto">
             <KerasLogo />
           </TechLogo>
 
           {/* Additional smaller tech elements - Black and White */}
-          <div className="absolute top-1/4 right-1/4 w-2 h-2 bg-black/20 rounded-full animate-pulse"></div>
-          <div className="absolute bottom-1/4 left-1/4 w-3 h-3 bg-black/25 rounded-full animate-bounce"></div>
-          <div className="absolute top-3/4 right-1/3 w-1 h-1 bg-black/30 rounded-full animate-ping"></div>
+          
         </div>
       )}
 
