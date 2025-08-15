@@ -146,26 +146,10 @@ export default function Leadership() {
           }}
         >
           <div 
-            className="inline-block bg-white/10 backdrop-blur-sm p-8 rounded-2xl border border-white/20"
+            className=" bg-white/10 backdrop-blur-sm p-8 rounded-2xl border border-white/20"
             style={{ marginBottom: 0 }}
           >
-            <div className="flex items-center justify-center space-x-2 mb-4">
-              
-              <p className="text-lg text-white/80">
-                <span className="font-semibold">Developed with love by:</span>
-              </p>
-              
-            </div>
-            <div className="flex flex-wrap justify-center gap-4" style={{ marginBottom: 0 }}>
-              {["Afjal", "Gyanendra", "Anvesh", "Arisha"].map((name, index) => (
-                <span
-                  key={index}
-                  className="bg-white text-black px-4 py-2 rounded-full font-semibold hover:scale-105 transition-transform"
-                >
-                  {name}
-                </span>
-              ))}
-            </div>
+          
           </div>
         </div>
       </div>

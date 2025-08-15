@@ -50,7 +50,7 @@ const socialLinks = [
   { icon: Github, href: "https://github.com/AIS-B", label: "GitHub" },
   { icon: Instagram, href: "https://www.instagram.com/ais.bennett/", label: "Instagram" },
   { icon: Linkedin, href: "https://www.linkedin.com/company/ais-bennett/", label: "LinkedIn" },
-  { icon: Youtube, href: "#", label: "YouTube" },
+  { icon: Youtube, href: "https://www.youtube.com/channel/UCyYIP23AO1ngKVqTPlP0fJA", label: "YouTube" },
 ]
 
 const MAX_DRAG_RADIUS = 40;

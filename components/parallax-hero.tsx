@@ -502,7 +502,7 @@ export default function ParallaxHero() {
 </MagneticButton>
 
 <MagneticButton
-  onClick={() => router.push("/join")}
+  onClick={() => window.open("https://chat.whatsapp.com/JNWPTs2NwBf1sTaHMF4t3Y", "_blank")}
   className="group border-2 border-black text-black px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold text-sm sm:text-lg hover:bg-black hover:text-white transition-all interactive relative overflow-hidden w-full sm:w-auto"
 >
   <span className="relative z-10 group-hover:scale-110 transition-transform">Join Community</span>
