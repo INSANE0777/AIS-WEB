@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useState, useRef, useCallback } from "react"
+import { useEffect, useState, useRef, useCallback, useMemo } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
 // --- Type Definitions ---
@@ -130,27 +130,69 @@ const galleryMediaItems: GalleryMediaItem[] = [
   },
 ]
 
-// --- Scroll Progress Component ---
+// --- Image Preloader Hook ---
+const useImagePreloader = (imageSources: string[]) => {
+  const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set())
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    let isMounted = true
+    const imagePromises = imageSources.map(src => {
+      return new Promise<string>((resolve, reject) => {
+        const img = new Image()
+        img.onload = () => resolve(src)
+        img.onerror = () => reject(src)
+        img.src = src
+      })
+    })
+
+    Promise.allSettled(imagePromises).then((results) => {
+      if (isMounted) {
+        const loaded = new Set<string>()
+        results.forEach((result, index) => {
+          if (result.status === 'fulfilled') {
+            loaded.add(imageSources[index])
+          }
+        })
+        setLoadedImages(loaded)
+        setIsLoading(false)
+      }
+    })
+
+    return () => { isMounted = false }
+  }, [imageSources])
+
+  return { loadedImages, isLoading }
+}
+
+// --- Optimized Scroll Progress Component ---
 const ScrollProgress: React.FC = () => {
   const [progress, setProgress] = useState<number>(0)
   const [visible, setVisible] = useState<boolean>(false)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const rafRef = useRef<number | null>(null)
 
   const handleScroll = useCallback(() => {
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop
-    const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight
-    const scrolled = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0
-    
-    setProgress(Math.min(Math.max(scrolled, 0), 100))
-    setVisible(true)
-    
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current)
     }
     
-    timeoutRef.current = setTimeout(() => {
-      setVisible(false)
-    }, 1000)
+    rafRef.current = requestAnimationFrame(() => {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+      const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight
+      const scrolled = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0
+      
+      setProgress(Math.min(Math.max(scrolled, 0), 100))
+      setVisible(true)
+      
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+      
+      timeoutRef.current = setTimeout(() => {
+        setVisible(false)
+      }, 1000)
+    })
   }, [])
 
   useEffect(() => {
@@ -159,6 +201,9 @@ const ScrollProgress: React.FC = () => {
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current)
+      }
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current)
       }
       window.removeEventListener("scroll", handleScroll)
     }
@@ -177,14 +222,15 @@ const ScrollProgress: React.FC = () => {
   )
 }
 
-// --- Event Card Component with Enhanced Animation ---
+// --- Optimized Event Card Component ---
 interface EventCardProps {
   image: ImageType;
   isLeft?: boolean;
   index: number;
+  isLoaded: boolean;
 }
 
-const EventCard: React.FC<EventCardProps> = ({ image, isLeft = false, index }) => (
+const EventCard: React.FC<EventCardProps> = ({ image, isLeft = false, index, isLoaded }) => (
   <div 
     className={`relative w-full max-w-md md:w-2/5 h-80 md:h-96 rounded-xl overflow-hidden cursor-pointer group shadow-2xl mx-auto transform transition-all duration-700 hover:scale-110 hover:rotate-1 ${
       isLeft ? 'hover:-rotate-1' : 'hover:rotate-1'
@@ -194,10 +240,19 @@ const EventCard: React.FC<EventCardProps> = ({ image, isLeft = false, index }) =
     }}
   >
     <div className="relative w-full h-full">
+      {!isLoaded && (
+        <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-xl flex items-center justify-center">
+          <div className="text-gray-500">Loading...</div>
+        </div>
+      )}
       <img 
         src={image.src} 
         alt={image.alt} 
-        className="w-full h-full object-cover transition-all duration-700 group-hover:scale-125 group-hover:brightness-110" 
+        className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-125 group-hover:brightness-110 ${
+          isLoaded ? 'opacity-100' : 'opacity-0'
+        }`}
+        loading="lazy"
+        decoding="async"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500">
         <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 transform translate-y-full transition-all duration-500 ease-out group-hover:translate-y-0">
@@ -214,18 +269,39 @@ const EventCard: React.FC<EventCardProps> = ({ image, isLeft = false, index }) =
   </div>
 )
 
-// --- Enhanced 3D Cube Component ---
+// --- Optimized 3D Cube Component ---
 interface ThreeDCubeProps {
   images: ImageType[];
   className?: string;
+  loadedImages: Set<string>;
 }
 
-const ThreeDCube: React.FC<ThreeDCubeProps> = ({ images, className }) => {
+const ThreeDCube: React.FC<ThreeDCubeProps> = ({ images, className, loadedImages }) => {
   const [rotationX, setRotationX] = useState<number>(0)
   const [rotationY, setRotationY] = useState<number>(0)
   const animationRef = useRef<number | null>(null)
+  const [isVisible, setIsVisible] = useState(false)
+  const cubeRef = useRef<HTMLDivElement>(null)
+
+  // Intersection observer for performance
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting)
+      },
+      { threshold: 0.1, rootMargin: '50px' }
+    )
+
+    if (cubeRef.current) {
+      observer.observe(cubeRef.current)
+    }
+
+    return () => observer.disconnect()
+  }, [])
 
   useEffect(() => {
+    if (!isVisible) return
+
     const animate = () => {
       setRotationY(prev => prev + 0.3)
       setRotationX(prev => prev + 0.15)
@@ -238,12 +314,14 @@ const ThreeDCube: React.FC<ThreeDCubeProps> = ({ images, className }) => {
         cancelAnimationFrame(animationRef.current)
       }
     }
-  }, [])
+  }, [isVisible])
+
+  const cubeSize = 'w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 lg:w-40 lg:h-40'
 
   return (
-    <div className={`${className} relative`}>
+    <div className={`${className} relative`} ref={cubeRef}>
       <div 
-        className="relative w-32 h-32 md:w-40 md:h-40 lg:w-48 lg:h-48 mx-auto"
+        className={`relative ${cubeSize} mx-auto`}
         style={{ perspective: '1000px' }}
       >
         <div 
@@ -253,71 +331,36 @@ const ThreeDCube: React.FC<ThreeDCubeProps> = ({ images, className }) => {
             transform: `rotateX(${rotationX}deg) rotateY(${rotationY}deg)`
           }}
         >
-          {/* Front Face */}
-          <div 
-            className="absolute w-full h-full bg-cover bg-center backdrop-blur-sm rounded-lg shadow-2xl"
-            style={{ 
-              backgroundImage: `url(${images[0]?.src})`,
-              transform: 'translateZ(80px)',
-              border: '2px solid rgba(255,255,255,0.2)',
-              boxShadow: '0 0 20px rgba(255,255,255,0.1)'
-            }}
-          />
-          
-          {/* Back Face */}
-          <div 
-            className="absolute w-full h-full bg-cover bg-center backdrop-blur-sm rounded-lg shadow-2xl"
-            style={{ 
-              backgroundImage: `url(${images[1]?.src})`,
-              transform: 'translateZ(-80px) rotateY(180deg)',
-              border: '2px solid rgba(255,255,255,0.2)',
-              boxShadow: '0 0 20px rgba(255,255,255,0.1)'
-            }}
-          />
-          
-          {/* Right Face */}
-          <div 
-            className="absolute w-full h-full bg-cover bg-center backdrop-blur-sm rounded-lg shadow-2xl"
-            style={{ 
-              backgroundImage: `url(${images[2]?.src})`,
-              transform: 'rotateY(90deg) translateZ(80px)',
-              border: '2px solid rgba(255,255,255,0.2)',
-              boxShadow: '0 0 20px rgba(255,255,255,0.1)'
-            }}
-          />
-          
-          {/* Left Face */}
-          <div 
-            className="absolute w-full h-full bg-cover bg-center backdrop-blur-sm rounded-lg shadow-2xl"
-            style={{ 
-              backgroundImage: `url(${images[3]?.src})`,
-              transform: 'rotateY(-90deg) translateZ(80px)',
-              border: '2px solid rgba(255,255,255,0.2)',
-              boxShadow: '0 0 20px rgba(255,255,255,0.1)'
-            }}
-          />
-          
-          {/* Top Face */}
-          <div 
-            className="absolute w-full h-full bg-cover bg-center backdrop-blur-sm rounded-lg shadow-2xl"
-            style={{ 
-              backgroundImage: `url(${images[4]?.src})`,
-              transform: 'rotateX(90deg) translateZ(80px)',
-              border: '2px solid rgba(255,255,255,0.2)',
-              boxShadow: '0 0 20px rgba(255,255,255,0.1)'
-            }}
-          />
-          
-          {/* Bottom Face */}
-          <div 
-            className="absolute w-full h-full bg-cover bg-center backdrop-blur-sm rounded-lg shadow-2xl"
-            style={{ 
-              backgroundImage: `url(${images[5]?.src})`,
-              transform: 'rotateX(-90deg) translateZ(80px)',
-              border: '2px solid rgba(255,255,255,0.2)',
-              boxShadow: '0 0 20px rgba(255,255,255,0.1)'
-            }}
-          />
+          {images.slice(0, 6).map((image, index) => {
+            const transforms = [
+              'translateZ(40px)', // front (reduced from 80px)
+              'translateZ(-40px) rotateY(180deg)', // back
+              'rotateY(90deg) translateZ(40px)', // right
+              'rotateY(-90deg) translateZ(40px)', // left
+              'rotateX(90deg) translateZ(40px)', // top
+              'rotateX(-90deg) translateZ(40px)' // bottom
+            ]
+
+            return (
+              <div 
+                key={index}
+                className="absolute w-full h-full bg-cover bg-center backdrop-blur-sm rounded-lg shadow-2xl"
+                style={{ 
+                  backgroundImage: loadedImages.has(image.src) ? `url(${image.src})` : 'none',
+                  backgroundColor: loadedImages.has(image.src) ? 'transparent' : '#e5e7eb',
+                  transform: transforms[index],
+                  border: '2px solid rgba(255,255,255,0.2)',
+                  boxShadow: '0 0 20px rgba(255,255,255,0.1)'
+                }}
+              >
+                {!loadedImages.has(image.src) && (
+                  <div className="w-full h-full flex items-center justify-center text-xs text-gray-500">
+                    Loading...
+                  </div>
+                )}
+              </div>
+            )
+          })}
         </div>
       </div>
     </div>
@@ -356,6 +399,7 @@ const InteractiveBentoGallery: React.FC<InteractiveBentoGalleryProps> = ({
               src={item.url}
               alt={item.title}
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              loading="lazy"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               <div className="absolute bottom-0 left-0 right-0 p-4">
@@ -398,39 +442,48 @@ const InteractiveBentoGallery: React.FC<InteractiveBentoGalleryProps> = ({
 // --- Main Events Component ---
 export default function Events() {
   const [isMobile, setIsMobile] = useState<boolean>(false)
-  const [isLoaded, setIsLoaded] = useState<boolean>(false)
-  const [scrollY, setScrollY] = useState<number>(0)
+  const [isComponentLoaded, setIsComponentLoaded] = useState<boolean>(false)
+
+  // Memoize all image sources for preloading
+  const allImageSources = useMemo(() => [
+    ...leftImages.map(img => img.src),
+    ...rightImages.map(img => img.src),
+    ...leftCubeImages.map(img => img.src),
+    ...rightCubeImages.map(img => img.src)
+  ], [])
+
+  const { loadedImages, isLoading } = useImagePreloader(allImageSources)
 
   const handleResize = useCallback(() => {
     setIsMobile(window.innerWidth < 768)
   }, [])
 
-  const handleScroll = useCallback(() => {
-    setScrollY(window.scrollY)
-  }, [])
-
   useEffect(() => {
     setIsMobile(window.innerWidth < 768)
-    setIsLoaded(true)
+    setIsComponentLoaded(true)
     
     window.addEventListener("resize", handleResize, { passive: true })
-    window.addEventListener("scroll", handleScroll, { passive: true })
     
     return () => {
       window.removeEventListener("resize", handleResize)
-      window.removeEventListener("scroll", handleScroll)
     }
-  }, [handleResize, handleScroll])
+  }, [handleResize])
 
-  const leftCubeFaces: ImageType[] = isMobile 
-    ? [...leftImages.slice(0, 3), ...leftImages.slice(0, 3)]
-    : leftCubeImages
+  const leftCubeFaces: ImageType[] = useMemo(() => 
+    isMobile 
+      ? [...leftImages.slice(0, 3), ...leftImages.slice(0, 3)]
+      : leftCubeImages,
+    [isMobile]
+  )
     
-  const rightCubeFaces: ImageType[] = isMobile 
-    ? [...rightImages.slice(0, 3), ...rightImages.slice(0, 3)]
-    : rightCubeImages
+  const rightCubeFaces: ImageType[] = useMemo(() => 
+    isMobile 
+      ? [...rightImages.slice(0, 3), ...rightImages.slice(0, 3)]
+      : rightCubeImages,
+    [isMobile]
+  )
 
-  if (!isLoaded) {
+  if (!isComponentLoaded) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-black text-2xl">Loading...</div>
@@ -445,23 +498,25 @@ export default function Events() {
       <div className="content relative z-10 w-full">
         {/* Hero Section */}
         <section className="hero relative w-full min-h-screen flex items-center justify-center px-4 bg-white">
-          {/* Background Cubes - Left and Right Sides */}
+          {/* Background Cubes - Better Positioning */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <ThreeDCube 
               images={leftCubeFaces} 
-              className="absolute top-1/2 left-4 md:left-8 lg:left-16 transform -translate-y-1/2 opacity-70"
+              loadedImages={loadedImages}
+              className="absolute top-1/2 -left-8 sm:-left-4 md:left-2 lg:left-8 xl:left-16 transform -translate-y-1/2 opacity-70"
             />
             <ThreeDCube 
               images={rightCubeFaces} 
-              className="absolute top-1/2 right-4 md:right-8 lg:right-16 transform -translate-y-1/2 opacity-70"
+              loadedImages={loadedImages}
+              className="absolute top-1/2 -right-8 sm:-right-4 md:right-2 lg:right-8 xl:right-16 transform -translate-y-1/2 opacity-70"
             />
           </div>
 
-          <div className="hero-text text-center relative z-10">
-            <h1 className="text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-black leading-none text-black drop-shadow-2xl">
+          <div className="hero-text text-center relative z-10 px-4">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl xl:text-9xl font-black leading-none text-black drop-shadow-2xl">
               Events
             </h1>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mt-4 text-black/90 drop-shadow-xl">
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold mt-4 text-black/90 drop-shadow-xl">
               Let's dive in
             </h2>
           </div>
@@ -482,8 +537,18 @@ export default function Events() {
                 className="row flex flex-col md:flex-row justify-center items-center w-full gap-6 md:gap-8 mb-16"
                 key={index}
               >
-                <EventCard image={leftImage} isLeft={true} index={index} />
-                <EventCard image={rightImages[index]} isLeft={false} index={index} />
+                <EventCard 
+                  image={leftImage} 
+                  isLeft={true} 
+                  index={index} 
+                  isLoaded={loadedImages.has(leftImage.src)}
+                />
+                <EventCard 
+                  image={rightImages[index]} 
+                  isLeft={false} 
+                  index={index}
+                  isLoaded={loadedImages.has(rightImages[index].src)}
+                />
               </div>
             ))}
           </div>
