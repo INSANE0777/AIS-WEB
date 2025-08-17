@@ -2,17 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Moliga Demo Font */
+/* Anton Font for Titles */
 @font-face {
-  font-family: 'Moliga DEMO';
-  src: url('/fonts/Moliga DEMO.otf') format('opentype');
+  font-family: 'Anton';
+  src: url('/fonts/Anton/Anton-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
 
-.font-moliga {
-  font-family: 'Moliga DEMO', sans-serif;
+/* Nunito Font for Body */
+@font-face {
+  font-family: 'Nunito';
+  src: url('/fonts/Nunito/static/Nunito-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+.font-anton {
+  font-family: 'Anton', sans-serif;
 }
 
 * {
@@ -26,7 +35,7 @@ html {
 }
 
 body {
-  font-family: "Poppins", sans-serif;
+  font-family: "Nunito", sans-serif;
   line-height: 1.6;
   color: #000;
   overflow-x: hidden;

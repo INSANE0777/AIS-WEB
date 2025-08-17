@@ -11,17 +11,6 @@ interface ImageType {
   date?: string;
   sortDate?: Date;
 }
-
-interface GalleryMediaItem {
-  id: number;
-  type: string;
-  title: string;
-  desc: string;
-  url: string;
-  span: string;
-  date?: string;
-}
-
 // --- Data Arrays ---
 const eventImages: ImageType[] = [
   { src: "/images/TECH ARENA.png", alt: "TechArena 2025", date: "January 15, 2025", sortDate: new Date("2025-01-15"), overlayText: "AIS proudly participated in TechArena 2025, presenting innovative projects and connecting with a vibrant community of tech enthusiasts and industry experts." },
@@ -31,21 +20,10 @@ const eventImages: ImageType[] = [
   { src: "/images/AI 101.png", alt: "AI 101", date: "September 19, 2024", sortDate: new Date("2024-09-19"), overlayText: "An immersive kickoff event where freshers engaged in foundational AI concepts, hands-on coding sessions, and insightful talks, setting the stage for innovation and learning." },
   { src: "/images/Club Carnival.png", alt: "Club Carnival", date: "August 23, 2024", sortDate: new Date("2024-08-23"), overlayText: "Freshers Orientation and Club Carnival for the new batch of students. Included a variety of fun demos, games, and fun events." },
 ];
-
 const leftImages: ImageType[] = eventImages.filter((_, index) => index % 2 === 0);
 const rightImages: ImageType[] = eventImages.filter((_, index) => index % 2 === 1);
-
-const leftCubeImages: ImageType[] = [
-  { src: "/images/RL.png", alt: "Reinforcement Learning" }, { src: "/images/GENAI.png", alt: "Generative AI" }, { src: "/images/NLP.png", alt: "Natural Language Processing" }, { src: "/images/CV.png", alt: "Computer Vision" }, { src: "/images/DESIGN.png", alt: "Design" }, { src: "/images/MULTIMEDIA.png", alt: "Multimedia" },
-]
-const rightCubeImages: ImageType[] = [
-  { src: "/images/MANAGEMENT.png", alt: "Management" }, { src: "/images/PR.png", alt: "Public Relations" }, { src: "/images/DESIGN.png", alt: "Design" }, { src: "/images/MULTIMEDIA.png", alt: "Multimedia" }, { src: "/images/GENAI.png", alt: "Generative AI" }, { src: "/images/NLP.png", alt: "Natural Language Processing" },
-]
-
-const galleryMediaItems: GalleryMediaItem[] = eventImages.map((image, index) => {
-  const spans = ["md:col-span-2 md:row-span-2 sm:col-span-2", "md:col-span-2 md:row-span-1 sm:col-span-2", "md:col-span-1 md:row-span-1", "md:col-span-1 md:row-span-1", "md:col-span-2 md:row-span-1 sm:col-span-2", "md:col-span-2 md:row-span-2 sm:col-span-2"];
-  return { id: index + 1, type: "image", title: image.alt, desc: image.overlayText || "An event by the AI Society.", url: image.src, date: image.date, span: spans[index] || "md:col-span-1 md:row-span-1" };
-});
+const leftCubeImages: ImageType[] = [ { src: "/images/RL.png", alt: "Reinforcement Learning" }, { src: "/images/GENAI.png", alt: "Generative AI" }, { src: "/images/NLP.png", alt: "Natural Language Processing" }, { src: "/images/CV.png", alt: "Computer Vision" }, { src: "/images/DESIGN.png", alt: "Design" }, { src: "/images/MULTIMEDIA.png", alt: "Multimedia" }, ]
+const rightCubeImages: ImageType[] = [ { src: "/images/MANAGEMENT.png", alt: "Management" }, { src: "/images/PR.png", alt: "Public Relations" }, { src: "/images/DESIGN.png", alt: "Design" }, { src: "/images/MULTIMEDIA.png", alt: "Multimedia" }, { src: "/images/GENAI.png", alt: "Generative AI" }, { src: "/images/NLP.png", alt: "Natural Language Processing" }, ]
 
 const useImagePreloader = (imageSources: string[]) => {
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set())
@@ -69,7 +47,6 @@ const useImagePreloader = (imageSources: string[]) => {
   }, [imageSources]);
   return { loadedImages };
 }
-
 const useScrollAnimation = () => {
   const [visibleCards, setVisibleCards] = useState<Set<number>>(new Set());
   const [scrollProgress, setScrollProgress] = useState<Map<number, number>>(new Map());
@@ -147,7 +124,6 @@ const ScrollProgress: React.FC = () => {
     </div>
   );
 }
-
 const EventCard: React.FC<{ image: ImageType; isLeft?: boolean; index: number; isLoaded: boolean; isVisible: boolean; scrollProgress: number; onRef: (element: HTMLElement | null) => void; }> = ({ image, isLeft = false, index, isLoaded, isVisible, scrollProgress, onRef }) => {
   const translateX = isVisible ? 0 : isLeft ? -120 : 120;
   const translateY = isVisible ? 0 : 80;
@@ -173,7 +149,6 @@ const EventCard: React.FC<{ image: ImageType; isLeft?: boolean; index: number; i
     </div>
   )
 }
-
 const ThreeDCube: React.FC<{ images: ImageType[]; className?: string; loadedImages: Set<string>; isMobile: boolean; }> = ({ images, className, loadedImages, isMobile }) => {
   const [rotationX, setRotationX] = useState<number>(0);
   const [rotationY, setRotationY] = useState<number>(0);
@@ -233,11 +208,11 @@ export default function Events() {
       <div className="content relative z-10 w-full">
         <section className="hero relative w-full h-screen flex items-center justify-center px-4 bg-white">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <ThreeDCube images={leftCubeFaces} loadedImages={loadedImages} isMobile={isMobile} className={`absolute z-0 ${isMobile ? 'top-[75%] left-0 transform -translate-y-1/2' : 'top-8 left-8 md:top-20 md:left-80 lg:bottom-20 lg:left-96'}`} />
-            <ThreeDCube images={rightCubeFaces} loadedImages={loadedImages} isMobile={isMobile} className={`absolute z-0 ${isMobile ? 'top-[1%] right-[2%] transform -translate-y-1/2' : 'bottom-8 right-8 md:bottom-20 md:right-60 lg:bottom-20 lg:right-96'}`} />
             
-            {/* --- CURVED LOOP INTEGRATION --- */}
-            <div className="absolute inset-x-0 top-[75%] -translate-y-1/2 -z-99 bg-white">
+            {/* THE FIX #1: Correct z-index for all layers */}
+            
+            {/* Layer 0: CurvedLoop as the base background element */}
+            <div className="absolute inset-x-0 bottom-6 -translate-y-1/2 z-0 bg-white">
               <CurvedLoop
                 marqueeText="AIS ✦ Workshops ✦ Hackathons ✦ Showcases ✦ Community Events"
                 className="fill-black/80 text-5xl sm:text-8xl"
@@ -245,8 +220,20 @@ export default function Events() {
                 interactive={false}
               />
             </div>
+
+            {/* Layer 1: 3D Cubes */}
+            <ThreeDCube images={leftCubeFaces} loadedImages={loadedImages} isMobile={isMobile} className={`absolute z-10 ${isMobile ? 'top-[75%] left-0 transform -translate-y-1/2' : 'top-8 left-8 md:top-20 md:left-80 lg:bottom-20 lg:left-96'}`} />
+            <ThreeDCube images={rightCubeFaces} loadedImages={loadedImages} isMobile={isMobile} className={`absolute z-10 ${isMobile ? 'top-[1%] right-[2%] transform -translate-y-1/2' : 'bottom-8 right-8 md:bottom-20 md:right-60 lg:bottom-20 lg:right-96'}`} />
+            
+            {/* Layer 2: BIAS Logo */}
+            <div className="absolute top-8 left-8 z-20 w-16 h-16 sm:w-20 sm:h-20">
+                 <Image src="/images/BIAS.png" alt="AI Society Logo" layout="fill" className="object-contain" />
+            </div>
+
           </div>
-          <div className="hero-text text-center relative z-20 px-4 py-8">
+
+          {/* Layer 3: Main hero text, on top of everything */}
+          <div className="hero-text text-center relative z-30 px-4 py-8">
             <h1 className="text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-black leading-none text-black drop-shadow-2xl">Events</h1>
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mt-4 text-black/90 drop-shadow-xl">Let's dive in</h2>
           </div>
@@ -255,7 +242,6 @@ export default function Events() {
         <section className="main relative w-full flex flex-col items-center justify-start bg-white py-16 px-4">
           <div className="main-content relative z-10 text-center py-12">
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-black drop-shadow-2xl">AI SOCIETY</h1>
-            
           </div>
           
           <div className="cards-container w-full max-w-7xl mx-auto">
