@@ -408,9 +408,57 @@ export default function JoinUs() {
             <button onClick={() => setActiveGuideline("community")} className={`px-6 py-3 rounded-full font-medium transition-all flex items-center space-x-2 ${activeGuideline === "community" ? "bg-black text-white" : "bg-white text-black border border-black/20 hover:border-black"}`}><Megaphone size={16} /><span>Community</span></button>
             <button onClick={() => setActiveGuideline("general")} className={`px-6 py-3 rounded-full font-medium transition-all flex items-center space-x-2 ${activeGuideline === "general" ? "bg-black text-white" : "bg-white text-black border border-black/20 hover:border-black"}`}><Globe size={16} /><span>General</span></button>
           </div>
-          {activeGuideline === "tech" && (<div className="bg-white p-8 rounded-2xl border border-black/10"><div className="flex items-center space-x-3 mb-6"><AlertTriangle className="text-red-500" size={24} /><h3 className="text-2xl font-bold text-black">For Technical Positions</h3></div><div className="space-y-6"><div className="p-4 bg-red-50 border border-red-200 rounded-xl"><p className="text-red-800 font-medium">⚠️ AI Generated Form Responses will be rejected.</p></div><div><h4 className="font-bold text-black mb-3">1. Mandatory Courses</h4><p className="text-black/70 mb-3">Complete these courses on Kaggle and obtain the certificates.</p><ul className="space-y-2"><li><CheckCircle className="text-green-500 inline mr-2" size={16} /><span className="text-black font-medium">Python Course (Mandatory)</span></li><li><CheckCircle className="text-green-500 inline mr-2" size={16} /><span className="text-black font-medium">Intro to Machine Learning (Mandatory)</span></li></ul></div><div><h4 className="font-bold text-black mb-3">2. Interview Expectations</h4><ul className="space-y-2 text-black/70"><li>• Verification of your Kaggle account and certificates.</li><li>• Questions regarding the Kaggle courses.</li><li>• Share a problem you want to solve with AI in your chosen domain.</li><li>• Bring your laptop, fully charged.</li></ul></div></div></div>)}
-          {activeGuideline === "community" && (<div className="bg-white p-8 rounded-2xl border border-black/10"><div className="flex items-center space-x-3 mb-6"><AlertTriangle className="text-blue-500" size={24} /><h3 className="text-2xl font-bold text-black">For Community Outreach</h3></div><div className="space-y-6"><div><h4 className="font-bold text-black mb-3">General Requirements</h4><ul className="space-y-2 text-black/70"><li>• Bring your laptop to the interview.</li><li>• Be prepared to showcase your portfolio of work.</li></ul></div><div><h4 className="font-bold text-black mb-3">Role-Specific Tasks</h4><ul className="space-y-2 text-black/70"><li>• <strong>Design/Video/Photo:</strong> Present relevant work (posters, reels, etc.).</li><li>• <strong>Management/PR:</strong> Your speaking and personality skills will be assessed via an on-the-spot task.</li></ul></div></div></div>)}
-          {activeGuideline === "general" && (<div className="bg-white p-8 rounded-2xl border border-black/10"><div className="flex items-center space-x-3 mb-6"><AlertTriangle className="text-green-500" size={24} /><h3 className="text-2xl font-bold text-black">General Guidelines for All</h3></div><div className="space-y-4 text-black/70"><li><strong>Punctuality:</strong> Be on time.</li><li><strong>Attire:</strong> Dress professionally.</li><li><strong>Preparation:</strong> Bring your laptop and be ready to discuss your skills and projects in detail.</li><li><strong>Engagement:</strong> Ask thoughtful questions about the role and the organization.</li></div></div>)}
+          {activeGuideline === "tech" && (
+            <div className="bg-white p-8 rounded-2xl border border-black/10">
+              <div className="flex items-center space-x-3 mb-6">
+                <AlertTriangle className="text-red-500" size={24} />
+                <h3 className="text-2xl font-bold text-black">For Technical Positions</h3>
+              </div>
+              <div className="space-y-6 text-black/70">
+                <div>
+                  <p>AI Generated Form Responses will be rejected in review.</p>
+                </div>
+                <div>
+                  <h4 className="font-bold text-black mb-2">Create a Kaggle account.</h4>
+                  <p>Kaggle is a free, online community and platform for AI competitions, learning, and collaboration. It is used by recruiters worldwide.</p>
+                </div>
+                <div>
+                  <h4 className="font-bold text-black mb-2">Mandatory Courses</h4>
+                  <p className="mb-2">Complete the following mandatory courses on Kaggle and obtain the certificates. These courses are covered in the YouTube course by Abhishek Thakur's Kaggle Tutorial for Beginners (World's first 4x Kaggle Grandmaster)</p>
+                  <ul className="list-disc list-inside space-y-1">
+                    <li><a href="https://www.kaggle.com/learn/python" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Python Course</a> (Mandatory)</li>
+                    <li><a href="https://www.kaggle.com/learn/intro-to-machine-learning" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Intro to Machine Learning</a> (Mandatory)</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-bold text-black mb-2">Optional Courses</h4>
+                  <ul className="list-disc list-inside space-y-1">
+                    <li><a href="https://www.kaggle.com/learn/intro-to-deep-learning" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Intro to Deep Learning</a> (Optional, recommended for advanced learners)</li>
+                    <li><a href="https://www.kaggle.com/learn/intermediate-machine-learning" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Intermediate Machine Learning</a> (Optional, recommended for advanced learners)</li>
+                  </ul>
+                </div>
+                <div>
+                  <p>Post Certificate on LinkedIn tagging <a href="https://www.linkedin.com/company/ais-bennett/posts/?feedView=all" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">@Artificial Intelligence Society Bennett University</a>, mentioning the completion of these (2) courses, and include the certificate links in your post. (Optional, will be considered)</p>
+                </div>
+                <div>
+                  <h4 className="font-bold text-black mb-2">For the interview, we will:</h4>
+                  <ul className="list-disc list-inside space-y-1">
+                    <li>Verify your Kaggle account and check the completion of these (2) courses along with their certificates.</li>
+                    <li>You will be asked questions regarding the Kaggle courses.</li>
+                    <li>Ask you for sure: Why do you want to join the CV / RL / GenAI / NLP department? Share a problem you want to solve with AI in this domain and your approach.</li>
+                  </ul>
+                </div>
+                <div>
+                  <p>Bring your laptop to the interview. Ensure it's fully charged and ready to showcase your work.</p>
+                </div>
+                <div>
+                  <p>We also appreciate additional skills like Web/App development, Video Editing, or Public Speaking.</p>
+                </div>
+              </div>
+            </div>
+          )}
+          {activeGuideline === "community" && (<div className="bg-white p-8 rounded-2xl border border-black/10"><div className="flex items-center space-x-3 mb-6"><AlertTriangle className="text-blue-500" size={24} /><h3 className="text-2xl font-bold text-black">For Community Outreach</h3></div><div className="space-y-6 text-black/70"><ul className="list-disc list-inside space-y-2"><li>Bring your laptop to the interview. Be prepared to showcase your work and projects.</li></ul><div><h4 className="font-bold text-black mb-2">If applying for Design, Video Editing, or Photography:</h4><ul className="list-disc list-inside space-y-1"><li>Submit your designs in the form and be ready to present them during the interview. Relevant examples include posters, reels, or any visual content you’ve created.</li><li>Skills required: Figma, Canva, Adobe Suite, etc.</li></ul></div><div><h4 className="font-bold text-black mb-2">For Social Media Management:</h4><ul className="list-disc list-inside space-y-1"><li>Provide examples of pages or accounts you have managed.</li></ul></div><div><h4 className="font-bold text-black mb-2">For Management/Public Relations:</h4><ul className="list-disc list-inside space-y-1"><li>Your behavior, personality, and speaking skills will be assessed through an on-the-spot task during the interview.</li></ul></div></div></div>)}
+          {activeGuideline === "general" && (<div className="bg-white p-8 rounded-2xl border border-black/10"><div className="flex items-center space-x-3 mb-6"><AlertTriangle className="text-green-500" size={24} /><h3 className="text-2xl font-bold text-black">General Guidelines for All</h3></div><div className="space-y-4 text-black/70"><ul className="list-disc list-inside space-y-2"><li><strong>Be on time.</strong> Punctuality is crucial.</li><li><strong>Dress appropriately.</strong> Professional attire is expected.</li><li><strong>Bring your laptop</strong> and any necessary accessories (charger, mouse, etc.). Ensure your laptop is fully functional and ready for use.</li><li><strong>Be prepared to discuss</strong> your work, skills, and experience in detail.</li><li><strong>Showcase relevant projects.</strong> Highlight the work that best represents your abilities and aligns with the position you’re applying for.</li><li><strong>Ask questions.</strong> Engage with the interviewers by asking insightful questions about the role and organization.</li></ul></div></div>)}
         </section>
 
         <section className="form-section my-12">
