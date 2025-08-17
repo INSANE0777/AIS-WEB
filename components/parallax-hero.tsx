@@ -4,10 +4,27 @@
 import { useRouter } from "next/navigation"
 import { useEffect, useRef } from "react"
 import { gsap } from "gsap"
-import { Sparkles, Users, Award, Github } from "lucide-react"
+import { Users, Award, Github } from "lucide-react"
 import MagneticButton from "./magnetic-button"
 import { useMobileOptimization, getOptimizedDuration, getOptimizedEase } from "./mobile-optimized-animations"
 import React, { HTMLAttributes } from 'react';
+
+// Custom Star SVG Component
+const CustomStar = () => (
+  <svg 
+    width="14" 
+    height="14" 
+    viewBox="0 0 59 59" 
+    fill="none" 
+    xmlns="http://www.w3.org/2000/svg"
+    className="transition-transform duration-300 ease-in-out group-hover:rotate-180"
+  >
+    <path 
+      d="M58.147 25.5731L39.4389 25.2451C38.5681 25.3114 37.8993 24.1946 38.4135 23.2797L49.2314 8.1522L47.0451 6.27509L33.7286 19.2573C32.902 19.904 31.9871 19.3898 31.6306 18.5412L28.4757 0.0980231L25.5732 0.318877L25.2232 18.7368C25.2894 19.6075 24.1726 20.2764 23.2577 19.7621L8.15229 9.23453L6.27518 11.4208L18.9671 24.7594C19.6139 25.586 19.0997 26.5009 18.251 26.8574L0.0981148 29.9902L0.318969 32.8927L19.0271 33.2207C19.8979 33.1544 20.5667 34.2712 20.0525 35.1861L9.52487 50.2915L11.7112 52.1687L25.0277 39.1864C25.8542 38.5397 26.7691 39.0539 27.1256 39.9026L29.9903 58.3678L32.8928 58.147L33.2208 39.4388C33.1545 38.568 34.2713 37.8992 35.1862 38.4134L50.3137 49.2313L52.1908 47.045L39.2086 33.7285C38.5619 32.9019 39.0761 31.987 39.9248 31.6305L58.3679 28.4756L58.147 25.5731Z" 
+      fill="white"
+    />
+  </svg>
+);
 
 // Tech Logo Components
 interface TechLogoProps extends HTMLAttributes<HTMLDivElement> {
@@ -95,8 +112,8 @@ export default function ParallaxHero() {
         </div>
         
         <div className="mb-4 sm:mb-8">
-          <div className="inline-flex items-center space-x-2 bg-black text-white px-3 sm:px-6 py-2 sm:py-3 rounded-full text-xs sm:text-sm font-medium animate-fade-in-up">
-            <Sparkles size={12} />
+          <div className="inline-flex items-center space-x-2 bg-black text-white px-3 sm:px-6 py-2 sm:py-3 rounded-full text-xs sm:text-sm font-medium animate-fade-in-up group">
+            <CustomStar />
             <span>Training Minds, One Epoch at a Time</span>
           </div>
         </div>
