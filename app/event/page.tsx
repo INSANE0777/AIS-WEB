@@ -8,6 +8,8 @@ interface ImageType {
   src: string;
   alt: string;
   overlayText?: string;
+  date?: string;
+  sortDate?: Date;
 }
 
 interface GalleryMediaItem {
@@ -17,50 +19,64 @@ interface GalleryMediaItem {
   desc: string;
   url: string;
   span: string;
+  date?: string;
 }
 
-// --- Data Arrays ---
-const leftImages: ImageType[] = [
-  {
-    src: "/images/AI 101.png",
-    alt: "AI 101",
-    overlayText:
-      "An immersive kickoff event where freshers engaged in foundational AI concepts, hands-on coding sessions, and insightful talks, setting the stage for innovation and learning.",
-  },
+// --- Data Arrays (Sorted Latest to Oldest) ---
+const eventImages: ImageType[] = [
   {
     src: "/images/TECH ARENA.png",
     alt: "TechArena 2025",
+    date: "January 15, 2025",
+    sortDate: new Date("2025-01-15"),
     overlayText:
       "AIS proudly participated in TechArena 2025, presenting innovative projects and connecting with a vibrant community of tech enthusiasts and industry experts.",
   },
   {
-    src: "/images/Workshop.png",
-    alt: "Workshop",
-    overlayText:
-      "A deep dive into the fusion of XR and Generative AI, providing students with hands-on experience and practical insights into emerging technologies.",
-  },
-]
-
-const rightImages: ImageType[] = [
-  {
     src: "/images/AI HUNT 2.0.png",
     alt: "AI Hunt 2.0",
+    date: "November 13-17, 2024",
+    sortDate: new Date("2024-11-13"),
     overlayText:
       "AI Hunt 2.0 was an exciting 48‑hour online cryptic treasure hunt, featuring a Gen AI workshop, an info session, and dynamic problem‑solving challenges that pushed the boundaries of AI exploration.",
   },
   {
+    src: "/images/Workshop.png",
+    alt: "Immersive XR Workshop",
+    date: "November 13, 2024",
+    sortDate: new Date("2024-11-13"),
+    overlayText:
+      "A deep dive into the fusion of XR and Generative AI, providing students with hands-on experience and practical insights into emerging technologies.",
+  },
+  {
     src: "/images/Project Showcase.png",
     alt: "Project Showcase",
+    date: "October 21, 2024",
+    sortDate: new Date("2024-10-21"),
     overlayText:
       "AIS shone at the Project Showcase, presenting over 10 groundbreaking projects, the most by any student body, that redefined innovation and creativity!",
   },
   {
+    src: "/images/AI 101.png",
+    alt: "AI 101",
+    date: "September 19, 2024",
+    sortDate: new Date("2024-09-19"),
+    overlayText:
+      "An immersive kickoff event where freshers engaged in foundational AI concepts, hands-on coding sessions, and insightful talks, setting the stage for innovation and learning.",
+  },
+  {
     src: "/images/Club Carnival.png",
     alt: "Club Carnival",
+    date: "August 23, 2024",
+    sortDate: new Date("2024-08-23"),
     overlayText:
       "Freshers Orientation and Club Carnival for the new batch of students. Included a variety of fun demos, games, and fun events.",
   },
-]
+];
+
+// Split events into left and right arrays for alternating layout
+const leftImages: ImageType[] = eventImages.filter((_, index) => index % 2 === 0);
+const rightImages: ImageType[] = eventImages.filter((_, index) => index % 2 === 1);
 
 const leftCubeImages: ImageType[] = [
   { src: "/images/RL.png", alt: "Reinforcement Learning" },
@@ -81,16 +97,13 @@ const rightCubeImages: ImageType[] = [
 ]
 
 // Dynamically generate gallery items from event images for a functional Bento Grid
-const galleryMediaItems: GalleryMediaItem[] = [
-  ...leftImages, 
-  ...rightImages
-].map((image, index) => {
+const galleryMediaItems: GalleryMediaItem[] = eventImages.map((image, index) => {
   const spans = [
-    "md:col-span-2 md:row-span-2 sm:col-span-2", // AI 101
+    "md:col-span-2 md:row-span-2 sm:col-span-2", // TechArena
     "md:col-span-2 md:row-span-1 sm:col-span-2", // AI Hunt 2.0
-    "md:col-span-1 md:row-span-1", // TechArena
+    "md:col-span-1 md:row-span-1", // Immersive XR
     "md:col-span-1 md:row-span-1", // Project Showcase
-    "md:col-span-2 md:row-span-1 sm:col-span-2", // Workshop
+    "md:col-span-2 md:row-span-1 sm:col-span-2", // AI 101
     "md:col-span-2 md:row-span-2 sm:col-span-2", // Club Carnival
   ];
   return {
@@ -99,10 +112,10 @@ const galleryMediaItems: GalleryMediaItem[] = [
     title: image.alt,
     desc: image.overlayText || "An event by the AI Society.",
     url: image.src,
+    date: image.date,
     span: spans[index] || "md:col-span-1 md:row-span-1", // Fallback span
   };
 });
-
 
 // --- Image Preloader Hook ---
 const useImagePreloader = (imageSources: string[]) => {
@@ -331,11 +344,26 @@ const EventCard: React.FC<EventCardProps> = ({
             isLoaded ? 'opacity-100' : 'opacity-0'
           }`}
         />
+        
+        {/* Date Badge */}
+        {image.date && (
+          <div className="absolute top-4 left-4 bg-black/80 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
+            {image.date}
+          </div>
+        )}
+        
         <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500">
           <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 transform translate-y-full transition-all duration-500 ease-out group-hover:translate-y-0">
-            <h3 className="text-lg md:text-xl font-bold text-white mb-2 md:mb-3 tracking-wide transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-100">
-              {image.alt}
-            </h3>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-lg md:text-xl font-bold text-white tracking-wide transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-100">
+                {image.alt}
+              </h3>
+              {image.date && (
+                <span className="text-xs text-white/80 bg-white/20 px-2 py-1 rounded-md transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-75">
+                  {image.date}
+                </span>
+              )}
+            </div>
             <p className="text-xs md:text-sm text-white/90 leading-relaxed line-clamp-3 md:line-clamp-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-200">
               {image.overlayText}
             </p>
@@ -486,9 +514,18 @@ const InteractiveBentoGallery: React.FC<InteractiveBentoGalleryProps> = ({
               sizes="(max-width: 768px) 50vw, 25vw"
               className="object-cover transition-transform duration-500 group-hover:scale-110"
             />
+            {/* Date Badge for Gallery */}
+            {item.date && (
+              <div className="absolute top-2 left-2 bg-black/80 backdrop-blur-sm text-white px-2 py-1 rounded-md text-xs font-semibold">
+                {item.date}
+              </div>
+            )}
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
               <div className="p-4">
                 <h3 className="text-white font-bold text-lg">{item.title}</h3>
+                {item.date && (
+                  <p className="text-white/80 text-sm mt-1">{item.date}</p>
+                )}
               </div>
             </div>
           </div>
@@ -507,9 +544,21 @@ const InteractiveBentoGallery: React.FC<InteractiveBentoGalleryProps> = ({
                 sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none"
               />
+              {selectedItem.date && (
+                <div className="absolute top-4 left-4 bg-black/80 backdrop-blur-sm text-white px-3 py-2 rounded-lg text-sm font-semibold">
+                  {selectedItem.date}
+                </div>
+              )}
             </div>
             <div className="p-6 md:p-8 w-full md:w-1/2">
-              <h3 className="text-2xl font-bold text-black mb-4">{selectedItem.title}</h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-2xl font-bold text-black">{selectedItem.title}</h3>
+                {selectedItem.date && (
+                  <span className="text-sm text-black/60 bg-gray-100 px-2 py-1 rounded-md">
+                    {selectedItem.date}
+                  </span>
+                )}
+              </div>
               <p className="text-black/80 leading-relaxed">{selectedItem.desc}</p>
               <button
                 onClick={() => setSelectedItem(null)}
@@ -531,8 +580,7 @@ export default function Events() {
   const [isComponentLoaded, setIsComponentLoaded] = useState<boolean>(false)
 
   const allImageSources = useMemo(() => [
-    ...leftImages.map(img => img.src),
-    ...rightImages.map(img => img.src),
+    ...eventImages.map(img => img.src),
     ...leftCubeImages.map(img => img.src),
     ...rightCubeImages.map(img => img.src)
   ], [])
@@ -574,7 +622,6 @@ export default function Events() {
         {/* Hero Section */}
         <section className="hero relative w-full h-screen flex items-center justify-center px-4 bg-white">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            {/* CORRECTED: Cube positioning restored to original specification */}
             <ThreeDCube 
               images={leftCubeFaces} 
               loadedImages={loadedImages}
@@ -613,6 +660,7 @@ export default function Events() {
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-black drop-shadow-2xl">
               AI SOCIETY
             </h1>
+            <p className="text-lg text-black/70 mt-4">Latest to Oldest Events</p>
           </div>
           
           <div className="cards-container w-full max-w-7xl mx-auto">
@@ -630,22 +678,23 @@ export default function Events() {
                   scrollProgress={scrollProgress.get(index * 2) || 0}
                   onRef={(el) => observeElement(el, index * 2)}
                 />
-                <EventCard 
-                  image={rightImages[index]} 
-                  isLeft={false} 
-                  index={index}
-                  isLoaded={loadedImages.has(rightImages[index].src)}
-                  isVisible={visibleCards.has(index * 2 + 1)}
-                  scrollProgress={scrollProgress.get(index * 2 + 1) || 0}
-                  onRef={(el) => observeElement(el, index * 2 + 1)}
-                />
+                {rightImages[index] && (
+                  <EventCard 
+                    image={rightImages[index]} 
+                    isLeft={false} 
+                    index={index}
+                    isLoaded={loadedImages.has(rightImages[index].src)}
+                    isVisible={visibleCards.has(index * 2 + 1)}
+                    scrollProgress={scrollProgress.get(index * 2 + 1) || 0}
+                    onRef={(el) => observeElement(el, index * 2 + 1)}
+                  />
+                )}
               </div>
             ))}
           </div>
         </section>
 
-    
-      
+     
       </div>
 
       <style jsx>{`
