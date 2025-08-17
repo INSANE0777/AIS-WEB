@@ -1,3 +1,5 @@
+// projects/page.tsx
+
 "use client";
 
 import { useRouter } from "next/navigation";
@@ -6,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { data } from "@/data/projects";
-
+import MagneticButton from "@/components/magnetic-button";
+import OptimizedScrollCard from "@/components/optimized-scroll-card";
 export default function Projects() {
   const router = useRouter();
 
@@ -39,12 +42,10 @@ export default function Projects() {
             <Code size={14} className="sm:w-4 sm:h-4" />
             <span>Innovation in Action</span>
           </div>
-
           <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-black mb-4 sm:mb-6 leading-tight">
             Our
             <span className="text-black"> Projects</span>
           </h1>
-
           <div className="w-16 sm:w-24 h-0.5 sm:h-1 bg-black mx-auto mb-6 sm:mb-8"></div>
           <p className="text-lg sm:text-xl text-black/70 max-w-3xl mx-auto leading-relaxed px-4">
             Innovative AI solutions that push the boundaries of technology and
@@ -57,7 +58,8 @@ export default function Projects() {
           {data.projects.map((project, index) => (
             <Card
               key={project.id}
-              className="group cursor-pointer transition-all duration-500 hover:shadow-xl hover:-translate-y-1 animate-in fade-in-0 slide-in-from-bottom-4 relative overflow-hidden bg-white/80 backdrop-blur-sm border border-gray-200/60 hover:border-gray-300/80"
+              // THE FIX: Changed to rounded-2xl for a softer look
+              className="group cursor-pointer transition-all duration-500 hover:shadow-xl hover:-translate-y-1 animate-in fade-in-0 slide-in-from-bottom-4 relative overflow-hidden bg-white/80 backdrop-blur-sm border border-gray-200/60 hover:border-gray-300/80 rounded-2xl"
               style={{ animationDelay: `${index * 100}ms` }}
               onClick={() => handleProjectClick(project.id)}
             >
@@ -76,11 +78,7 @@ export default function Projects() {
               <CardContent className="p-0">
                 <div className="relative overflow-hidden">
                   <img
-                    src={
-                      project.imagePath ||
-                      "/placeholder.svg?height=240&width=480&query=professional project showcase" ||
-                      "/placeholder.svg"
-                    }
+                    src={project.imagePath || "/placeholder.svg"}
                     alt={project.title}
                     className="w-full h-48 sm:h-56 object-cover group-hover:scale-105 transition-transform duration-700"
                     loading="lazy"
@@ -89,20 +87,18 @@ export default function Projects() {
                 </div>
 
                 <div className="p-6 sm:p-8 space-y-6">
-                  {/* Project Header with Tags */}
                   <div className="space-y-4">
                     <div className="flex flex-wrap gap-2">
                       {project.tags.map((tag, i) => (
                         <Badge
                           key={i}
                           variant="secondary"
-                          className="text-xs font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors px-3 py-1"
+                          className="text-xs font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors px-3 py-1 rounded-full"
                         >
                           {tag}
                         </Badge>
                       ))}
                     </div>
-
                     <div className="flex items-start justify-between">
                       <h3 className="text-xl sm:text-2xl font-bold text-gray-900 group-hover:text-gray-700 transition-colors leading-tight">
                         {project.title}
@@ -111,7 +107,7 @@ export default function Projects() {
                         <Button
                           size="icon"
                           variant="ghost"
-                          className="w-10 h-10 hover:bg-gray-100 hover:text-gray-900 transition-all shrink-0 ml-4"
+                          className="w-10 h-10 hover:bg-gray-100 hover:text-gray-900 transition-all shrink-0 ml-4 rounded-full"
                           onClick={(e) => {
                             e.stopPropagation();
                             window.open(project.githubLink, "_blank");
@@ -122,13 +118,11 @@ export default function Projects() {
                       )}
                     </div>
                   </div>
-
                   <div className="border-l-4 border-gray-200 pl-4">
                     <p className="text-gray-600 leading-relaxed text-sm sm:text-base line-clamp-3">
                       {project.description}
                     </p>
                   </div>
-
                   <div className="pt-4 border-t border-gray-100">
                     <div className="flex items-center justify-between">
                       <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
@@ -144,7 +138,7 @@ export default function Projects() {
                         <Badge
                           key={i}
                           variant="outline"
-                          className="text-xs bg-white border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors px-3 py-1"
+                          className="text-xs bg-white border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors px-3 py-1 rounded-full"
                         >
                           {contributor}
                         </Badge>
@@ -158,27 +152,24 @@ export default function Projects() {
         </div>
 
         {/* CTA Section */}
-        <div className="text-center mt-12 sm:mt-20">
-          <Card className="bg-foreground text-background p-6 sm:p-12 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-foreground via-foreground/90 to-foreground"></div>
-            <CardContent className="relative z-10 p-0">
+     <div className="text-center mt-12 sm:mt-20">
+          <OptimizedScrollCard className="bg-black text-white p-6 sm:p-12 rounded-xl sm:rounded-2xl relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-black via-gray-900 to-black"></div>
+            <div className="relative z-10">
               <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-2 mb-4">
                 <Brain size={20} className="sm:w-6 sm:h-6 text-blue-400" />
-                <h2 className="text-2xl sm:text-3xl font-bold text-center">
-                  Have a Project Idea?
-                </h2>
+                <h2 className="text-2xl sm:text-3xl font-bold text-center">Have a Project Idea?</h2>
                 <Zap size={20} className="sm:w-6 sm:h-6 text-yellow-400" />
               </div>
-              <p className="text-background/80 mb-6 sm:mb-8 max-w-2xl mx-auto text-sm sm:text-base px-4">
-                Join our community and bring your AI vision to life. We're
-                always looking for innovative projects and passionate
-                collaborators.
+              <p className="text-white/80 mb-6 sm:mb-8 max-w-2xl mx-auto text-sm sm:text-base px-4">
+                Join our community and bring your AI vision to life. We're always looking for innovative projects and
+                passionate collaborators.
               </p>
-              <Button className="bg-background text-foreground hover:bg-background/90 transition-colors text-sm sm:text-base">
+              <MagneticButton className="bg-white text-black px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold hover:bg-white/90 transition-colors text-sm sm:text-base">
                 Propose a Project
-              </Button>
-            </CardContent>
-          </Card>
+              </MagneticButton>
+            </div>
+          </OptimizedScrollCard>
         </div>
       </div>
     </div>

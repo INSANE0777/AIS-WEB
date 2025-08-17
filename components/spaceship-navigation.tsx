@@ -347,7 +347,7 @@ export default function SpaceshipNavigation() {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border border-white/10 rounded-full pointer-events-none" style={{width: dimensions.navItemRadius * 2, height: dimensions.navItemRadius * 2}}></div>
         </div>
 
-        <div className="absolute bottom-4 left-4 sm:bottom-8 sm:left-8 text-white/60 text-[10px] sm:text-xs">COPYRIGHT© 2024 ALL RIGHTS RESERVED</div>
+        <div className="absolute bottom-4 left-4 sm:bottom-8 sm:left-8 text-white/60 text-[10px] sm:text-xs">COPYRIGHT© 2025 ALL RIGHTS RESERVED</div>
         <div className="hidden sm:flex absolute bottom-8 right-8 space-x-6 text-white/60 text-xs"><span>COOKIE SETTINGS</span><span>PRIVACY POLICY</span><span>LEGAL DISCLAIMER</span></div>
       </div>
     </>

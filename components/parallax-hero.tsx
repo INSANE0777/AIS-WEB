@@ -7,6 +7,7 @@ import { Sparkles, Users, Award, Github } from "lucide-react"
 import MagneticButton from "./magnetic-button"
 import { useMobileOptimization, getOptimizedDuration, getOptimizedEase } from "./mobile-optimized-animations"
 import React, { HTMLAttributes } from 'react';
+
 // Tech Logo Components
 interface TechLogoProps extends HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;

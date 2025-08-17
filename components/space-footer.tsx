@@ -132,7 +132,7 @@ export default function SpaceFooter() {
                   <Link href="/" className="hover:text-white transition-colors cursor-pointer">HOME</Link>
                   <Link href="/about" className="hover:text-white transition-colors cursor-pointer">ABOUT</Link>
                   <Link href="/projects" className="hover:text-white transition-colors cursor-pointer">PROJECTS</Link>
-                  <Link href="/contact" className="hover:text-white transition-colors cursor-pointer">CONTACT</Link>
+                  <Link href="/announcements" className="hover:text-white transition-colors cursor-pointer">ANNOUNCEMENTS</Link>
                   <Link href="/events" className="hover:text-white transition-colors cursor-pointer">EVENTS</Link>
                 </div>
               </div>
