@@ -401,3 +401,7 @@ body:has(#custom-cursor-container),
 body:has(#custom-cursor-container) * {
   cursor: none;
 }
+.has-custom-cursor,
+.has-custom-cursor * {
+  cursor: none !important;
+}

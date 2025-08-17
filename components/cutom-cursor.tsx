@@ -73,8 +73,8 @@ export default function CustomCursor() {
       <Image
         src="/cursor-1.svg"
         alt="Custom Cursor"
-        width={40}
-        height={40}
+        width={36}
+        height={36}
         className="w-full h-full"
       />
     </div>

@@ -40,7 +40,7 @@ const technicalDepts = [
   { icon: Zap, title: "Reinforcement Learning" },
   { icon: Eye, title: "Computer Vision" },
   { icon: Sparkles, title: "Generative AI" },
-  { icon: Brain, title: "Machine Learning Research" },
+  { icon: Brain, title: "Research" },
 ]
 
 const nonTechnicalDepts = [

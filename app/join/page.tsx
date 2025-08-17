@@ -347,13 +347,13 @@ export default function JoinUs() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [activeGuideline, setActiveGuideline] = useState<"tech" | "community" | "general">("tech")
   const [expandedFAQ, setExpandedFAQ] = useState<number | null>(null)
-
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
     reset,
+    setValue,
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -365,6 +365,46 @@ export default function JoinUs() {
   })
 
   const domain = watch("domain")
+
+  // Load form data from localStorage on component mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedFormData = localStorage.getItem('ais-registration-form')
+      if (savedFormData) {
+        try {
+          const parsedData = JSON.parse(savedFormData)
+          Object.entries(parsedData).forEach(([key, value]) => {
+            if (value !== undefined && value !== null && value !== "") {
+              setValue(key as keyof FormData, value as any)
+            }
+          })
+        } catch (error) {
+          console.error('Error loading form data:', error)
+        }
+      }
+    }
+  }, [setValue])
+
+  // Save form data to localStorage on form changes
+  useEffect(() => {
+    const subscription = watch((data) => {
+      if (typeof window !== 'undefined') {
+        const cleanedData = Object.fromEntries(
+          Object.entries(data).filter(([, value]) => {
+            // Only save non-empty values
+            if (Array.isArray(value)) return value.length > 0
+            return value !== undefined && value !== null && value !== ""
+          })
+        )
+        
+        // Only save if there's actual data to save
+        if (Object.keys(cleanedData).length > 0) {
+          localStorage.setItem('ais-registration-form', JSON.stringify(cleanedData))
+        }
+      }
+    })
+    return () => subscription.unsubscribe()
+  }, [watch])
 
   useEffect(() => {
     const tl = gsap.timeline()
@@ -438,6 +478,11 @@ export default function JoinUs() {
 
       setSubmissionStatus("success")
       toast.success("Registration successful! We'll be in touch.")
+      
+      // Clear localStorage and reset form
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('ais-registration-form')
+      }
       reset()
     } catch (error: any) {
       console.error("Registration error:", error)
@@ -845,7 +890,7 @@ export default function JoinUs() {
                         type="checkbox"
                         value={skill}
                         {...register("additionalSkills")}
-                        className="w-5 h-5 text-black border-2 border-black/20 rounded focus:ring-black focus:ring-2"
+                        className="w-5 h-5 accent-black border-2 border-black/20 rounded focus:outline-none focus:ring-0"
                       />
                       <span className="text-black/70 group-hover:text-black transition-colors text-sm">{skill}</span>
                     </label>
@@ -1214,22 +1259,24 @@ export default function JoinUs() {
             {FAQ_ITEMS.map((faq, index) => (
               <div
                 key={index}
-                className="bg-white rounded-2xl border border-black/10 hover:border-black/20 transition-all"
+                className="bg-white rounded-2xl border border-black/10 hover:border-black/20 transition-all overflow-hidden"
               >
                 <button
                   onClick={() => setExpandedFAQ(expandedFAQ === index ? null : index)}
-                  className="w-full p-6 text-left flex items-center justify-between"
+                  className="w-full p-6 text-left flex items-center justify-between hover:bg-gray-50 transition-colors focus:outline-none"
                 >
-                  <h3 className="font-bold text-black pr-4">{faq.question}</h3>
-                  {expandedFAQ === index ? (
-                    <ChevronUp className="text-black/60 flex-shrink-0" size={20} />
-                  ) : (
-                    <ChevronDown className="text-black/60 flex-shrink-0" size={20} />
-                  )}
+                  <h3 className="font-bold text-black flex-1 pr-4">{faq.question}</h3>
+                  <div className="flex-shrink-0 ml-4 mr-2">
+                    {expandedFAQ === index ? (
+                      <ChevronUp className="text-black/60" size={20} />
+                    ) : (
+                      <ChevronDown className="text-black/60" size={20} />
+                    )}
+                  </div>
                 </button>
                 {expandedFAQ === index && (
-                  <div className="px-6 pb-6">
-                    <p className="text-black/70 leading-relaxed">{faq.answer}</p>
+                  <div className="px-6 pb-6 border-t border-gray-100">
+                    <p className="text-black/70 leading-relaxed pt-4">{faq.answer}</p>
                   </div>
                 )}
               </div>
