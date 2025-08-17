@@ -366,7 +366,7 @@ export default function ParallaxHero() {
         <img 
           src="/images/cabinet-logo.png"
           alt="Student Cabinet Logo"
-          className="hidden sm:block object-contain w-16 h-16 transition-all duration-300"
+          className="hidden sm:block object-contain w-28 h-28 transition-all duration-300"
         />
         {/* AI Society Logo - Always visible, different sizes */}
         <img 
@@ -378,7 +378,7 @@ export default function ParallaxHero() {
         <img 
           src="/images/bennett-logo.webp"
           alt="Bennett University Logo"
-          className="hidden sm:block object-contain w-16 h-16 transition-all duration-300"
+          className="hidden sm:block object-contain w-28 h-28 transition-all duration-300"
         />
       </div>
 
