@@ -1,3 +1,5 @@
+// components/curved-loop.tsx
+
 import {
   useRef,
   useEffect,
@@ -34,7 +36,6 @@ const CurvedLoop: FC<CurvedLoopProps> = ({
 
   const measureRef = useRef<SVGTextElement | null>(null);
   const textPathRef = useRef<SVGTextPathElement | null>(null);
-  const pathRef = useRef<SVGPathElement | null>(null);
   const [spacing, setSpacing] = useState(0);
   const [offset, setOffset] = useState(0);
   const uid = useId();
@@ -69,11 +70,9 @@ const CurvedLoop: FC<CurvedLoopProps> = ({
           textPathRef.current.getAttribute("startOffset") || "0"
         );
         let newOffset = currentOffset + delta;
-
         const wrapPoint = spacing;
         if (newOffset <= -wrapPoint) newOffset += wrapPoint;
         if (newOffset >= wrapPoint) newOffset -= wrapPoint;
-
         textPathRef.current.setAttribute("startOffset", newOffset + "px");
         setOffset(newOffset);
       }
@@ -96,16 +95,13 @@ const CurvedLoop: FC<CurvedLoopProps> = ({
     const dx = e.clientX - lastXRef.current;
     lastXRef.current = e.clientX;
     velRef.current = dx;
-
     const currentOffset = parseFloat(
       textPathRef.current.getAttribute("startOffset") || "0"
     );
     let newOffset = currentOffset + dx;
-
     const wrapPoint = spacing;
     if (newOffset <= -wrapPoint) newOffset += wrapPoint;
     if (newOffset >= wrapPoint) newOffset -= wrapPoint;
-
     textPathRef.current.setAttribute("startOffset", newOffset + "px");
     setOffset(newOffset);
   };
@@ -123,17 +119,16 @@ const CurvedLoop: FC<CurvedLoopProps> = ({
     : "auto";
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center w-full"
-      style={{ visibility: ready ? "visible" : "hidden", cursor: cursorStyle }}
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={endDrag}
-      onPointerLeave={endDrag}
-    >
+    // THE FIX: Removed min-h-screen and flex classes to allow for absolute positioning
+    <div style={{ visibility: ready ? "visible" : "hidden" }}>
       <svg
         className="select-none w-full overflow-visible block aspect-[100/12] text-[6rem] font-bold uppercase leading-none"
         viewBox="0 0 1440 120"
+        style={{ cursor: cursorStyle }}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endDrag}
+        onPointerLeave={endDrag}
       >
         <text
           ref={measureRef}
@@ -144,7 +139,6 @@ const CurvedLoop: FC<CurvedLoopProps> = ({
         </text>
         <defs>
           <path
-            ref={pathRef}
             id={pathId}
             d={pathD}
             fill="none"
@@ -152,7 +146,7 @@ const CurvedLoop: FC<CurvedLoopProps> = ({
           />
         </defs>
         {ready && (
-          <text xmlSpace="preserve" className={`fill-white ${className ?? ""}`}>
+          <text xmlSpace="preserve" className={`${className ?? ""}`}>
             <textPath
               ref={textPathRef}
               href={`#${pathId}`}
