@@ -370,7 +370,7 @@ export default function ParallaxHero() {
         />
         {/* AI Society Logo - Always visible, different sizes */}
         <img 
-          src="/images/BIAS.png" 
+          src="/images/BIAS.svg" 
           alt="AI Society Logo" 
           className="object-contain drop-shadow-lg hover:drop-shadow-xl transition-all duration-300 cursor-pointer hover:scale-110 w-24 h-24 sm:w-16 sm:h-16"
         />

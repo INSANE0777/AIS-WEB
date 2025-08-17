@@ -34,6 +34,11 @@ export default function Projects() {
       <FluidGradient />
 
       {/* Optimized Floating Background Elements */}
+       <img 
+          src="/images/BIAS.png" 
+          alt="AI Society Logo" 
+          className="absolute top-4 left-4 sm:left-8 object-contain drop-shadow-lg hover:drop-shadow-xl transition-all duration-300 cursor-pointer hover:scale-110 w-24 h-24 sm:w-16 sm:h-16"
+        />
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <Code className="float-icon absolute top-20 left-4 sm:left-10 w-6 h-6 sm:w-8 sm:h-8 text-black/10" />
         <Brain className="float-icon absolute top-40 right-4 sm:right-20 w-8 h-8 sm:w-10 sm:h-10 text-black/10" />

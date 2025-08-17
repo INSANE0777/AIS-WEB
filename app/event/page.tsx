@@ -329,6 +329,7 @@ const EventCard: React.FC<EventCardProps> = ({
         willChange: 'transform, opacity'
       }}
     >
+      
       <div className="relative w-full h-full">
         {!isLoaded && (
           <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-xl flex items-center justify-center">
@@ -352,17 +353,15 @@ const EventCard: React.FC<EventCardProps> = ({
           </div>
         )}
         
+          
+        
         <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500">
           <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 transform translate-y-full transition-all duration-500 ease-out group-hover:translate-y-0">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-lg md:text-xl font-bold text-white tracking-wide transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-100">
                 {image.alt}
               </h3>
-              {image.date && (
-                <span className="text-xs text-white/80 bg-white/20 px-2 py-1 rounded-md transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-75">
-                  {image.date}
-                </span>
-              )}
+            
             </div>
             <p className="text-xs md:text-sm text-white/90 leading-relaxed line-clamp-3 md:line-clamp-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-200">
               {image.overlayText}
