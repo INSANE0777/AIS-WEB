@@ -390,3 +390,14 @@ body:has(#custom-cursor-container) [role="button"],
 body:has(#custom-cursor-container) [style*="cursor: pointer"] {
   cursor: none;
 }
+/* app/globals.css */
+
+/* 
+  THE FIX:
+  This forces the body AND every single element (*) inside it 
+  to have no cursor, overriding any `cursor: pointer` styles on links, buttons, etc.
+*/
+body:has(#custom-cursor-container),
+body:has(#custom-cursor-container) * {
+  cursor: none;
+}

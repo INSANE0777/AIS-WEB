@@ -74,8 +74,8 @@ export default function CustomCursor() {
       <Image
         src="/cursor-1.svg" // This points to your file in the /public folder
         alt="Custom Cursor"
-        width={40} // Should match the width of the container (w-10 = 40px)
-        height={40} // Should match the height of the container (h-10 = 40px)
+        width={36} // Should match the width of the container (w-10 = 40px)
+        height={36} // Should match the height of the container (h-10 = 40px)
         className="w-full h-full"
       />
     </div>
