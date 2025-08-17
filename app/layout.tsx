@@ -1,4 +1,5 @@
 // app/layout.tsx
+
 "use client"
 import type React from "react"
 import { Poppins } from "next/font/google"
@@ -9,7 +10,8 @@ import PageTransition from "@/components/page-transition"
 import FluidGradient from "@/components/fluid-gradient"
 import RightScrollProgress from "@/components/right-scroll-progress"
 import { ReactLenis } from "lenis/react"
-import CursorFollower from "@/components/cursor-follower"
+// 1. Import your new CustomCursor component
+import CustomCursor from "@/components/cutom-cursor" 
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -29,11 +31,15 @@ export default function RootLayout({
         <meta name="keywords" content="AI Society, Bennett University, Artificial Intelligence, Machine Learning, Research, Innovation" />
       </head>
       <body className={`${poppins.className} bg-white text-black antialiased`}>
+        {/* 2. Add the cursor in its own container right after the body tag */}
+        <div id="custom-cursor-container">
+          <CustomCursor />
+        </div>
+        
         <ReactLenis root>
           {/* Right Side Scroll Progress Bar */}
           <RightScrollProgress />
         
-
           {/* Gradient Layer: Above main content but below footer */}
           <div className="fixed inset-0 z-40 pointer-events-none">
             <FluidGradient />

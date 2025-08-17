@@ -327,24 +327,7 @@ export default function ParallaxHero() {
       ease: "sine.inOut",
       stagger: 0.2,
     })
-
-    // Logo hover animation
-    if (logoRef.current) {
-      gsap.to(logoRef.current, {
-        scale: 1.1,
-        duration: 0.3,
-        ease: "power2.out",
-        paused: true,
-        onComplete: () => {
-          gsap.to(logoRef.current, {
-            scale: 1,
-            duration: 0.3,
-            ease: "power2.out",
-          })
-        }
-      })
-    }
-
+    
     // Tech logo hover effects - Black and White theme
     document.querySelectorAll('.tech-logo').forEach((logo) => {
       logo.addEventListener('mouseenter', () => {
@@ -373,26 +356,32 @@ export default function ParallaxHero() {
       ref={heroRef}
       className="relative w-full min-h-screen flex items-center justify-center overflow-hidden parallax-container bg-white"
     >
-      {/* Logo - Centered on mobile, top-left on desktop */}
+      {/* Logo Container - Different layouts for mobile and desktop */}
       <div 
         ref={logoRef}
-        className={`absolute z-20 cursor-pointer hover:scale-110 transition-transform duration-300 ${
-          isMobile 
-            ? 'top-16 left-1/2.8 transform -translate-x-1/2' 
-            : 'top-6 left-1/2.8'
-        }`}
+        className="absolute z-20 w-full top-6 flex justify-center sm:items-center sm:gap-8"
         style={{ opacity: 1, visibility: "visible" }}
       >
+        {/* Cabinet Logo - DESKTOP ONLY */}
+        <img 
+          src="/images/cabinet-logo.png"
+          alt="Student Cabinet Logo"
+          className="hidden sm:block object-contain w-16 h-16 transition-all duration-300"
+        />
+        {/* AI Society Logo - Always visible, different sizes */}
         <img 
           src="/images/BIAS.png" 
           alt="AI Society Logo" 
-          className={`object-contain drop-shadow-lg hover:drop-shadow-xl transition-all duration-300 ${
-            isMobile 
-              ? '28 h-28 sm:w-28 sm:h-28' 
-              : 'w-16 h-16'
-          }`}
+          className="object-contain drop-shadow-lg hover:drop-shadow-xl transition-all duration-300 cursor-pointer hover:scale-110 w-24 h-24 sm:w-16 sm:h-16"
+        />
+        {/* Bennett Logo - DESKTOP ONLY */}
+        <img 
+          src="/images/bennett-logo.webp"
+          alt="Bennett University Logo"
+          className="hidden sm:block object-contain w-16 h-16 transition-all duration-300"
         />
       </div>
+
 
       {/* Advanced Multi-Layer Parallax Background - Black and White */}
       <div ref={parallaxLayer1Ref} className="absolute inset-0 parallax-layer-1">
@@ -417,29 +406,22 @@ export default function ParallaxHero() {
           <TechLogo className="tech-logo-github absolute top-20 left-20 text-black/30 hover:text-black/80 transition-colors cursor-pointer pointer-events-auto">
             <Github size={28} />
           </TechLogo>
-
           {/* HuggingFace Logo */}
           <TechLogo className="tech-logo-hf absolute top-32 right-32 text-black hover:text-black/80 transition-colors cursor-pointer pointer-events-auto">
             <HuggingFaceLogo />
           </TechLogo>
-
           {/* TensorFlow Logo */}
           <TechLogo className="tech-logo-tf absolute bottom-40 left-32 text-black hover:text-black/80 transition-colors cursor-pointer pointer-events-auto">
             <TensorFlowLogo />
           </TechLogo>
-
           {/* PyTorch Logo */}
           <TechLogo className="tech-logo-pytorch absolute bottom-32 right-24 text-black hover:text-black/80 transition-colors cursor-pointer pointer-events-auto">
             <PyTorchLogo />
           </TechLogo>
-
           {/* Keras Logo */}
           <TechLogo className="tech-logo-keras absolute top-1/2 left-16 text-black hover:text-black/80 transition-colors cursor-pointer pointer-events-auto">
             <KerasLogo />
           </TechLogo>
-
-          {/* Additional smaller tech elements - Black and White */}
-          
         </div>
       )}
 
@@ -453,11 +435,26 @@ export default function ParallaxHero() {
 
       {/* Main Content */}
       <div className={`relative z-10 text-center w-full max-w-6xl mx-auto px-3 sm:px-4 ${
-        isMobile ? 'pt-28 sm:pt-32' : 'pt-20'
+        isMobile ? 'pt-28 sm:pt-32 translate-x-2' : 'pt-20'
       }`}>
+
+        {/* Bennett and Cabinet Logos - MOBILE ONLY */}
+        <div className="sm:hidden flex items-center justify-center gap-8 mb-8">
+          <img 
+            src="/images/cabinet-logo.png" 
+            alt="Student Cabinet Logo" 
+            className="w-24 h-24 object-contain"
+          />
+          <img 
+            src="/images/bennett-logo.webp" 
+            alt="Bennett University Logo" 
+            className="w-24 h-24 object-contain"
+          />
+        </div>
+        
         {/* Enhanced Badge */}
         <div className="mb-4 sm:mb-8">
-          <div className="inline-flex items-center space-x-1 sm:space-x-2 bg-black text-white px-3 sm:px-6 py-2 sm:py-3 rounded-full text-xs sm:text-sm font-medium mb-4 sm:mb-8 animate-fade-in-up hover:scale-105 transition-transform group">
+          <div className="inline-flex items-center space-x-1 sm:space-x-2 bg-black text-white px-3 sm:px-6 py-2 sm:py-3 rounded-full text-xs sm:text-sm font-medium animate-fade-in-up hover:scale-105 transition-transform group">
             <Sparkles size={12} className="sm:w-4 sm:h-4 group-hover:rotate-180 transition-transform duration-500" />
             <span className="whitespace-nowrap">Training Minds, One Epoch at a Time</span>
           </div>
@@ -495,19 +492,18 @@ export default function ParallaxHero() {
           style={{ opacity: 1, visibility: "visible" }}
         >
          <MagneticButton
-  onClick={() => router.push("/projects")}
-  className="group bg-black text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold text-sm sm:text-lg hover:scale-105 transition-all interactive relative overflow-hidden w-full sm:w-auto"
->
-  <span className="relative z-10 group-hover:scale-110 transition-transform">Explore Our Work</span>
-</MagneticButton>
+            onClick={() => router.push("/projects")}
+            className="group bg-black text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold text-sm sm:text-lg hover:scale-105 transition-all interactive relative overflow-hidden w-full sm:w-auto"
+          >
+            <span className="relative z-10 group-hover:scale-110 transition-transform">Explore Our Work</span>
+          </MagneticButton>
 
-<MagneticButton
-  onClick={() => window.open("https://chat.whatsapp.com/JNWPTs2NwBf1sTaHMF4t3Y", "_blank")}
-  className="group border-2 border-black text-black px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold text-sm sm:text-lg hover:bg-black hover:text-white transition-all interactive relative overflow-hidden w-full sm:w-auto"
->
-  <span className="relative z-10 group-hover:scale-110 transition-transform">Join Community</span>
-</MagneticButton>
-
+          <MagneticButton
+            onClick={() => window.open("https://chat.whatsapp.com/JNWPTs2NwBf1sTaHMF4t3Y", "_blank")}
+            className="group border-2 border-black text-black px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold text-sm sm:text-lg hover:bg-black hover:text-white transition-all interactive relative overflow-hidden w-full sm:w-auto"
+          >
+            <span className="relative z-10 group-hover:scale-110 transition-transform">Join Community</span>
+          </MagneticButton>
         </div>
 
         {/* Enhanced Stats Preview */}

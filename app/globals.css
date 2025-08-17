@@ -376,3 +376,17 @@ body {
   outline: 3px solid green !important;
 }
 */
+/* app/globals.css */
+
+/* Hide the default cursor when our custom cursor is present */
+body:has(#custom-cursor-container) {
+  cursor: none;
+}
+
+/* Ensure interactive elements also don't show the default cursor */
+body:has(#custom-cursor-container) a,
+body:has(#custom-cursor-container) button,
+body:has(#custom-cursor-container) [role="button"],
+body:has(#custom-cursor-container) [style*="cursor: pointer"] {
+  cursor: none;
+}

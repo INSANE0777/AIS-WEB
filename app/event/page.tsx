@@ -1,6 +1,7 @@
 "use client"
 import { useEffect, useState, useRef, useCallback, useMemo } from "react"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+// Import Image component from next/image
+import Image from "next/image"
 
 // --- Type Definitions ---
 interface ImageType {
@@ -79,56 +80,29 @@ const rightCubeImages: ImageType[] = [
   { src: "/images/NLP.png", alt: "Natural Language Processing" },
 ]
 
+// Dynamically generate gallery items from event images for a functional Bento Grid
 const galleryMediaItems: GalleryMediaItem[] = [
-  { 
-    id: 1, 
-    type: "image", 
-    title: "AI 101", 
-    desc: "An immersive kickoff event where freshers engaged in foundational AI concepts...", 
-    url: "/api/placeholder/400/300", 
-    span: "md:col-span-1 md:row-span-3 sm:col-span-1 sm:row-span-2" 
-  },
-  { 
-    id: 2, 
-    type: "image", 
-    title: "AI Hunt 2.0", 
-    desc: "AI Hunt 2.0 was an exciting 48‑hour online cryptic treasure hunt...", 
-    url: "/api/placeholder/600/400", 
-    span: "md:col-span-2 md:row-span-2 col-span-1 sm:col-span-2 sm:row-span-2" 
-  },
-  { 
-    id: 3, 
-    type: "image", 
-    title: "TechArena 2025", 
-    desc: "AIS proudly participated in TechArena 2025, presenting innovative projects...", 
-    url: "/api/placeholder/400/300", 
-    span: "md:col-span-1 md:row-span-3 sm:col-span-2 sm:row-span-2" 
-  },
-  { 
-    id: 4, 
-    type: "image", 
-    title: "Project Showcase", 
-    desc: "AIS shone at the Project Showcase, presenting over 10 groundbreaking projects...", 
-    url: "/api/placeholder/600/400", 
-    span: "md:col-span-2 md:row-span-2 sm:col-span-1 sm:row-span-2" 
-  },
-  { 
-    id: 5, 
-    type: "image", 
-    title: "Workshop", 
-    desc: "A deep dive into the fusion of XR and Generative AI, providing hands-on experience...", 
-    url: "/api/placeholder/400/300", 
-    span: "md:col-span-1 md:row-span-3 sm:col-span-1 sm:row-span-2" 
-  },
-  { 
-    id: 6, 
-    type: "image", 
-    title: "Club Carnival", 
-    desc: "Freshers Orientation and Club Carnival for the new batch of students...", 
-    url: "/api/placeholder/600/400", 
-    span: "md:col-span-2 md:row-span-2 sm:col-span-1 sm:row-span-2" 
-  },
-]
+  ...leftImages, 
+  ...rightImages
+].map((image, index) => {
+  const spans = [
+    "md:col-span-2 md:row-span-2 sm:col-span-2", // AI 101
+    "md:col-span-2 md:row-span-1 sm:col-span-2", // AI Hunt 2.0
+    "md:col-span-1 md:row-span-1", // TechArena
+    "md:col-span-1 md:row-span-1", // Project Showcase
+    "md:col-span-2 md:row-span-1 sm:col-span-2", // Workshop
+    "md:col-span-2 md:row-span-2 sm:col-span-2", // Club Carnival
+  ];
+  return {
+    id: index + 1,
+    type: "image",
+    title: image.alt,
+    desc: image.overlayText || "An event by the AI Society.",
+    url: image.src,
+    span: spans[index] || "md:col-span-1 md:row-span-1", // Fallback span
+  };
+});
+
 
 // --- Image Preloader Hook ---
 const useImagePreloader = (imageSources: string[]) => {
@@ -139,7 +113,8 @@ const useImagePreloader = (imageSources: string[]) => {
     let isMounted = true
     const imagePromises = imageSources.map(src => {
       return new Promise<string>((resolve, reject) => {
-        const img = new Image()
+        // Note: This uses the native browser Image API for preloading, which is fine.
+        const img = new window.Image() 
         img.onload = () => resolve(src)
         img.onerror = () => reject(src)
         img.src = src
@@ -184,7 +159,6 @@ const useScrollAnimation = () => {
           const elementCenter = elementTop + rect.height / 2
           const viewportCenter = scrollY + windowHeight / 2
           
-          // Calculate distance from viewport center (-1 to 1)
           const distance = (viewportCenter - elementCenter) / windowHeight
           const progress = Math.max(0, Math.min(1, 1 - Math.abs(distance)))
           
@@ -282,11 +256,11 @@ const ScrollProgress: React.FC = () => {
 
   return (
     <div 
-      className="fixed right-3 top-1/2 transform -translate-y-1/2 w-1 h-24 bg-white/20 rounded-full z-50 transition-opacity duration-300"
+      className="fixed right-3 top-1/2 transform -translate-y-1/2 w-1 h-24 bg-black/20 rounded-full z-50 transition-opacity duration-300"
       style={{ opacity: visible ? 1 : 0 }}
     >
       <div 
-        className="w-full bg-white rounded-full transition-all duration-150 ease-out"
+        className="w-full bg-black rounded-full transition-all duration-150 ease-out"
         style={{ height: `${progress}%` }}
       />
     </div>
@@ -313,19 +287,11 @@ const EventCard: React.FC<EventCardProps> = ({
   scrollProgress,
   onRef 
 }) => {
-  // Calculate smooth entrance animation values
-  const translateX = isVisible 
-    ? 0 
-    : isLeft ? -120 : 120
-  
-  const translateY = isVisible 
-    ? 0 
-    : 80
-    
+  const translateX = isVisible ? 0 : isLeft ? -120 : 120
+  const translateY = isVisible ? 0 : 80
   const opacity = isVisible ? 1 : 0
   const scale = isVisible ? 1 : 0.85
   
-  // Parallax effect based on scroll progress
   const parallaxY = (scrollProgress - 0.5) * 30
   const parallaxRotation = (scrollProgress - 0.5) * 2
   const parallaxScale = 0.95 + (scrollProgress * 0.1)
@@ -341,9 +307,11 @@ const EventCard: React.FC<EventCardProps> = ({
           rotate3d(0, 0, 1, ${parallaxRotation}deg)
         `,
         opacity,
-        transition: isVisible 
-          ? 'transform 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.1s ease-out' 
-          : 'all 1.2s cubic-bezier(0.23, 1, 0.32, 1)',
+        transitionProperty: isVisible ? 'transform, opacity' : 'all',
+        transitionDuration: isVisible ? '0.1s' : '1.2s',
+        transitionTimingFunction: isVisible 
+          ? 'cubic-bezier(0.25, 0.46, 0.45, 0.94), ease-out' 
+          : 'cubic-bezier(0.23, 1, 0.32, 1)',
         transitionDelay: isVisible ? '0s' : `${index * 0.15}s`,
         willChange: 'transform, opacity'
       }}
@@ -354,14 +322,14 @@ const EventCard: React.FC<EventCardProps> = ({
             <div className="text-gray-500">Loading...</div>
           </div>
         )}
-        <img 
+        <Image 
           src={image.src} 
           alt={image.alt} 
-          className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110 ${
+          fill
+          sizes="(max-width: 768px) 100vw, 40vw"
+          className={`object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110 ${
             isLoaded ? 'opacity-100' : 'opacity-0'
           }`}
-          loading="lazy"
-          decoding="async"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500">
           <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 transform translate-y-full transition-all duration-500 ease-out group-hover:translate-y-0">
@@ -394,19 +362,12 @@ const ThreeDCube: React.FC<ThreeDCubeProps> = ({ images, className, loadedImages
   const [isVisible, setIsVisible] = useState(false)
   const cubeRef = useRef<HTMLDivElement>(null)
 
-  // Intersection observer for performance
   useEffect(() => {
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsVisible(entry.isIntersecting)
-      },
+      ([entry]) => setIsVisible(entry.isIntersecting),
       { threshold: 0.1, rootMargin: '100px' }
     )
-
-    if (cubeRef.current) {
-      observer.observe(cubeRef.current)
-    }
-
+    if (cubeRef.current) observer.observe(cubeRef.current)
     return () => observer.disconnect()
   }, [])
 
@@ -421,18 +382,14 @@ const ThreeDCube: React.FC<ThreeDCubeProps> = ({ images, className, loadedImages
     animationRef.current = requestAnimationFrame(animate)
 
     return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current)
-      }
+      if (animationRef.current) cancelAnimationFrame(animationRef.current)
     }
   }, [isVisible, isMobile])
 
-  // Better mobile sizing and positioning
   const cubeSize = isMobile 
     ? 'w-20 h-20 sm:w-24 sm:h-24' 
-    : 'w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:w-40'
-  
-  const cubeDepth = isMobile ? 40 : 40
+    : 'w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40'
+  const cubeDepth = isMobile ? 40 : 60
 
   return (
     <div className={`${className} relative`} ref={cubeRef}>
@@ -444,7 +401,7 @@ const ThreeDCube: React.FC<ThreeDCubeProps> = ({ images, className, loadedImages
         }}
       >
         <div 
-          className="relative w-full h-full transition-transform duration-100 ease-linear"
+          className="relative w-full h-full"
           style={{
             transformStyle: 'preserve-3d',
             transform: `rotateX(${rotationX}deg) rotateY(${rotationY}deg)`
@@ -452,33 +409,39 @@ const ThreeDCube: React.FC<ThreeDCubeProps> = ({ images, className, loadedImages
         >
           {images.slice(0, 6).map((image, index) => {
             const transforms = [
-              `translateZ(${cubeDepth}px)`, // front
-              `translateZ(-${cubeDepth}px) rotateY(180deg)`, // back
-              `rotateY(90deg) translateZ(${cubeDepth}px)`, // right
-              `rotateY(-90deg) translateZ(${cubeDepth}px)`, // left
-              `rotateX(90deg) translateZ(${cubeDepth}px)`, // top
-              `rotateX(-90deg) translateZ(${cubeDepth}px)` // bottom
+              `translateZ(${cubeDepth}px)`,
+              `translateZ(-${cubeDepth}px) rotateY(180deg)`,
+              `rotateY(90deg) translateZ(${cubeDepth}px)`,
+              `rotateY(-90deg) translateZ(${cubeDepth}px)`,
+              `rotateX(90deg) translateZ(${cubeDepth}px)`,
+              `rotateX(-90deg) translateZ(${cubeDepth}px)`
             ]
 
             return (
               <div 
                 key={index}
-                className="absolute w-full h-full bg-cover bg-center backdrop-blur-sm rounded-lg shadow-2xl"
+                className="absolute w-full h-full rounded-lg shadow-2xl"
                 style={{ 
-                  backgroundImage: loadedImages.has(image.src) ? `url(${image.src})` : 'none',
-                  backgroundColor: loadedImages.has(image.src) ? 'transparent' : '#e5e7eb',
                   transform: transforms[index],
-                  border: isMobile ? '2px solid rgba(255,255,255,0.4)' : '2px solid rgba(255,255,255,0.2)',
-                  boxShadow: isMobile 
-                    ? '0 0 25px rgba(255,255,255,0.3), inset 0 0 10px rgba(255,255,255,0.1)' 
-                    : '0 0 20px rgba(255,255,255,0.1)'
+                  border: isMobile ? '2px solid rgba(0,0,0,0.4)' : '2px solid rgba(0,0,0,0.2)',
+                  boxShadow: isMobile ? '0 0 25px rgba(0,0,0,0.3)' : '0 0 20px rgba(0,0,0,0.1)'
                 }}
               >
-                {!loadedImages.has(image.src) && (
-                  <div className="w-full h-full flex items-center justify-center text-xs text-gray-500">
-                    Loading...
-                  </div>
-                )}
+                <div className="relative w-full h-full rounded-lg overflow-hidden">
+                  {loadedImages.has(image.src) ? (
+                    <Image
+                      src={image.src}
+                      alt={image.alt}
+                      fill
+                      sizes="160px"
+                      className="object-cover rounded-lg"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gray-200 flex items-center justify-center text-xs text-gray-500 rounded-lg">
+                      ...
+                    </div>
+                  )}
+                </div>
               </div>
             )
           })}
@@ -503,29 +466,29 @@ const InteractiveBentoGallery: React.FC<InteractiveBentoGalleryProps> = ({
   const [selectedItem, setSelectedItem] = useState<GalleryMediaItem | null>(null)
 
   return (
-    <div className="w-full">
+    <div className="w-full py-20">
       <div className="text-center mb-12">
-        <h2 className="text-4xl md:text-5xl font-black text-white mb-4">{title}</h2>
-        <p className="text-lg text-white/80 max-w-2xl mx-auto">{description}</p>
+        <h2 className="text-4xl md:text-5xl font-black text-black mb-4">{title}</h2>
+        <p className="text-lg text-black/80 max-w-2xl mx-auto">{description}</p>
       </div>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-fr">
+      <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-[200px] gap-4">
         {mediaItems.map((item) => (
           <div
             key={item.id}
-            className={`${item.span} relative group cursor-pointer rounded-xl overflow-hidden bg-white/5 backdrop-blur-sm border border-white/10 hover:border-white/30 transition-all duration-300 hover:scale-105`}
+            className={`${item.span} relative group cursor-pointer rounded-xl overflow-hidden bg-black/5 backdrop-blur-sm border border-black/10 hover:border-black/30 transition-all duration-300 hover:scale-105 shadow-lg`}
             onClick={() => setSelectedItem(item)}
           >
-            <img
+            <Image
               src={item.url}
               alt={item.title}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-              loading="lazy"
+              fill
+              sizes="(max-width: 768px) 50vw, 25vw"
+              className="object-cover transition-transform duration-500 group-hover:scale-110"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <div className="absolute bottom-0 left-0 right-0 p-4">
-                <h3 className="text-white font-bold text-lg mb-2">{item.title}</h3>
-                <p className="text-white/80 text-sm line-clamp-2">{item.desc}</p>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+              <div className="p-4">
+                <h3 className="text-white font-bold text-lg">{item.title}</h3>
               </div>
             </div>
           </div>
@@ -535,23 +498,25 @@ const InteractiveBentoGallery: React.FC<InteractiveBentoGalleryProps> = ({
       {/* Modal */}
       {selectedItem && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setSelectedItem(null)}>
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-auto" onClick={e => e.stopPropagation()}>
-            <div className="relative">
+          <div className="bg-white shadow-2xl rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-auto flex flex-col md:flex-row" onClick={e => e.stopPropagation()}>
+            <div className="relative w-full md:w-1/2 h-64 md:h-auto">
+              <Image
+                src={selectedItem.url}
+                alt={selectedItem.title}
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-cover rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none"
+              />
+            </div>
+            <div className="p-6 md:p-8 w-full md:w-1/2">
+              <h3 className="text-2xl font-bold text-black mb-4">{selectedItem.title}</h3>
+              <p className="text-black/80 leading-relaxed">{selectedItem.desc}</p>
               <button
                 onClick={() => setSelectedItem(null)}
                 className="absolute top-4 right-4 z-10 bg-black/50 backdrop-blur-sm rounded-full p-2 text-white hover:bg-black/70 transition-colors"
               >
                 ✕
               </button>
-              <img
-                src={selectedItem.url}
-                alt={selectedItem.title}
-                className="w-full h-64 md:h-96 object-cover rounded-t-2xl"
-              />
-              <div className="p-6">
-                <h3 className="text-2xl font-bold text-white mb-4">{selectedItem.title}</h3>
-                <p className="text-white/80 leading-relaxed">{selectedItem.desc}</p>
-              </div>
             </div>
           </div>
         </div>
@@ -565,7 +530,6 @@ export default function Events() {
   const [isMobile, setIsMobile] = useState<boolean>(false)
   const [isComponentLoaded, setIsComponentLoaded] = useState<boolean>(false)
 
-  // Memoize all image sources for preloading
   const allImageSources = useMemo(() => [
     ...leftImages.map(img => img.src),
     ...rightImages.map(img => img.src),
@@ -573,7 +537,7 @@ export default function Events() {
     ...rightCubeImages.map(img => img.src)
   ], [])
 
-  const { loadedImages, isLoading } = useImagePreloader(allImageSources)
+  const { loadedImages } = useImagePreloader(allImageSources)
   const { visibleCards, observeElement, scrollProgress } = useScrollAnimation()
 
   const handleResize = useCallback(() => {
@@ -597,7 +561,7 @@ export default function Events() {
   if (!isComponentLoaded) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-black text-2xl">Loading...</div>
+        <div className="text-black text-2xl animate-pulse">Loading Events...</div>
       </div>
     )
   }
@@ -609,10 +573,8 @@ export default function Events() {
       <div className="content relative z-10 w-full">
         {/* Hero Section */}
         <section className="hero relative w-full h-screen flex items-center justify-center px-4 bg-white">
-          {/* Background Cubes - Desktop: Top corners, Mobile: Above and below text */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            {/* Desktop Layout: Top Left and Top Right */}
-            {/* Mobile Layout: Above and Below Events Text */}
+            {/* CORRECTED: Cube positioning restored to original specification */}
             <ThreeDCube 
               images={leftCubeFaces} 
               loadedImages={loadedImages}
@@ -636,10 +598,10 @@ export default function Events() {
           </div>
 
           <div className="hero-text text-center relative z-10 px-4 py-8">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl xl:text-9xl font-black leading-none text-black drop-shadow-2xl">
+            <h1 className="text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-black leading-none text-black drop-shadow-2xl">
               Events
             </h1>
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold mt-4 text-black/90 drop-shadow-xl">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mt-4 text-black/90 drop-shadow-xl">
               Let's dive in
             </h2>
           </div>
@@ -648,12 +610,11 @@ export default function Events() {
         {/* Main Content Section */}
         <section className="main relative w-full flex flex-col items-center justify-start bg-white py-16 px-4">
           <div className="main-content relative z-10 text-center py-12">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-black drop-shadow-2xl">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-black drop-shadow-2xl">
               AI SOCIETY
             </h1>
           </div>
           
-          {/* Event Cards with Enhanced Scroll Animation */}
           <div className="cards-container w-full max-w-7xl mx-auto">
             {leftImages.map((leftImage, index) => (
               <div 
@@ -683,35 +644,19 @@ export default function Events() {
           </div>
         </section>
 
-        {/* Bento Gallery Section */}
-        <section className="bento-gallery-section relative w-full bg-white">
-          <div className="container mx-auto max-w-7xl">
-            {/* Gallery content removed */}
-          </div>
-        </section>
+    
+      
       </div>
 
       <style jsx>{`
-        .line-clamp-2 {
+        .line-clamp-2, .line-clamp-3, .line-clamp-4 {
           display: -webkit-box;
-          -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
           overflow: hidden;
         }
-        
-        .line-clamp-3 {
-          display: -webkit-box;
-          -webkit-line-clamp: 3;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-        
-        .line-clamp-4 {
-          display: -webkit-box;
-          -webkit-line-clamp: 4;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
+        .line-clamp-2 { -webkit-line-clamp: 2; }
+        .line-clamp-3 { -webkit-line-clamp: 3; }
+        .line-clamp-4 { -webkit-line-clamp: 4; }
       `}</style>
     </div>
   )

@@ -90,16 +90,20 @@ export default function Home() {
         </SectionTransition>
         
         {/* Remove SectionTransition wrapper and add explicit controls */}
+        
         <div 
           className="relative"
           style={{ 
             margin: 0, 
             padding: 0,
             marginBottom: 0,
-            paddingBottom: 25
+            paddingBottom: 40,
+            backgroundColor: 'black'
           }}
         >
+            <SectionTransition delay={0.4}>
           <Leadership />
+          </SectionTransition>
         </div>
       </main>
     </div>

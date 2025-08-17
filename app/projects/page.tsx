@@ -51,8 +51,8 @@ export default function Projects() {
 
           <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-black mb-4 sm:mb-6 leading-tight">
             Our
-            <br />
-            <span className="text-black/60">Projects</span>
+            
+            <span className="text-black"> Projects</span>
           </h1>
 
           <div className="w-16 sm:w-24 h-0.5 sm:h-1 bg-black mx-auto mb-6 sm:mb-8"></div>

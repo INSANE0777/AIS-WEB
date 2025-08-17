@@ -16,14 +16,23 @@ import {
   Camera,
   Mic,
   GraduationCap,
-  Brain
+  Brain,
+  Code,       // Icon for CTO
+  Briefcase,  // Icon for COO
+  Megaphone,  // Icon for CMO
 } from "lucide-react"
 
-// --- Data (updated with new technical dept) ---
-const executives = [
+// --- Data (updated with new executive roles) ---
+const topExecutives = [
   { icon: User, title: "President" },
   { icon: UserCheck, title: "Vice-President" },
   { icon: FileText, title: "General Secretary" },
+]
+
+const cLevelExecutives = [
+  { icon: Code, title: "Chief Technology Officer" },
+  { icon: Briefcase, title: "Chief Operating Officer" },
+  { icon: Megaphone, title: "Chief Marketing Officer" },
 ]
 
 const technicalDepts = [
@@ -114,7 +123,9 @@ export default function AISocietyOrgChart() {
   useEffect(() => {
     if (!isLoading && chartRef.current) {
       // Set initial states for animation
-      gsap.set(".org-card, .dept-container, .connecting-line", { opacity: 0 });
+      gsap.set(".org-card, .dept-container, .connecting-line", { opacity: 0, y: 20 });
+      gsap.set(".dept-card", {scale: 0.8, opacity: 0});
+
 
       const tl = gsap.timeline({
         scrollTrigger: {
@@ -127,11 +138,11 @@ export default function AISocietyOrgChart() {
 
       tl.to(
         ".exec-card",
-        { y: 0, opacity: 1, duration: 0.8, stagger: 0.15, ease: "power3.out" },
+        { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: "power3.out" },
       )
       .to(
         ".connecting-line",
-        { opacity: 1, duration: 0.3 },
+        { y: 0, opacity: 1, duration: 0.3 },
         "-=0.6"
       )
       .to(
@@ -161,7 +172,6 @@ export default function AISocietyOrgChart() {
           {/* Header */}
           <div className="text-center mb-8 md:mb-16">
             <div className="inline-flex items-center gap-2 md:gap-3 mb-4 flex-col sm:flex-row">
-              {/* --- LOGO CHANGE HERE --- */}
               <Image src="/images/BIAS.png" alt="BIAS Logo" width={40} height={40} className="md:w-[52px] md:h-[52px]" />
               <h2 className="text-2xl md:text-4xl font-black text-black text-center sm:text-left">Artificial Intelligence Society</h2>
             </div>
@@ -172,13 +182,36 @@ export default function AISocietyOrgChart() {
             {/* Executives Level */}
             <div className="mb-8 md:mb-12">
               <h3 className="text-xl md:text-2xl font-black text-black text-center mb-6 md:mb-8">Executives</h3>
+              {/* Top Row - Larger Cards */}
               <div className="flex flex-col sm:flex-row justify-center items-center gap-6 md:gap-8 relative">
-                {executives.map((exec, index) => {
+                {topExecutives.map((exec, index) => {
                   const Icon = exec.icon
                   return (
                     <div key={index} className="org-card exec-card relative">
-                      <div className="p-8 md:p-12 rounded-3xl bg-white border-2 border-black/20 hover:border-black/40 transition-all hover:shadow-xl text-center min-w-[200px] md:min-w-[280px] w-full sm:w-auto">
-                        <div className="inline-flex items-center justify-center w-16 md:w-20 h-16 md:h-20 bg-black text-white rounded-full mb-6 md:mb-8">
+                      <div className="p-8 md:p-14 rounded-3xl bg-white border-2 border-black/20 hover:border-black/40 transition-all hover:shadow-xl text-center min-w-[220px] md:min-w-[300px] w-full sm:w-auto">
+                        <div className="inline-flex items-center justify-center w-20 md:w-24 h-20 md:h-24 bg-black text-white rounded-full mb-6 md:mb-8">
+                          <Icon size={28} className="md:w-10 md:h-10" />
+                        </div>
+                        <h4 className="text-lg md:text-xl font-bold text-black">{exec.title}</h4>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+              
+              {/* Connecting line between executive rows */}
+              <div className="flex justify-center my-6 md:my-8">
+                <div className="connecting-line w-px h-8 md:h-12 bg-black/30 origin-top"></div>
+              </div>
+
+              {/* C-Level Row - Smaller Cards */}
+              <div className="flex flex-col sm:flex-row justify-center items-center gap-6 md:gap-8 relative">
+                {cLevelExecutives.map((exec, index) => {
+                  const Icon = exec.icon
+                  return (
+                    <div key={index} className="org-card exec-card relative">
+                      <div className="p-6 md:p-10 rounded-3xl bg-white border-2 border-black/20 hover:border-black/40 transition-all hover:shadow-lg text-center min-w-[200px] md:min-w-[280px] w-full sm:w-auto">
+                        <div className="inline-flex items-center justify-center w-16 md:w-20 h-16 md:h-20 bg-black text-white rounded-full mb-5 md:mb-6">
                           <Icon size={22} className="md:w-8 md:h-8" />
                         </div>
                         <h4 className="text-base md:text-lg font-bold text-black">{exec.title}</h4>
@@ -194,7 +227,7 @@ export default function AISocietyOrgChart() {
               <div className="connecting-line w-px h-8 md:h-12 bg-black/30 origin-top"></div>
             </div>
 
-            {/* Departments Level - Both boxes now have equal height */}
+            {/* Departments Level */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 mb-8 md:mb-12">
               <div className="dept-container relative h-full">
                 <div className="h-full p-4 md:p-8 rounded-3xl bg-white border-2 border-black/20 hover:border-black/30 transition-all shadow-lg flex flex-col">
@@ -247,7 +280,7 @@ export default function AISocietyOrgChart() {
               <div className="connecting-line w-px h-8 md:h-12 bg-black/30 origin-top"></div>
             </div>
 
-            {/* Mentors Level - Smaller height but wider to match layout */}
+            {/* Mentors Level */}
             <div className="flex justify-center">
               <div className="org-card mentors-card w-full max-w-4xl">
                 <div className="p-4 md:p-6 rounded-3xl bg-white border-2 border-black/20 hover:border-black/30 transition-all shadow-lg text-center">

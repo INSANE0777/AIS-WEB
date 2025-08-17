@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react"
 import { gsap } from "gsap"
-import { Crown, Award, Star, Heart, Zap } from "lucide-react"
+import { Crown, Award, Star } from "lucide-react"
 
 const leaders = [
   {
@@ -32,21 +32,12 @@ export default function Leadership() {
   const sectionRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
-    // Ensure elements are visible
-    gsap.set([".leadership-header", ".leadership-card", ".developed-by"], {
-      opacity: 1,
-      visibility: "visible",
-    })
-
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: sectionRef.current,
         start: "top 80%",
         end: "bottom 20%",
         toggleActions: "play none none reverse",
-        // Prevent ScrollTrigger from adding extra space
-        invalidateOnRefresh: true,
-        refreshPriority: -1,
       },
     })
 
@@ -56,40 +47,17 @@ export default function Leadership() {
         { y: 50, opacity: 0 },
         { y: 0, opacity: 1, duration: 0.8, stagger: 0.2, ease: "power3.out" },
         "-=0.5",
-      )
-      .fromTo(".developed-by", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }, "-=0.3")
-
-    // Force remove any spacing after animation
-    tl.call(() => {
-      if (sectionRef.current) {
-        gsap.set(sectionRef.current, { 
-          marginBottom: 0, 
-          paddingBottom: 0,
-          clearProps: "margin-bottom,padding-bottom" 
-        })
-      }
-    })
-
+      );
   }, [])
 
   return (
+    // This component now has standard, self-contained padding.
     <section 
       ref={sectionRef} 
-      className="leadership-section bg-black text-white" 
-      style={{ 
-        opacity: 1, 
-        visibility: "visible",
-        margin: 0,
-        padding: 0,
-        paddingTop: '5rem',
-        paddingLeft: '1rem',
-        paddingRight: '1rem',
-        paddingBottom: 0,
-        marginBottom: 0
-      }}
+      className="leadership-section bg-black text-white py-20 px-4"
     >
-      <div className="max-w-6xl mx-auto" style={{ paddingBottom: 0, marginBottom: 0 }}>
-        <div className="leadership-header text-center mb-16" style={{ opacity: 1, visibility: "visible" }}>
+      <div className="max-w-6xl mx-auto">
+        <div className="leadership-header text-center mb-16">
           <h2 className="text-5xl md:text-6xl font-black mb-6">
             Leadership
             <br />
@@ -100,15 +68,13 @@ export default function Leadership() {
             Meet the visionary leaders shaping the future of AI education and research
           </p>
         </div>
-
-        <div className="grid lg:grid-cols-3 gap-8 mb-12">
+        <div className="grid lg:grid-cols-3 gap-8">
           {leaders.map((leader, index) => {
             const Icon = leader.icon
             return (
               <div
                 key={index}
                 className="leadership-card bg-white/5 backdrop-blur-sm p-8 rounded-2xl border border-white/20 hover:border-white hover:bg-white/10 transition-all group"
-                style={{ opacity: 1, visibility: "visible" }}
               >
                 <div className="text-center mb-6">
                   <div className="w-20 h-20 bg-white group-hover:bg-black border-2 border-white rounded-full mx-auto mb-4 flex items-center justify-center transition-all">
@@ -118,7 +84,6 @@ export default function Leadership() {
                   <p className="text-lg text-white/60 mb-4">{leader.role}</p>
                   <p className="text-white/70 leading-relaxed">{leader.description}</p>
                 </div>
-
                 <div className="space-y-3">
                   <h4 className="text-sm font-semibold text-white/80 uppercase tracking-wider">Key Achievements</h4>
                   {leader.achievements.map((achievement, i) => (
@@ -131,26 +96,6 @@ export default function Leadership() {
               </div>
             )
           })}
-        </div>
-
-        {/* Final element with absolute zero bottom space */}
-        <div 
-          className="developed-by text-center" 
-          style={{ 
-            opacity: 1, 
-            visibility: "visible",
-            margin: 0,
-            padding: 0,
-            marginBottom: 0,
-            paddingBottom: 0
-          }}
-        >
-          <div 
-            className=" bg-white/10 backdrop-blur-sm p-8 rounded-2xl border border-white/20"
-            style={{ marginBottom: 0 }}
-          >
-          
-          </div>
         </div>
       </div>
     </section>
