@@ -34,7 +34,7 @@ export default function RootLayout({
         <div id="custom-cursor-container">
           <CustomCursor />
         </div>
-        
+        <link rel="icon" href="/favicon.ico" />
         <ReactLenis root>
           {/* ... rest of your layout file remains the same */}
           <RightScrollProgress />
