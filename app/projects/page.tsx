@@ -38,16 +38,7 @@ export default function Projects() {
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="relative text-center mb-12 sm:mb-20 pt-12 sm:pt-16">
           
-          <div className="absolute inset-0 -z-10 ">
-            <div className="absolute inset-x-0 top-16 sm:top-20 bg-white">
-              <CurvedLoop
-                marqueeText="AI Society • Projects Showcase • Bennett University •"
-                className="fill-black/10 text-5xl sm:text-8xl" 
-                speed={1}
-                interactive={false}
-              />
-            </div>
-          </div>
+          
           
           <div className="relative z-10">
             <div className="inline-flex items-center space-x-2 bg-black text-white px-4 sm:px-6 py-2 sm:py-3 rounded-full text-xs sm:text-sm font-medium mb-6 sm:mb-8">
