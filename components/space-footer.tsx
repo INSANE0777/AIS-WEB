@@ -233,7 +233,8 @@ export default function SpaceFooter() {
                 </div>
               </div>
               <div className="text-xs sm:text-sm text-white/60 text-center lg:text-right">
-                DESIGN BY <Link href="/team" className="underline hover:text-white transition-colors cursor-pointer">AI SOCIETY TEAM</Link>
+                DESIGN & DEVELOPED BY <Link href="/team" className="underline hover:text-white transition-colors cursor-pointer">AFJAL HUSSEIN</Link>
+
               </div>
             </div>
           </div>
