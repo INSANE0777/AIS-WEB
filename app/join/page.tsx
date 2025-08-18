@@ -132,7 +132,7 @@ type FormData = z.infer<typeof formSchema>
 // --- Department & Page Constants ---
 const TECH_DEPARTMENTS: { [key: string]: TechDepartmentInfo } = { "Natural Language Processing (NLP)": { icon: MessageSquare, description: "Work with language models, text analysis, chatbots, and language understanding systems.", skills: ["Python", "Transformers", "NLTK", "spaCy", "Hugging Face", "LangChain", "OpenAI APIs"], projects: ["Conversational AI Chatbots", "Sentiment Analysis Systems", "Text Summarization Tools"], requirements: ["Strong foundation in Python programming", "Understanding of language processing concepts"] }, "Generative AI (GenAI)": { icon: Bot, description: "Create AI systems that generate content - text, images, code, and multimedia using cutting-edge generative models.", skills: ["Python", "PyTorch/TensorFlow", "Stable Diffusion", "GPT APIs", "LangChain", "Prompt Engineering"], projects: ["AI Art Generation Applications", "Code Generation Tools", "Creative Writing Assistants"], requirements: ["Strong programming skills in Python", "Understanding of neural networks"] }, "Reinforcement Learning (RL)": { icon: Cpu, description: "Develop AI agents that learn through interaction with environments, perfect for game AI, robotics, and decision-making systems.", skills: ["Python", "OpenAI Gym", "Stable Baselines3", "PyTorch", "Unity ML-Agents", "Ray RLlib"], projects: ["Game AI Agents (Chess, Go, Atari)", "Autonomous Navigation Systems", "Trading and Finance Bots"], requirements: ["Strong mathematical background", "Programming experience in Python"] }, "Computer Vision (CV)": { icon: Eye, description: "Build AI systems that can see, understand, and interpret visual information from images and videos.", skills: ["Python", "OpenCV", "PyTorch/TensorFlow", "YOLO", "Detectron2", "Pillow", "Scikit-image"], projects: ["Object Detection and Recognition", "Face Recognition Systems", "Medical Image Analysis"], requirements: ["Strong programming skills", "Basic understanding of linear algebra"] } }
 const NON_TECH_DEPARTMENTS: { [key: string]: DepartmentInfo } = { "Community Outreach": { icon: Users, description: "Social Media Managers: Manage socials and create engaging content (stories & reels on Instagram).", skills: ["Social Media Management", "Content Creation", "Community Building"] }, Designers: { icon: Sparkles, description: "Proficient with Canva/Figma for creating designs. Focus on graphic and visual design.", skills: ["Canva/Figma", "Graphic Design", "Visual Identity"] }, "Event Managers": { icon: Award, description: "Oversee administrative and logistical aspects. Coordinate meetings, events, and club activities.", skills: ["Event Planning", "Project Management", "Leadership"] }, "Public Speakers (PR)": { icon: Brain, description: "Engage with external representatives and organizations. Build partnerships and collaborations.", skills: ["Public Speaking", "Networking", "Partnership Development"] }, "Photographers / Video Editors": { icon: Zap, description: "Capture high-quality photos and videos during events. Edit and create engaging visual content.", skills: ["Photography", "Video Editing", "Creative Direction"] } }
-const ALL_DEPARTMENTS = { Tech: Object.keys(TECH_DEPARTMENTS), NonTech: Object.keys(NON_TECH_DEPARTMENTS) }
+const ALL_DEPARTMENTS = { Tech: Object.keys(TECH_DEPARTMENTS), "Non-Tech": Object.keys(NON_TECH_DEPARTMENTS) }
 const ALL_DEPARTMENTS_FOR_TABS = [...Object.keys(TECH_DEPARTMENTS).map((dept) => ({ name: dept, domain: "Tech" as const })), ...Object.keys(NON_TECH_DEPARTMENTS).map((dept) => ({ name: dept, domain: "Non-Tech" as const }))]
 const ADDITIONAL_SKILLS: string[] = ["Researching", "Content Writing", "Designing (Canva/Figma/Photoshop etc.)", "Public Speaking", "Outreach and Sponsorship", "Social Media Management / Marketing", "Photography/Videography", "Managing Events", "3D softwares (Blender, Maya, etc)", "Video editing (Capcut/Kinemaster/After Effects, Da Vinci etc)"]
 const TIMELINE_ITEMS = [{ icon: Send, title: "Fill the Form", subtitle: "Applications open till Monday 27th January 12 noon", description: "Applications: 128+", status: "ongoing", date: "Till 27th Jan" }, { icon: Clock, title: "Form Shortlisting", subtitle: "Form review period where you will be judged by the form responses", description: "AI Generated Form Responses will be rejected.", status: "upcoming", date: "21st-27th Jan" }, { icon: MessageCircle, title: "One-on-One Interview", subtitle: "Candidate is interviewed on technicalities and soft skills", description: "Interview Guidelines and Preparation", status: "upcoming", date: "26th-27th Jan" }]
@@ -149,7 +149,6 @@ export default function JoinUs() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [activeGuideline, setActiveGuideline] = useState<"tech" | "community" | "general">("tech")
   const [expandedFAQ, setExpandedFAQ] = useState<number | null>(null)
-  const [selectedDepartment, setSelectedDepartment] = useState<{ name: string; domain: "Tech" | "Non-Tech" } | null>(null)
   const [hoveredDepartment, setHoveredDepartment] = useState<string | null>(null)
 
   const {
@@ -167,9 +166,13 @@ export default function JoinUs() {
 
   const domainValue = watch("domain")
   const departmentValue = watch("department")
+  const domainRegistration = register("domain");
+
+  const selectedDepartment = (domainValue && departmentValue)
+    ? { name: departmentValue, domain: domainValue }
+    : null;
 
   const handleSelectDepartment = (department: { name: string; domain: "Tech" | "Non-Tech" }) => {
-    setSelectedDepartment(department); // Update UI state directly for instant feedback
     setValue("domain", department.domain, { shouldValidate: true })
     setValue("department", department.name, { shouldValidate: true })
     clearErrors(["domain", "department"])
@@ -211,18 +214,10 @@ export default function JoinUs() {
   }, [watch]);
 
   useEffect(() => {
-    if (domainValue && departmentValue) {
-      if(selectedDepartment?.name !== departmentValue || selectedDepartment?.domain !== domainValue) {
-        setSelectedDepartment({ name: departmentValue, domain: domainValue });
-      }
-    } else {
-      setSelectedDepartment(null);
+    if (isInitialMount.current) {
+        isInitialMount.current = false;
+        return;
     }
-  }, [domainValue, departmentValue, selectedDepartment]);
-
-  useEffect(() => {
-    if (isInitialMount.current) { isInitialMount.current = false } 
-    else { setValue('department', '') }
   }, [domainValue, setValue]);
 
   useEffect(() => {
@@ -363,7 +358,15 @@ export default function JoinUs() {
                 <div><label className="block text-sm font-semibold text-black mb-2">Hostel <span className="text-red-500">*</span></label><select {...register("hostel")} required className="w-full px-4 py-3 border-2 border-black/20 rounded-full focus:outline-none focus:border-black transition-colors hover:border-black/40"><option value="">Select</option><option value="Yes">Yes</option><option value="No">No</option></select>{renderError("hostel")}</div>
                 <div>
                   <label className="block text-sm font-semibold text-black mb-2">Domain <span className="text-red-500">*</span></label>
-                  <select {...register("domain")} required className="w-full px-4 py-3 border-2 border-black/20 rounded-full focus:outline-none focus:border-black transition-colors hover:border-black/40">
+                  <select
+                    {...domainRegistration}
+                    required
+                    className="w-full px-4 py-3 border-2 border-black/20 rounded-full focus:outline-none focus:border-black transition-colors hover:border-black/40"
+                    onChange={(e) => {
+                      domainRegistration.onChange(e); 
+                      setValue("department", "", { shouldValidate: true });
+                    }}
+                  >
                     <option value="">Select Domain</option>
                     <option value="Tech">Tech</option>
                     <option value="Non-Tech">Non-Tech</option>
@@ -372,11 +375,12 @@ export default function JoinUs() {
                 </div>
               </div>
 
-              <div>
+              {/* --- FIX APPLIED HERE --- */}
+              <div key={domainValue || 'department-wrapper'}>
                 <label className="block text-sm font-semibold text-black mb-2">Department <span className="text-red-500">*</span></label>
                 <select {...register("department")} required className="w-full px-4 py-3 border-2 border-black/20 rounded-full focus:outline-none focus:border-black transition-colors hover:border-black/40">
                   <option value="">Select Department</option>
-                  {domainValue && ALL_DEPARTMENTS[domainValue === "Tech" ? "Tech" : "NonTech"].map((dept) => (<option key={dept} value={dept}>{dept}</option>))}
+                  {domainValue && ALL_DEPARTMENTS[domainValue as keyof typeof ALL_DEPARTMENTS]?.map((dept) => (<option key={dept} value={dept}>{dept}</option>))}
                 </select>
                 {renderError("department")}
               </div>

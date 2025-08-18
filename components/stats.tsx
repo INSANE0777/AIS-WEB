@@ -24,8 +24,8 @@ import {
 
 // --- Data (updated with new executive roles) ---
 const topExecutives = [
-  { icon: User, title: "President" },
-  { icon: UserCheck, title: "Vice-President" },
+  { icon: User, title: "Vice-President" },
+  { icon: UserCheck, title: "President" },
   { icon: FileText, title: "General Secretary" },
 ]
 
@@ -52,6 +52,7 @@ const nonTechnicalDepts = [
 ]
 
 // --- Skeleton Loader Component ---
+// This component remains unchanged and is collapsed for brevity
 const OrgChartSkeleton = () => (
   <div className="max-w-7xl mx-auto animate-pulse px-4">
     {/* Header */}
@@ -126,7 +127,6 @@ export default function AISocietyOrgChart() {
       gsap.set(".org-card, .dept-container, .connecting-line", { opacity: 0, y: 20 });
       gsap.set(".dept-card", {scale: 0.8, opacity: 0});
 
-
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
@@ -183,16 +183,18 @@ export default function AISocietyOrgChart() {
             <div className="mb-8 md:mb-12">
               <h3 className="text-xl md:text-2xl font-black text-black text-center mb-6 md:mb-8">Executives</h3>
               {/* Top Row - Larger Cards */}
-              <div className="flex flex-col sm:flex-row justify-center items-center gap-6 md:gap-8 relative">
+              {/* CHANGED: Added items-stretch to ensure cards stretch to the same height */}
+              <div className="flex flex-col sm:flex-row justify-center items-stretch gap-6 md:gap-8 relative">
                 {topExecutives.map((exec, index) => {
                   const Icon = exec.icon
                   return (
                     <div key={index} className="org-card exec-card relative">
-                      <div className="p-8 md:p-14 rounded-3xl bg-white border-2 border-black/20 hover:border-black/40 transition-all hover:shadow-xl text-center min-w-[220px] md:min-w-[300px] w-full sm:w-auto">
-                        <div className="inline-flex items-center justify-center w-20 md:w-24 h-20 md:h-24 bg-black text-white rounded-full mb-6 md:mb-8">
-                          <Icon size={28} className="md:w-10 md:h-10" />
+                      {/* CHANGED: Standardized classes for symmetry */}
+                      <div className="flex flex-col items-center justify-center p-8 rounded-3xl bg-white border-2 border-black/20 hover:border-black/40 transition-all hover:shadow-xl w-full sm:w-64 md:w-72 min-h-[280px]">
+                        <div className="inline-flex items-center justify-center w-20 h-20 bg-black text-white rounded-full mb-6">
+                          <Icon size={28} />
                         </div>
-                        <h4 className="text-lg md:text-xl font-bold text-black">{exec.title}</h4>
+                        <h4 className="text-lg font-bold text-black text-center">{exec.title}</h4>
                       </div>
                     </div>
                   )
@@ -205,16 +207,18 @@ export default function AISocietyOrgChart() {
               </div>
 
               {/* C-Level Row - Smaller Cards */}
-              <div className="flex flex-col sm:flex-row justify-center items-center gap-6 md:gap-8 relative">
+              {/* CHANGED: Added items-stretch to ensure cards stretch to the same height */}
+              <div className="flex flex-col sm:flex-row justify-center items-stretch gap-6 md:gap-8 relative">
                 {cLevelExecutives.map((exec, index) => {
                   const Icon = exec.icon
                   return (
                     <div key={index} className="org-card exec-card relative">
-                      <div className="p-6 md:p-10 rounded-3xl bg-white border-2 border-black/20 hover:border-black/40 transition-all hover:shadow-lg text-center min-w-[200px] md:min-w-[280px] w-full sm:w-auto">
-                        <div className="inline-flex items-center justify-center w-16 md:w-20 h-16 md:h-20 bg-black text-white rounded-full mb-5 md:mb-6">
-                          <Icon size={22} className="md:w-8 md:h-8" />
+                      {/* CHANGED: Used the exact same classes as the top row for symmetry */}
+                      <div className="flex flex-col items-center justify-center p-8 rounded-3xl bg-white border-2 border-black/20 hover:border-black/40 transition-all hover:shadow-xl w-full sm:w-64 md:w-72 min-h-[280px]">
+                        <div className="inline-flex items-center justify-center w-20 h-20 bg-black text-white rounded-full mb-6">
+                          <Icon size={28} />
                         </div>
-                        <h4 className="text-base md:text-lg font-bold text-black">{exec.title}</h4>
+                        <h4 className="text-lg font-bold text-black text-center">{exec.title}</h4>
                       </div>
                     </div>
                   )
@@ -254,7 +258,9 @@ export default function AISocietyOrgChart() {
               <div className="dept-container relative h-full">
                 <div className="h-full p-4 md:p-8 rounded-3xl bg-white border-2 border-black/20 hover:border-black/30 transition-all shadow-lg flex flex-col">
                   <h3 className="text-lg md:text-2xl font-black text-black mb-4 md:mb-6 text-center">Non-Technical Departments</h3>
-                  <div className="space-y-3 md:space-y-4 flex-1">
+
+                  {/* CHANGED: Used grid here as well for better consistency with the technical side */}
+                  <div className="grid grid-cols-1 gap-3 md:gap-4 flex-1">
                     {nonTechnicalDepts.map((dept, index) => {
                       const Icon = dept.icon
                       return (

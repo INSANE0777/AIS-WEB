@@ -214,8 +214,8 @@ export default function SpaceFooter() {
                   <a href="https://chat.whatsapp.com/JNWPTs2NwBf1sTaHMF4t3Y" target="_blank" rel="noopener noreferrer" className="text-white font-semibold hover:text-white/70 transition-colors cursor-pointer underline">
                     WHATSAPP
                   </a>
-                  <a href="https://www.instagram.com/ais.bennett/" target="_blank" rel="noopener noreferrer" className="text-white font-semibold hover:text-white/70 transition-colors cursor-pointer underline">
-                    INSTAGRAM
+                  <a href="https://www.linkedin.com/company/bennett-artificial-intelligence-society/" target="_blank" rel="noopener noreferrer" className="text-white font-semibold hover:text-white/70 transition-colors cursor-pointer underline">
+                    LINKEDIN
                   </a>
                 </div>
                 <div className="flex items-center space-x-2">

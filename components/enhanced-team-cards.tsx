@@ -24,26 +24,39 @@ const CustomStar = () => (
   </svg>
 );
 
+// --- CHANGED: Updated teamData with new executive roles ---
 const teamData = {
   executives: {
     members: [
       {
         name: "Samaksh Tyagi",
         role: "President",
-        specialty: "AI Strategy & Vision",
-        avatar: "/placeholder.svg?height=128&width=128&query=professional+man+in+suit",
+        avatar: "/placeholder.svg?height=128&width=128&query=professional+man+with+glasses",
       },
       {
         name: "Aviral Jain",
         role: "Vice President",
-        specialty: "Operations & Growth",
-        avatar: "/placeholder.svg?height=128&width=128&query=professional+man+with+glasses",
+        avatar: "/placeholder.svg?height=128&width=128&query=professional+man+in+suit",
       },
       {
         name: "Mann Acharya",
         role: "Mentor / Ex-Chairperson",
-        specialty: "Strategic Guidance",
         avatar: "/placeholder.svg?height=128&width=128&query=experienced+wise+mentor",
+      },
+      {
+        name: "WAIT",
+        role: "Chief Technology Officer",
+        avatar: "/placeholder.svg?height=128&width=128&query=tech+lead+focused",
+      },
+      {
+        name: "WAIT-1",
+        role: "Chief Operating Officer",
+        avatar: "/placeholder.svg?height=128&width=128&query=professional+woman+organized",
+      },
+      {
+        name: "WAIT-2",
+        role: "Chief Marketing Officer",
+        avatar: "/placeholder.svg?height=128&width=128&query=creative+marketing+person",
       },
     ],
   },
@@ -175,10 +188,11 @@ export default function EnhancedTeamCards() {
 
         <div className="mb-16 md:mb-20">
           <h3 className="text-3xl font-bold text-black mb-8 text-center">Executive Leadership</h3>
-          <div className="grid md:grid-cols-3 gap-8">
+          {/* --- CHANGED: Updated grid layout for better responsiveness --- */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {teamData.executives.members.map((member) => (
               <div key={member.name} className="team-card will-change-transform">
-                <div className="card-content w-full h-full bg-white/70 p-8 rounded-2xl border border-gray-300 shadow-xl backdrop-blur-md text-center relative overflow-hidden">
+                <div className="card-content w-full h-full bg-white/70 p-8 rounded-2xl border border-gray-300 backdrop-blur-md text-center relative overflow-hidden">
                    <div className="card-glare absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_var(--mx)_var(--my),rgba(0,0,0,0.1),rgba(0,0,0,0)_40%)] opacity-0 pointer-events-none"></div>
                    <div className="card-avatar relative mb-6">
                     <div className="w-32 h-32 mx-auto rounded-full overflow-hidden border-4 border-black relative">
@@ -190,7 +204,6 @@ export default function EnhancedTeamCards() {
                   </div>
                   <h3 className="card-title text-2xl font-bold text-black mb-2">{member.name}</h3>
                   <p className="card-role text-lg text-black mb-3 font-semibold">{member.role}</p>
-                  <p className="card-specialty text-sm text-gray-700">{member.specialty}</p>
                 </div>
               </div>
             ))}
@@ -203,7 +216,7 @@ export default function EnhancedTeamCards() {
                 <div className="space-y-8">
                     {Object.entries(teamData.technical.departments).map(([dept, members]) => (
                         <div key={dept} className="team-card will-change-transform">
-                            <div className="card-content w-full h-full bg-white/70 p-6 rounded-2xl border border-gray-300 shadow-xl backdrop-blur-md relative overflow-hidden">
+                            <div className="card-content w-full h-full bg-white/70 p-6 rounded-2xl border border-gray-300 backdrop-blur-md relative overflow-hidden">
                                 <div className="card-glare absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_var(--mx)_var(--my),rgba(0,0,0,0.1),rgba(0,0,0,0)_40%)] opacity-0 pointer-events-none"></div>
                                 <div className="flex items-center space-x-4 mb-4">
                                     <div className="card-icon w-12 h-12 bg-black rounded-full flex items-center justify-center flex-shrink-0">
@@ -230,7 +243,7 @@ export default function EnhancedTeamCards() {
                 <div className="space-y-8">
                     {Object.entries(teamData.community.departments).map(([dept, members]) => (
                         <div key={dept} className="team-card will-change-transform">
-                             <div className="card-content w-full h-full bg-white/70 p-6 rounded-2xl border border-gray-300 shadow-xl backdrop-blur-md relative overflow-hidden">
+                             <div className="card-content w-full h-full bg-white/70 p-6 rounded-2xl border border-gray-300 backdrop-blur-md relative overflow-hidden">
                                 <div className="card-glare absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_var(--mx)_var(--my),rgba(0,0,0,0.1),rgba(0,0,0,0)_40%)] opacity-0 pointer-events-none"></div>
                                 <div className="flex items-center space-x-4 mb-4">
                                     <div className="card-icon w-12 h-12 bg-black rounded-full flex items-center justify-center flex-shrink-0">
