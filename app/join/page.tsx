@@ -288,7 +288,7 @@ export default function JoinUs() {
     setSubmissionStatus("loading")
     setErrorMessage(null)
     try {
-      const appwriteData = { fullname: data.fullName, email: data.email, phone: data.phone, degree: data.degree, currentyear: data.year, hostel: data.hostel === "Yes", domain: data.domain.toLowerCase(), department: data.department, additionalskills: data.additionalSkills.join(", "), elaboratechoices: data.elaborateChoices, hobbies: data.hobbies, fictionalchar: data.fictionalCharacter, whyjoin: data.whyJoinUs, otherlinks: data.portfolioLinks || null, linkedinlink: data.linkedinLink || null, githublink: data.githubLink || null }
+      const appwriteData = { fullname: data.fullName, email: data.email, phone: data.phone, degree: data.degree, currentyear: data.year, hostel: data.hostel, domain: data.domain.toLowerCase(), department: data.department, additionalskills: data.additionalSkills.join(", "), elaboratechoices: data.elaborateChoices, hobbies: data.hobbies, fictionalchar: data.fictionalCharacter, whyjoin: data.whyJoinUs, otherlinks: data.portfolioLinks || null, linkedinlink: data.linkedinLink || null, githublink: data.githubLink || null }
       
       const databaseId = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!
       const collectionId = process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID!
