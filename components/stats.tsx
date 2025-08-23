@@ -234,19 +234,19 @@ export default function AISocietyOrgChart() {
             {/* Departments Level */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 mb-8 md:mb-12">
               <div className="dept-container relative h-full">
-                <div className="h-full p-4 md:p-8 rounded-3xl bg-white border-2 border-black/20 hover:border-black/30 transition-all shadow-lg flex flex-col">
+                <div className="h-full p-8 pr-10 md:p-8 rounded-3xl bg-white border-2 border-black/20 hover:border-black/30 transition-all shadow-lg flex flex-col">
                   <h3 className="text-lg md:text-2xl font-black text-black mb-4 md:mb-6 text-center">Technical Departments</h3>
                   <div className="grid grid-cols-1 gap-3 md:gap-4 flex-1">
                     {technicalDepts.map((dept, index) => {
                       const Icon = dept.icon
                       return (
                         <div key={index} className="org-card dept-card">
-                          <div className="p-2 pl-3 rounded-full bg-gray-50 border border-black/10 hover:border-black/20 transition-all hover:shadow-md">
+                          <div className="p-2 pl-3 pr-6 rounded-full bg-gray-50 border border-black/10 hover:border-black/20 transition-all hover:shadow-md">
                             <div className="flex items-center gap-3">
                               <div className="flex-shrink-0 w-8 md:w-10 h-8 md:h-10 bg-black text-white rounded-full flex items-center justify-center">
                                 <Icon size={14} className="md:w-4 md:h-4" />
                               </div>
-                              <h4 className="text-xs md:text-sm font-bold text-black leading-tight pr-2 md:pr-4">{dept.title}</h4>
+                              <h4 className="text-xs md:text-sm font-bold text-black leading-tight">{dept.title}</h4>
                             </div>
                           </div>
                         </div>
@@ -256,7 +256,7 @@ export default function AISocietyOrgChart() {
                 </div>
               </div>
               <div className="dept-container relative h-full">
-                <div className="h-full p-4 md:p-8 rounded-3xl bg-white border-2 border-black/20 hover:border-black/30 transition-all shadow-lg flex flex-col">
+                <div className="h-full p-8 pr-10 md:p-8 rounded-3xl bg-white border-2 border-black/20 hover:border-black/30 transition-all shadow-lg flex flex-col">
                   <h3 className="text-lg md:text-2xl font-black text-black mb-4 md:mb-6 text-center">Non-Technical Departments</h3>
 
                   {/* CHANGED: Used grid here as well for better consistency with the technical side */}
@@ -265,12 +265,12 @@ export default function AISocietyOrgChart() {
                       const Icon = dept.icon
                       return (
                         <div key={index} className="org-card dept-card">
-                          <div className="p-2 pl-3 rounded-full bg-gray-50 border border-black/10 hover:border-black/20 transition-all hover:shadow-md">
+                          <div className="p-2 pl-3 pr-6 rounded-full bg-gray-50 border border-black/10 hover:border-black/20 transition-all hover:shadow-md">
                             <div className="flex items-center gap-3">
                               <div className="flex-shrink-0 w-8 md:w-10 h-8 md:h-10 bg-black text-white rounded-full flex items-center justify-center">
                                 <Icon size={14} className="md:w-4 md:h-4" />
                               </div>
-                              <h4 className="text-xs md:text-sm font-bold text-black leading-tight pr-2 md:pr-4">{dept.title}</h4>
+                              <h4 className="text-xs md:text-sm font-bold text-black leading-tight">{dept.title}</h4>
                             </div>
                           </div>
                         </div>

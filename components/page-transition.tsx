@@ -75,7 +75,7 @@ export default function PageTransition({ children }: { children: React.ReactNode
 
     // Lightweight particle effects
     const particleEffect = () => {
-      // Floating hearts (reduced amount)
+      
       const hearts = Array.from({ length: 6 }).map((_, i) => {
         const heart = document.createElement("div")
         heart.innerHTML = "◆"
@@ -99,7 +99,7 @@ export default function PageTransition({ children }: { children: React.ReactNode
         )
       })
 
-      // Simple geometric shapes (reduced)
+
       const shapes = ['◆']
       Array.from({ length: 8 }).forEach((_, i) => {
         const shape = document.createElement("div")
@@ -129,13 +129,13 @@ export default function PageTransition({ children }: { children: React.ReactNode
 
   return (
     <div className="relative">
-      {/* Transition Mask */}
+  
       <div
         ref={maskRef}
         className="fixed inset-0 bg-black z-50 pointer-events-none flex items-center justify-center"
         style={{ transformOrigin: "left center" }}
       >
-        {/* Scrambling Text - clean and simple */}
+     
         <div
           ref={textRef}
           className="text-white text-6xl font-bold tracking-widest opacity-0"
@@ -147,7 +147,6 @@ export default function PageTransition({ children }: { children: React.ReactNode
       
       </div>
       
-      {/* Page Content */}
       <div ref={containerRef} className="relative">
         {children}
       </div>

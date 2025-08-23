@@ -1,9 +1,9 @@
 "use client"
 import { useEffect, useState, useRef, useCallback, useMemo } from "react"
 import Image from "next/image"
-import CurvedLoop from "@/components/CurvedLoop/CurvedLoop"; // Import the component
+import CurvedLoop from "@/components/CurvedLoop/CurvedLoop"; 
 
-// --- Type Definitions ---
+
 interface ImageType {
   src: string;
   alt: string;
@@ -11,15 +11,21 @@ interface ImageType {
   date?: string;
   sortDate?: Date;
 }
-// --- Data Arrays ---
+
 const eventImages: ImageType[] = [
   { src: "/images/TECH ARENA.png", alt: "TechArena 2025", date: "January 15, 2025", sortDate: new Date("2025-01-15"), overlayText: "AIS proudly participated in TechArena 2025, presenting innovative projects and connecting with a vibrant community of tech enthusiasts and industry experts." },
-  { src: "/images/AI HUNT 2.0.png", alt: "AI Hunt 2.0", date: "November 13-17, 2024", sortDate: new Date("2024-11-13"), overlayText: "AI Hunt 2.0 was an exciting 48‑hour online cryptic treasure hunt, featuring a Gen AI workshop, an info session, and dynamic problem‑solving challenges that pushed the boundaries of AI exploration." },
+  { src: "/images/AI HUNT 2.0.png", alt: "AI Hunt 2.0", date: "November 13-17, 2024", sortDate: new Date("2024-11-13"), overlayText: "AI Hunt 2.0 was an exciting 48-hour online cryptic treasure hunt, featuring a Gen AI workshop, an info session, and dynamic problem-solving challenges that pushed the boundaries of AI exploration." },
   { src: "/images/Workshop.png", alt: "Immersive XR Workshop", date: "November 13, 2024", sortDate: new Date("2024-11-13"), overlayText: "A deep dive into the fusion of XR and Generative AI, providing students with hands-on experience and practical insights into emerging technologies." },
   { src: "/images/Project Showcase.png", alt: "Project Showcase", date: "October 21, 2024", sortDate: new Date("2024-10-21"), overlayText: "AIS shone at the Project Showcase, presenting over 10 groundbreaking projects, the most by any student body, that redefined innovation and creativity!" },
   { src: "/images/AI 101.png", alt: "AI 101", date: "September 19, 2024", sortDate: new Date("2024-09-19"), overlayText: "An immersive kickoff event where freshers engaged in foundational AI concepts, hands-on coding sessions, and insightful talks, setting the stage for innovation and learning." },
   { src: "/images/Club Carnival.png", alt: "Club Carnival", date: "August 23, 2024", sortDate: new Date("2024-08-23"), overlayText: "Freshers Orientation and Club Carnival for the new batch of students. Included a variety of fun demos, games, and fun events." },
+
+ 
+  { src: "/images/event-ai-fest.png", alt: "Campus AI Fest", date: "October 14, 2023", sortDate: new Date("2023-10-14"), overlayText: "Talks by Google Developer Experts, project showcases, and explorations of KerasCV, KerasNLP, and Vertex AI." },
+  { src: "/images/event-llm-workshop.png", alt: "LLM Workshop", date: "November 23, 2023", sortDate: new Date("2023-11-23"), overlayText: "Custom Recipe Generation LLM, awards for top-performing students, exploration of LangChain, OpenAI, Kaggle, and Pandas." },
+  { src: "/images/event-biy.png", alt: "Build-it-Yourself Workshop", date: "February 12-17, 2024", sortDate: new Date("2024-02-12"), overlayText: "Transformer-Based NER e-commerce chatbot, FastAPI deployment, exploration of Keras, TensorFlow, HuggingFace, and FastAPI." },
 ];
+
 const leftImages: ImageType[] = eventImages.filter((_, index) => index % 2 === 0);
 const rightImages: ImageType[] = eventImages.filter((_, index) => index % 2 === 1);
 const leftCubeImages: ImageType[] = [ { src: "/images/RL.png", alt: "Reinforcement Learning" }, { src: "/images/GENAI.png", alt: "Generative AI" }, { src: "/images/NLP.png", alt: "Natural Language Processing" }, { src: "/images/CV.png", alt: "Computer Vision" }, { src: "/images/DESIGN.png", alt: "Design" }, { src: "/images/MULTIMEDIA.png", alt: "Multimedia" }, ]
@@ -209,9 +215,7 @@ export default function Events() {
         <section className="hero relative w-full h-screen flex items-center justify-center px-4 bg-white">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             
-            {/* THE FIX #1: Correct z-index for all layers */}
-            
-            {/* Layer 0: CurvedLoop as the base background element */}
+         
             <div className="absolute inset-x-0 bottom-6 -translate-y-1/2 z-0 bg-white">
               <CurvedLoop
                 marqueeText="AIS ✦ Workshops ✦ Hackathons ✦ Showcases ✦ Community Events"
@@ -221,18 +225,18 @@ export default function Events() {
               />
             </div>
 
-            {/* Layer 1: 3D Cubes */}
+      
             <ThreeDCube images={leftCubeFaces} loadedImages={loadedImages} isMobile={isMobile} className={`absolute z-10 ${isMobile ? 'top-[75%] left-0 transform -translate-y-1/2' : 'top-8 left-8 md:top-20 md:left-80 lg:bottom-20 lg:left-96'}`} />
             <ThreeDCube images={rightCubeFaces} loadedImages={loadedImages} isMobile={isMobile} className={`absolute z-10 ${isMobile ? 'top-[1%] right-[2%] transform -translate-y-1/2' : 'bottom-8 right-8 md:bottom-20 md:right-60 lg:bottom-20 lg:right-96'}`} />
             
-            {/* Layer 2: BIAS Logo */}
+           
             <div className="absolute top-8 left-8 z-20 w-16 h-16 sm:w-20 sm:h-20">
                  <Image src="/images/BIAS.png" alt="AI Society Logo" layout="fill" className="object-contain" />
             </div>
 
           </div>
 
-          {/* Layer 3: Main hero text, on top of everything */}
+          
           <div className="hero-text text-center relative z-30 px-4 py-8">
             <h1 className="text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-black leading-none text-black drop-shadow-2xl">Events</h1>
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mt-4 text-black/90 drop-shadow-xl">Let's dive in</h2>

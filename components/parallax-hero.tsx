@@ -137,8 +137,7 @@ export default function ParallaxHero() {
           className="text-sm xs:text-base sm:text-xl md:text-2xl text-black/70 max-w-4xl mx-auto mb-6 sm:mb-12"
           style={{ opacity: 1, visibility: "visible" }}
         >
-          Bennett University's most research-focused and collaborative student community dedicated to fostering deep
-          understanding of Artificial Intelligence and its revolutionary applications.
+         Bennett University's hub for research, collaboration, and innovation in Artificial Intelligence.
         </p>
 
         <div

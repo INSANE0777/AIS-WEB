@@ -29,10 +29,46 @@ export default function Projects() {
           className="absolute top-4 left-4 sm:left-8 z-20 object-contain drop-shadow-lg hover:drop-shadow-xl transition-all duration-300 cursor-pointer hover:scale-110 w-24 h-24 sm:w-16 sm:h-16"
       />
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <Code className="absolute top-20 left-4 sm:left-10 w-6 h-6 sm:w-8 sm:h-8 text-black/10" />
-        <Brain className="absolute top-40 right-4 sm:right-20 w-8 h-8 sm:w-10 sm:h-10 text-black/10" />
-        <Zap className="absolute bottom-40 left-4 sm:left-20 w-5 h-5 sm:w-6 sm:h-6 text-black/10" />
-        <Users className="absolute bottom-20 right-8 sm:right-40 w-6 h-6 sm:w-8 sm:h-8 text-black/10" />
+<svg 
+  width="100" 
+  height="100" 
+  viewBox="0 0 200 200" 
+  fill="none" 
+  xmlns="http://www.w3.org/2000/svg"
+  className="absolute top-20 right-20 animate-float opacity-20"
+  style={{ animation: "float 6s ease-in-out infinite" }}
+>
+  <g clipPath="url(#clip0_119_282)">
+    <path d="M123.344 200C100 200 100 143.969 76.6558 143.969C49.7872 143.969 0 150.205 0 123.338C0 99.9951 56.0242 99.995 56.0242 76.652C56.0242 49.7946 49.7872 0 76.6558 0C100 0 100 56.0313 123.344 56.0313C150.213 56.0313 200 49.7946 200 76.652C200 99.995 143.966 99.9951 143.966 123.338C143.966 150.205 150.213 200 123.344 200Z" fill="black"/>
+  </g>
+  <defs>
+    <clipPath id="clip0_119_282">
+      <rect width="200" height="200" fill="white"/>
+    </clipPath>
+  </defs>
+</svg>
+
+<svg 
+  width="100" 
+  height="100" 
+  viewBox="0 0 200 200" 
+  fill="none" 
+  xmlns="http://www.w3.org/2000/svg"
+  className="absolute top-40 left-20 animate-float opacity-20"
+  style={{ animation: "float 6s ease-in-out infinite" }}
+>
+  <g clipPath="url(#clip0_118_213)">
+    <path d="M100 173.738C24.3644 236.944 -36.9438 175.636 26.2621 100C-36.9438 24.3644 24.3644 -36.9438 100 26.2621C175.621 -36.9438 236.944 24.3644 173.738 100C236.944 175.578 175.621 236.944 100 173.738Z" fill="black"/>
+  </g>
+  <defs>
+    <clipPath id="clip0_118_213">
+      <rect width="200" height="200" fill="white"/>
+    </clipPath>
+  </defs>
+</svg>
+ 
+
+
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10">
@@ -42,7 +78,28 @@ export default function Projects() {
           
           <div className="relative z-10">
             <div className="inline-flex items-center space-x-2 bg-black text-white px-4 sm:px-6 py-2 sm:py-3 rounded-full text-xs sm:text-sm font-medium mb-6 sm:mb-8">
-              <Code size={14} className="sm:w-4 sm:h-4" />
+<svg
+  className="transition-transform duration-500 ease-in-out hover:rotate-180"
+  width="20"
+  height="20"
+  viewBox="0 0 200 200"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <g clipPath="url(#clip0_231_793)">
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M50 0H200V50V150L150 200L150 50H0L50 0ZM0 165.067V100L65.067 100L0 165.067ZM100 200H35.7777L100 135.778L100 200Z"
+      fill="#FFFFFF"
+    />
+  </g>
+  <defs>
+    <clipPath id="clip0_231_793">
+      <rect width="200" height="200" fill="white" />
+    </clipPath>
+  </defs>
+</svg>
               <span>Innovation in Action</span>
             </div>
             <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-black mb-4 sm:mb-6 leading-tight">

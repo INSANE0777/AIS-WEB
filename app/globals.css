@@ -432,3 +432,13 @@ body:has(#custom-cursor-container) * {
     font-family: var(--font-anton);
   }
 }
+/* In app/globals.css */
+
+.svg-particle svg path {
+  fill: #FFFFFF !important;
+}
+/* In app/globals.css */
+
+.background-svg-particle svg path {
+  fill: #000000 !important;
+}

@@ -14,6 +14,57 @@ import {
 } from "lucide-react"
 import toast from "react-hot-toast"
 
+// --- NEW: Floating SVG Background Component ---
+
+const FloatingSvgBackground: React.FC = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { reducedMotion } = useMobileOptimization();
+
+  // The two new SVGs you provided
+  const svgs = [
+    `<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#clip0_234_943)"> <path fill-rule="evenodd" clip-rule="evenodd" d="M200 50V4.37114e-06L100 0V49.9803C99.9893 22.3751 77.6077 4.37114e-06 50 4.37114e-06H2.18557e-06V100H50C22.3858 100 -1.20706e-06 122.386 0 150L2.18557e-06 200H100L100 150C100 177.614 122.386 200 150 200H200L200 100H150.02C177.625 99.9893 200 77.6077 200 50Z" fill="url(#paint0_linear_234_943)"/> </g> <defs> <linearGradient id="paint0_linear_234_943" x1="27.5" y1="19" x2="149" y2="174.5" gradientUnits="userSpaceOnUse"> <stop stop-color="#FFD9A0"/> <stop offset="1" stop-color="#FFF5F1"/> </linearGradient> <clipPath id="clip0_234_943"> <rect width="200" height="200" fill="white"/> </clipPath> </defs> </svg>`,
+    `<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#clip0_234_869)"> <path fill-rule="evenodd" clip-rule="evenodd" d="M50 0H0V100H50C22.3858 100 0 122.386 0 150V200H100V150C100 177.614 122.386 200 150 200H200V100H150C177.614 100 200 77.6142 200 50V0H100V50C100 22.3858 77.6142 0 50 0ZM100 100H50C77.6142 100 100 122.386 100 150V100ZM100 100V50C100 77.6142 122.386 100 150 100H100Z" fill="url(#paint0_linear_234_869)"/> </g> <defs> <linearGradient id="paint0_linear_234_869" x1="100" y1="0" x2="100" y2="200" gradientUnits="userSpaceOnUse"> <stop stop-color="#A7B5FF"/> <stop offset="1" stop-color="#F3ACFF"/> </linearGradient> <clipPath id="clip0_234_869"> <rect width="200" height="200" fill="white"/> </clipPath> </defs> </svg>`
+  ];
+
+  useEffect(() => {
+    if (reducedMotion || !containerRef.current) return;
+
+    const container = containerRef.current;
+    const particleCount = 12; // Number of floating SVGs
+
+    for (let i = 0; i < particleCount; i++) {
+      const particle = document.createElement("div");
+      particle.innerHTML = svgs[Math.floor(Math.random() * svgs.length)];
+      particle.className = "background-svg-particle absolute opacity-0"; // Class for CSS targeting
+      
+      const size = Math.random() * 150 + 50; // Size between 50px and 200px
+      gsap.set(particle, {
+        width: size,
+        height: size,
+        top: `${Math.random() * 100}%`,
+        left: `${Math.random() * 100}%`,
+        opacity: Math.random() * 0.05 + 0.02, // Very low opacity for a subtle effect
+      });
+
+      container.appendChild(particle);
+
+      // Continuous, slow, looping animation
+      gsap.to(particle, {
+        duration: Math.random() * 40 + 30, // Long duration (30-70 seconds)
+        x: (Math.random() - 0.5) * 400,
+        y: (Math.random() - 0.5) * 400,
+        rotation: (Math.random() - 0.5) * 360,
+        ease: "sine.inOut",
+        repeat: -1, // Infinite loop
+        yoyo: true, // Animate back and forth
+        delay: Math.random() * 5,
+      });
+    }
+  }, [reducedMotion]);
+
+  return <div ref={containerRef} className="absolute inset-0 w-full h-full -z-10 overflow-hidden" />;
+};
+
 // --- Helper Components & Hooks ---
 
 interface MagneticButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -269,13 +320,39 @@ export default function JoinUs() {
 
   return (
     <div ref={pageRef} className="pt-32 pb-20 px-4 min-h-screen relative overflow-hidden bg-gray-50">
+      {/* --- ADDED THE BACKGROUND COMPONENT HERE --- */}
+      <FloatingSvgBackground />
+
       <div className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20 cursor-pointer hover:scale-110 transition-transform duration-300">
         <img src="/images/BIAS.png" alt="AI Society Logo" className="w-12 h-12 sm:w-16 sm:h-16 object-contain drop-shadow-lg" />
       </div>
 
       <div className="max-w-4xl mx-auto relative z-10">
+        {/* ... ALL YOUR OTHER JSX CONTENT REMAINS THE SAME ... */}
         <header className="page-header text-center mb-16">
-          <div className="inline-flex items-center space-x-2 bg-black text-white px-6 py-3 rounded-full text-sm font-medium mb-8"><Sparkles size={16} /><span>Join the AI Revolution</span></div>
+          <div className="inline-flex items-center space-x-2 bg-black text-white px-6 py-3 rounded-full text-sm font-medium mb-8">
+            <svg 
+              width="24" 
+              height="24" 
+              viewBox="0 0 200 200" 
+              fill="none" 
+              xmlns="http://www.w3.org/2000/svg"
+              className="transition-transform hover:rotate-180 duration-500"
+            >
+              <g clipPath="url(#clip0_119_300)">
+                <path 
+                  d="M99.6778 105.287C99.6778 -81.6924 145.108 21.3021 98.3534 102.278C145.098 21.3021 257.091 9.12898 95.091 102.638C257.052 9.14845 190.528 99.9892 97.0387 99.9892C190.528 99.9892 257.062 190.859 95.091 97.3404C257.052 190.83 145.108 178.686 98.3534 97.7007C145.098 178.686 99.6778 281.759 99.6778 94.7012C99.6778 281.681 54.2379 178.686 100.993 97.7007C54.2477 178.686 -57.7451 190.859 104.255 97.3404C-57.7062 190.83 8.81757 99.9892 102.307 99.9892C8.81757 99.9892 -57.7159 9.12898 104.255 102.638C-57.7062 9.14845 54.2379 21.3021 100.993 102.278C54.2379 21.3021 99.6778 -81.7411 99.6778 105.287Z" 
+                  fill="white"
+                />
+              </g>
+              <defs>
+                <clipPath id="clip0_119_300">
+                  <rect width="200" height="200" fill="white"/>
+                </clipPath>
+              </defs>
+            </svg>
+            <span>Join the AI Revolution</span>
+          </div>
           <h1 className="text-5xl md:text-6xl font-black text-black mb-6">Registration <span className="text-black/60">Form</span></h1>
           <div className="w-24 h-1 bg-black mx-auto mb-8"></div>
           <p className="max-w-3xl mx-auto text-lg text-black/70 leading-relaxed font-semibold">Welcome to the AIS Core Selection Process! We are seeking dedicated individuals for <span className="text-black">Tech, Multimedia, Design and Management</span> roles.</p>
@@ -375,7 +452,6 @@ export default function JoinUs() {
                 </div>
               </div>
 
-              {/* --- FIX APPLIED HERE --- */}
               <div key={domainValue || 'department-wrapper'}>
                 <label className="block text-sm font-semibold text-black mb-2">Department <span className="text-red-500">*</span></label>
                 <select {...register("department")} required className="w-full px-4 py-3 border-2 border-black/20 rounded-full focus:outline-none focus:border-black transition-colors hover:border-black/40">

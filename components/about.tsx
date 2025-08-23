@@ -113,8 +113,8 @@ export default function About() {
               <div className="w-24 h-1 bg-black"></div>
             </div>
             <div className="space-y-6 text-lg text-black/70 leading-relaxed">
-              <p>The Artificial Intelligence Society (AIS) at Bennett University stands as one of the most research-focused and collaborative student communities on campus.</p>
-              <p>Our mission transcends traditional learning boundaries—we foster deep understanding of AI applications by uniting passionate individuals eager to publish research, share knowledge, and pioneer innovative projects.</p>
+              <p>The AI Specialization Club (AIS) at Bennett University is dedicated to cultivating a strong passion for Artificial Intelligence. The club focuses on end-to-end project development, excels in hackathons, organizes insightful workshops, and helps members upskill through guidance from senior mentors and experienced faculty. We also actively contribute to open-source development.</p>
+              <p>To empower students with practical AI knowledge, collaborative opportunities, and innovative thinking to shape impactful solutions for the future</p>
             </div>
             <div className="flex items-center space-x-4">
               <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center shadow-lg">

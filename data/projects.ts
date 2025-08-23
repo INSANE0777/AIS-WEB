@@ -80,5 +80,35 @@ export const data = {
       imagePath: "/images/python.png",
       githubLink: "https://github.com/mr-anvesh/ML_Profanity_Detector",
     },
+    {
+      id: 9,
+      title: "Friday - Your Sarcastic AI Assistant",
+      description:
+        "Friday is a voice-powered AI assistant inspired by Iron Man's iconic butler AI. It responds in a classy and sarcastic manner, handling tasks like checking weather, searching the web, sending emails, generating images, and even creating simple websites. Built with LiveKit Agents, Google's voice LLM, and Gemini API, Friday offers wit, sarcasm, and one-liners while being a practical digital assistant. Features include real-time conversation, enhanced noise cancellation, web search with DuckDuckGo, Gmail integration, and Imagen-powered image generation.",
+      tags: ["AI", "Voice Assistant", "LLM", "LiveKit", "Automation"],
+      contributors: ["Afjal"],
+      imagePath: "/images/livekit-1.webp",
+      githubLink: "https://github.com/INSANE0777/Livekit-agent",
+    },
+    {
+      id: 10,
+      title: "Chef-Code",
+      description:
+        "Chef-Code is an intelligent recipe recommendation system that takes user-provided ingredients and suggests food and recipes they can make from a curated dataset. Using TF-IDF vectorization and NLP-based nearest word matching, it implements a content-based filtering approach to deliver accurate recipe matches. The system is powered by Flask for the backend, PostgreSQL for data storage, and React for the frontend. It leverages ScaPy alongside TF-IDF for efficient text processing and delivers an interactive, user-friendly recipe discovery experience.",
+      tags: ["AI", "NLP", "Recommendation System", "Fullstack", "Flask", "React", "PostgreSQL"],
+      contributors: ["Gyaanendra"],
+      imagePath: "/images/chef.jpg",
+      githubLink: "https://github.com/Gyaanendra/smart-chef-new",
+    },
+    {
+      id: 11,
+      title: "PopNews - Fake News Detection Platform",
+      description:
+        "PopNews is an innovative fake news detection platform that leverages artificial intelligence to enhance content verification. The platform enables users to validate news articles and social media content, with the option to deploy AI agents that can analyze information based on customized verification strategies and knowledge bases. Key features include AI-powered detection, real-time content analysis, source credibility assessment, user feedback learning, and multi-platform support across web, mobile, and API. The frontend is built with Vue + TypeScript, while the backend uses Node.js with RESTful APIs and WebSocket connections for real-time updates. The system includes an AI agent manager, task queue, LLM interface, knowledge base, and strategy engine for robust misinformation detection.",
+      tags: ["AI", "Fake News Detection", "Fullstack", "Vue", "Node.js", "LLM"],
+      contributors: ["Afjal"],
+      imagePath: "/images/pop.avif",
+      githubLink: "https://github.com/INSANE0777/Hackauction",
+    },
   ],
 }
