@@ -13,6 +13,8 @@ import {
   Megaphone, Globe, Eye, Cpu, MessageSquare, Bot, RefreshCw,
 } from "lucide-react"
 import toast from "react-hot-toast"
+// --- NEW: Import your real Appwrite client ---
+import { databases, ID } from "./appwrite/app"; // Make sure this path is correct
 
 // --- NEW: Floating SVG Background Component ---
 
@@ -144,9 +146,7 @@ const FluidAnimationCanvas: React.FC = () => {
   return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full z-0" />
 }
 
-// --- Appwrite Client (Mocked) ---
-const databases = { createDocument: (dbId: string, colId: string, docId: string, data: any) => { console.log("Mock Appwrite: Creating document...", { dbId, colId, docId, data }); return new Promise((resolve, reject) => { setTimeout(() => { if (data.email.includes("fail")) { reject(new Error("Mock network error: Submission failed.")) } else { resolve({ $id: docId, ...data }) } }, 1500) }) } }
-const ID = { unique: () => `unique_${Math.random().toString(36).slice(2, 9)}` }
+// --- REMOVED: Mock Appwrite Client ---
 
 // --- Type Definitions ---
 interface DepartmentInfo { icon: React.ComponentType<React.SVGProps<SVGSVGElement>>; description: string; skills: string[] }
@@ -181,7 +181,13 @@ const formSchema = z
 type FormData = z.infer<typeof formSchema>
 
 // --- Department & Page Constants ---
-const TECH_DEPARTMENTS: { [key: string]: TechDepartmentInfo } = { "Natural Language Processing (NLP)": { icon: MessageSquare, description: "Work with language models, text analysis, chatbots, and language understanding systems.", skills: ["Python", "Transformers", "NLTK", "spaCy", "Hugging Face", "LangChain", "OpenAI APIs"], projects: ["Conversational AI Chatbots", "Sentiment Analysis Systems", "Text Summarization Tools"], requirements: ["Strong foundation in Python programming", "Understanding of language processing concepts"] }, "Generative AI (GenAI)": { icon: Bot, description: "Create AI systems that generate content - text, images, code, and multimedia using cutting-edge generative models.", skills: ["Python", "PyTorch/TensorFlow", "Stable Diffusion", "GPT APIs", "LangChain", "Prompt Engineering"], projects: ["AI Art Generation Applications", "Code Generation Tools", "Creative Writing Assistants"], requirements: ["Strong programming skills in Python", "Understanding of neural networks"] }, "Reinforcement Learning (RL)": { icon: Cpu, description: "Develop AI agents that learn through interaction with environments, perfect for game AI, robotics, and decision-making systems.", skills: ["Python", "OpenAI Gym", "Stable Baselines3", "PyTorch", "Unity ML-Agents", "Ray RLlib"], projects: ["Game AI Agents (Chess, Go, Atari)", "Autonomous Navigation Systems", "Trading and Finance Bots"], requirements: ["Strong mathematical background", "Programming experience in Python"] }, "Computer Vision (CV)": { icon: Eye, description: "Build AI systems that can see, understand, and interpret visual information from images and videos.", skills: ["Python", "OpenCV", "PyTorch/TensorFlow", "YOLO", "Detectron2", "Pillow", "Scikit-image"], projects: ["Object Detection and Recognition", "Face Recognition Systems", "Medical Image Analysis"], requirements: ["Strong programming skills", "Basic understanding of linear algebra"] } }
+const TECH_DEPARTMENTS: { [key: string]: TechDepartmentInfo } = { 
+  "Natural Language Processing (NLP)": { icon: MessageSquare, description: "Work with language models, text analysis, chatbots, and language understanding systems.", skills: ["Python", "Transformers", "NLTK", "spaCy", "Hugging Face", "LangChain", "OpenAI APIs"], projects: ["Conversational AI Chatbots", "Sentiment Analysis Systems", "Text Summarization Tools"], requirements: ["Strong foundation in Python programming", "Understanding of language processing concepts"] }, 
+  "Generative AI (GenAI)": { icon: Bot, description: "Create AI systems that generate content - text, images, code, and multimedia using cutting-edge generative models.", skills: ["Python", "PyTorch/TensorFlow", "Stable Diffusion", "GPT APIs", "LangChain", "Prompt Engineering"], projects: ["AI Art Generation Applications", "Code Generation Tools", "Creative Writing Assistants"], requirements: ["Strong programming skills in Python", "Understanding of neural networks"] }, 
+  "Reinforcement Learning (RL)": { icon: Cpu, description: "Develop AI agents that learn through interaction with environments, perfect for game AI, robotics, and decision-making systems.", skills: ["Python", "OpenAI Gym", "Stable Baselines3", "PyTorch", "Unity ML-Agents", "Ray RLlib"], projects: ["Game AI Agents (Chess, Go, Atari)", "Autonomous Navigation Systems", "Trading and Finance Bots"], requirements: ["Strong mathematical background", "Programming experience in Python"] }, 
+  "Computer Vision (CV)": { icon: Eye, description: "Build AI systems that can see, understand, and interpret visual information from images and videos.", skills: ["Python", "OpenCV", "PyTorch/TensorFlow", "YOLO", "Detectron2", "Pillow", "Scikit-image"], projects: ["Object Detection and Recognition", "Face Recognition Systems", "Medical Image Analysis"], requirements: ["Strong programming skills", "Basic understanding of linear algebra"] },
+  "Research": { icon: Star, description: "Dive deep into theoretical AI, explore novel concepts, and contribute to academic publications. This is for those who want to push the boundaries of AI knowledge.", skills: ["Python", "PyTorch/TensorFlow", "LaTeX", "Academic Writing", "Critical Thinking", "Statistical Analysis"], projects: ["Original Research Papers", "Replication Studies of State-of-the-Art Models", "Literature Review Compilations"], requirements: ["Strong academic and theoretical background", "Passion for exploring novel concepts", "Excellent writing and analytical skills"] },
+}
 const NON_TECH_DEPARTMENTS: { [key: string]: DepartmentInfo } = { "Community Outreach": { icon: Users, description: "Social Media Managers: Manage socials and create engaging content (stories & reels on Instagram).", skills: ["Social Media Management", "Content Creation", "Community Building"] }, Designers: { icon: Sparkles, description: "Proficient with Canva/Figma for creating designs. Focus on graphic and visual design.", skills: ["Canva/Figma", "Graphic Design", "Visual Identity"] }, "Event Managers": { icon: Award, description: "Oversee administrative and logistical aspects. Coordinate meetings, events, and club activities.", skills: ["Event Planning", "Project Management", "Leadership"] }, "Public Speakers (PR)": { icon: Brain, description: "Engage with external representatives and organizations. Build partnerships and collaborations.", skills: ["Public Speaking", "Networking", "Partnership Development"] }, "Photographers / Video Editors": { icon: Zap, description: "Capture high-quality photos and videos during events. Edit and create engaging visual content.", skills: ["Photography", "Video Editing", "Creative Direction"] } }
 const ALL_DEPARTMENTS = { Tech: Object.keys(TECH_DEPARTMENTS), "Non-Tech": Object.keys(NON_TECH_DEPARTMENTS) }
 const ALL_DEPARTMENTS_FOR_TABS = [...Object.keys(TECH_DEPARTMENTS).map((dept) => ({ name: dept, domain: "Tech" as const })), ...Object.keys(NON_TECH_DEPARTMENTS).map((dept) => ({ name: dept, domain: "Non-Tech" as const }))]
@@ -283,10 +289,14 @@ export default function JoinUs() {
     setErrorMessage(null)
     try {
       const appwriteData = { fullname: data.fullName, email: data.email, phone: data.phone, degree: data.degree, currentyear: data.year, hostel: data.hostel === "Yes", domain: data.domain.toLowerCase(), department: data.department, additionalskills: data.additionalSkills.join(", "), elaboratechoices: data.elaborateChoices, hobbies: data.hobbies, fictionalchar: data.fictionalCharacter, whyjoin: data.whyJoinUs, otherlinks: data.portfolioLinks || null, linkedinlink: data.linkedinLink || null, githublink: data.githubLink || null }
-      const databaseId = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || "mock-db-id"
-      const collectionId = process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID || "mock-collection-id"
+      
+      const databaseId = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!
+      const collectionId = process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID!
+
       if (!databaseId || !collectionId) throw new Error("Database or Collection is not configured.")
+      
       await databases.createDocument(databaseId, collectionId, ID.unique(), appwriteData)
+      
       setSubmissionStatus("success")
       toast.success("Registration successful! We'll be in touch.")
       if (typeof window !== "undefined") localStorage.removeItem("ais-registration-form")
@@ -320,7 +330,6 @@ export default function JoinUs() {
 
   return (
     <div ref={pageRef} className="pt-32 pb-20 px-4 min-h-screen relative overflow-hidden bg-gray-50">
-      {/* --- ADDED THE BACKGROUND COMPONENT HERE --- */}
       <FloatingSvgBackground />
 
       <div className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20 cursor-pointer hover:scale-110 transition-transform duration-300">
@@ -328,7 +337,6 @@ export default function JoinUs() {
       </div>
 
       <div className="max-w-4xl mx-auto relative z-10">
-        {/* ... ALL YOUR OTHER JSX CONTENT REMAINS THE SAME ... */}
         <header className="page-header text-center mb-16">
           <div className="inline-flex items-center space-x-2 bg-black text-white px-6 py-3 rounded-full text-sm font-medium mb-8">
             <svg 
@@ -391,7 +399,7 @@ export default function JoinUs() {
                   </div>
                 </div>
                 <div className="w-full max-w-3xl bg-white/50 p-2 rounded-b-2xl shadow-xl -mt-1">
-                  <div className="flex flex-wrap w-full" style={{ gap: `2px` }}>
+                  <div className="flex w-full" style={{ gap: `2px` }}>
                     {ALL_DEPARTMENTS_FOR_TABS.map((dept, index) => (
                       <motion.div key={dept.name} layout initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: index * 0.03 }} className="relative flex-grow" style={{ minWidth: "10%" }}>
                         <motion.button className="relative bg-white border border-black/10 rounded-lg w-full h-full hover:bg-gray-100 transition-colors duration-200 group focus:outline-none focus:ring-0" onMouseEnter={() => setHoveredDepartment(dept.name)} onMouseLeave={() => setHoveredDepartment(null)} onClick={() => handleSelectDepartment(dept)} animate={{ y: hoveredDepartment === dept.name ? 20 : 0, zIndex: hoveredDepartment === dept.name ? 10 : 1 }} whileTap={{ scale: 0.95, y: 10 }} transition={{ type: "spring", stiffness: 400, damping: 25 }} style={{ transformOrigin: "top center" }}>
@@ -481,6 +489,7 @@ export default function JoinUs() {
           )}
         </div>
 
+        {/* ... Rest of your component JSX remains unchanged ... */}
         <section className="form-section my-12">
           <h2 className="text-3xl font-bold text-black mb-8 text-center flex items-center justify-center space-x-3"><MessageCircle /><span>Interview Guidelines</span></h2>
           <div className="flex flex-wrap justify-center gap-4 mb-8">
