@@ -9,71 +9,141 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import MagneticButton from "./magnetic-button"
 import { useMobileOptimization, getOptimizedDuration } from "./mobile-optimized-animations"
+import { Client, Databases, ID } from "appwrite"
 import type { FormEvent } from "react";
 
 gsap.registerPlugin(ScrollTrigger)
+
+// Initialize Appwrite client
+const client = new Client()
+  .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)
+  .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID!)
+
+const databases = new Databases(client)
 
 export default function SpaceFooter() {
   const footerRef = useRef<HTMLElement>(null)
   const titleRef = useRef<HTMLDivElement>(null)
   const [email, setEmail] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitMessage, setSubmitMessage] = useState("")
   const { isMobile, reducedMotion } = useMobileOptimization()
   const router = useRouter()
 
   useEffect(() => {
-    // ... animation code remains the same ...
     const footer = footerRef.current
-    const title = titleRef.current
-    if (!footer || !title || reducedMotion) return
+    if (!footer || reducedMotion) return
 
-    if (!isMobile) {
-      gsap.to(footer.querySelector('.footer-content-wrapper'), {
-        yPercent: -10,
-        ease: "none",
-        scrollTrigger: {
-          trigger: footer,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: 1,
+    // SOLVED: Use GSAP Context for proper animation scoping and cleanup.
+    // This prevents animations from one state (e.g., desktop) from "leaking" into another (e.g., mobile).
+    const ctx = gsap.context(() => {
+      const title = titleRef.current
+      const wrapper = footer.querySelector('.footer-content-wrapper')
+      if (!title || !wrapper) return;
+
+      // Desktop-only parallax animation
+      if (!isMobile) {
+        gsap.to(wrapper, {
+          yPercent: -10,
+          ease: "none",
+          scrollTrigger: {
+            trigger: footer,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 1,
+          },
+        })
+      } 
+      // SOLVED: Explicitly reset the position on mobile to prevent leftover transforms.
+      else {
+        gsap.set(wrapper, { yPercent: 0 });
+      }
+
+      // Title rotation animation
+      gsap.set(title, { transformPerspective: 1000 })
+      gsap.to(title, {
+        rotationX: isMobile ? 2 : 3,
+        rotationY: isMobile ? -1 : -1.5,
+        duration: getOptimizedDuration(3, isMobile, reducedMotion),
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+      })
+      
+      // Grid dot animation
+      gsap.to(".grid-dot", {
+        scale: isMobile ? 1.2 : 1.5,
+        opacity: 0.6,
+        duration: getOptimizedDuration(1.5, isMobile, reducedMotion),
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+        stagger: {
+          amount: 1,
+          from: "random",
         },
       })
-    }
-    gsap.set(title, { transformPerspective: 1000 })
-    gsap.to(title, {
-      rotationX: isMobile ? 2 : 3,
-      rotationY: isMobile ? -1 : -1.5,
-      duration: getOptimizedDuration(3, isMobile, reducedMotion),
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut",
-    })
-    gsap.to(".grid-dot", {
-      scale: isMobile ? 1.2 : 1.5,
-      opacity: 0.6,
-      duration: getOptimizedDuration(1.5, isMobile, reducedMotion),
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut",
-      stagger: {
-        amount: 1,
-        from: "random",
-      },
-    })
-    gsap.to(".social-float", {
-      y: isMobile ? -5 : -8,
-      rotation: isMobile ? 3 : 4,
-      duration: getOptimizedDuration(2, isMobile, reducedMotion),
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut",
-      stagger: 0.15,
-    })
+      
+      // Social icon float animation
+      gsap.to(".social-float", {
+        y: isMobile ? -5 : -8,
+        rotation: isMobile ? 3 : 4,
+        duration: getOptimizedDuration(2, isMobile, reducedMotion),
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+        stagger: 0.15,
+      })
+    }, footerRef); // Scope the context to the footer element
+
+    // SOLVED: Return the cleanup function. GSAP will revert all animations within the context.
+    return () => ctx.revert();
+    
   }, [isMobile, reducedMotion])
 
-  const handleNewsletterSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleNewsletterSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('Newsletter signup:', email);
-    setEmail('');
+    setIsSubmitting(true);
+    setSubmitMessage("");
+
+    try {
+      // Create document in Appwrite database
+      await databases.createDocument(
+        process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
+        process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID!,
+        ID.unique(),
+        {
+          newsletter: email,
+          subscribed_at: new Date().toISOString(),
+          status: 'active'
+        }
+      );
+
+      setSubmitMessage("Successfully subscribed to newsletter!");
+      setEmail('');
+      
+      // Clear success message after 3 seconds
+      setTimeout(() => {
+        setSubmitMessage("");
+      }, 3000);
+
+    } catch (error: any) {
+      console.error('Newsletter signup error:', error);
+      
+      // Handle specific error cases
+      if (error.code === 409) {
+        setSubmitMessage("Email already subscribed!");
+      } else {
+        setSubmitMessage("Something went wrong. Please try again.");
+      }
+      
+      // Clear error message after 3 seconds
+      setTimeout(() => {
+        setSubmitMessage("");
+      }, 3000);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -176,26 +246,35 @@ export default function SpaceFooter() {
             <div className="lg:col-span-2 text-center lg:text-right">
               <div className="space-y-3 sm:space-y-4">
                 <div className="text-center lg:text-right">
-                  <div className="text-sm sm:text-lg font-bold mb-1 sm:mb-2">SIGN UP</div>
-                  <div className="text-sm sm:text-lg font-bold">TO OUR</div>
-                  <div className="text-sm sm:text-lg font-bold">NEWSLETTER</div>
+                  <div className="text-sm sm:text-lg font-bold">SIGN UP TO OUR NEWSLETTER</div>
                 </div>
-                <form onSubmit={handleNewsletterSubmit} className="relative max-w-xs mx-auto lg:mx-0 lg:ml-auto">
+                <form onSubmit={handleNewsletterSubmit} className="relative max-w-sm mx-auto lg:mx-0 lg:ml-auto">
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="YOUR EMAIL"
-                    className="w-full bg-white text-black px-3 sm:px-4 py-2 sm:py-3 rounded-full font-semibold placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-white/50 text-sm sm:text-base"
+                    disabled={isSubmitting}
+                    className="w-full bg-white text-black px-4 sm:px-6 py-3 sm:py-4 rounded-full font-semibold placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-white/50 text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
                     required
                   />
                   <MagneticButton 
                     type="submit"
-                    className="absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 w-6 h-6 sm:w-8 sm:h-8 bg-black border border-white rounded-full flex items-center justify-center hover:scale-110 hover:bg-white hover:text-black transition-all"
+                    disabled={isSubmitting}
+                    className="absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 w-6 h-6 sm:w-8 sm:h-8 bg-black border border-white rounded-full flex items-center justify-center hover:scale-110 hover:bg-white hover:text-black transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:bg-black disabled:hover:text-white"
                   >
                     <ArrowRight size={12} className="sm:w-4 sm:h-4 text-white" />
                   </MagneticButton>
                 </form>
+                
+                {/* Status Message */}
+                {submitMessage && (
+                  <div className={`text-xs sm:text-sm font-medium ${
+                    submitMessage.includes('Success') ? 'text-green-400' : 'text-red-400'
+                  }`}>
+                    {submitMessage}
+                  </div>
+                )}
               </div>
             </div>
           </div>

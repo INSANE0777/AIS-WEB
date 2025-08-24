@@ -379,12 +379,32 @@ export default function JoinUs() {
 
         <section className="form-section mb-12">
           <h2 className="text-3xl font-bold text-black mb-8 text-center">Technical Departments</h2>
-          <div className="grid md:grid-cols-2 gap-6">{Object.entries(TECH_DEPARTMENTS).map(([dept, info]) => (<div key={dept} className="bg-white p-6 rounded-2xl border border-black/10 hover:border-black hover:shadow-lg transition-all group"><div className="flex items-center space-x-3 mb-4"><div className="w-10 h-10 bg-black group-hover:bg-white border-2 border-black rounded-full flex items-center justify-center transition-all"><info.icon width={20} height={20} className="text-white group-hover:text-black transition-colors" /></div><h3 className="font-bold text-black">{dept}</h3></div><p className="text-black/70 text-sm mb-4">{info.description}</p></div>))}</div>
+          <div className="grid md:grid-cols-2 gap-6">{Object.entries(TECH_DEPARTMENTS).map(([dept, info]) => (
+            <div key={dept} className="bg-white p-8 rounded-2xl border border-black/10 hover:border-black hover:shadow-lg transition-all group">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-10 h-10 bg-black group-hover:bg-white border-2 border-black rounded-full flex items-center justify-center transition-all flex-shrink-0">
+                  <info.icon width={20} height={20} className="text-white group-hover:text-black transition-colors" />
+                </div>
+                <h3 className="font-bold text-black min-w-0">{dept}</h3>
+              </div>
+              <p className="text-black/70 text-sm mb-4">{info.description}</p>
+            </div>
+          ))}</div>
         </section>
 
         <section className="form-section mb-12">
           <h2 className="text-3xl font-bold text-black mb-8 text-center">Non-Technical Departments</h2>
-          <div className="grid md:grid-cols-2 gap-6">{Object.entries(NON_TECH_DEPARTMENTS).map(([dept, info]) => (<div key={dept} className="bg-white p-6 rounded-2xl border border-black/10 hover:border-black hover:shadow-lg transition-all group"><div className="flex items-center space-x-3 mb-4"><div className="w-10 h-10 bg-black group-hover:bg-white border-2 border-black rounded-full flex items-center justify-center transition-all"><info.icon width={20} height={20} className="text-white group-hover:text-black transition-colors" /></div><h3 className="font-bold text-black">{dept}</h3></div><p className="text-black/70 text-sm mb-4">{info.description}</p></div>))}</div>
+          <div className="grid md:grid-cols-2 gap-6">{Object.entries(NON_TECH_DEPARTMENTS).map(([dept, info]) => (
+            <div key={dept} className="bg-white p-8 rounded-2xl border border-black/10 hover:border-black hover:shadow-lg transition-all group">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-10 h-10 bg-black group-hover:bg-white border-2 border-black rounded-full flex items-center justify-center transition-all flex-shrink-0">
+                  <info.icon width={20} height={20} className="text-white group-hover:text-black transition-colors" />
+                </div>
+                <h3 className="font-bold text-black min-w-0">{dept}</h3>
+              </div>
+              <p className="text-black/70 text-sm mb-4">{info.description}</p>
+            </div>
+          ))}</div>
         </section>
         
         <section className="form-section mb-12">
@@ -401,7 +421,15 @@ export default function JoinUs() {
                 <div className="w-full max-w-3xl bg-white/50 p-2 rounded-b-2xl shadow-xl -mt-1">
                   <div className="flex w-full" style={{ gap: `2px` }}>
                     {ALL_DEPARTMENTS_FOR_TABS.map((dept, index) => (
-                      <motion.div key={dept.name} layout initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: index * 0.03 }} className="relative flex-grow" style={{ minWidth: "10%" }}>
+                      <motion.div 
+                        key={dept.name} 
+                        layout 
+                        initial={{ opacity: 0, y: -20 }} 
+                        animate={{ opacity: 1, y: 0 }} 
+                        transition={{ duration: 0.3, delay: index * 0.03 }} 
+                        // --- FIX: Changed flex-grow to flex-1 and removed minWidth style ---
+                        className="relative flex-1"
+                      >
                         <motion.button className="relative bg-white border border-black/10 rounded-lg w-full h-full hover:bg-gray-100 transition-colors duration-200 group focus:outline-none focus:ring-0" onMouseEnter={() => setHoveredDepartment(dept.name)} onMouseLeave={() => setHoveredDepartment(null)} onClick={() => handleSelectDepartment(dept)} animate={{ y: hoveredDepartment === dept.name ? 20 : 0, zIndex: hoveredDepartment === dept.name ? 10 : 1 }} whileTap={{ scale: 0.95, y: 10 }} transition={{ type: "spring", stiffness: 400, damping: 25 }} style={{ transformOrigin: "top center" }}>
                           <div className="px-1 py-4 min-h-[100px] flex items-center justify-center"><span className="text-black/80 group-hover:text-black font-semibold text-[10px] sm:text-xs leading-tight text-center" style={{ writingMode: "vertical-rl", textOrientation: "mixed" }}>{dept.name}</span></div>
                         </motion.button>

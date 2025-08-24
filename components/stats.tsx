@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useRef, useState } from "react"
-import Image from "next/image" // Import the Next.js Image component
+import Image from "next/image"
 import { gsap } from "gsap"
 import { 
   User, 
@@ -17,12 +17,12 @@ import {
   Mic,
   GraduationCap,
   Brain,
-  Code,       // Icon for CTO
-  Briefcase,  // Icon for COO
-  Megaphone,  // Icon for CMO
+  Code,
+  Briefcase,
+  Megaphone,
 } from "lucide-react"
 
-// --- Data (updated with new executive roles) ---
+// --- Data ---
 const topExecutives = [
   { icon: User, title: "Vice-President" },
   { icon: UserCheck, title: "President" },
@@ -34,6 +34,9 @@ const cLevelExecutives = [
   { icon: Briefcase, title: "Chief Operating Officer" },
   { icon: Megaphone, title: "Chief Marketing Officer" },
 ]
+
+// Combine all executives into a single array for the mobile view
+const allExecutives = [...topExecutives, ...cLevelExecutives];
 
 const technicalDepts = [
   { icon: MessageSquare, title: "Natural Language Processing" },
@@ -51,18 +54,13 @@ const nonTechnicalDepts = [
   { icon: Mic, title: "Public Speakers // Sponsorship Outreach" },
 ]
 
-// --- Skeleton Loader Component ---
-// This component remains unchanged and is collapsed for brevity
+// --- Skeleton Loader Component (unchanged) ---
 const OrgChartSkeleton = () => (
   <div className="max-w-7xl mx-auto animate-pulse px-4">
-    {/* Header */}
     <div className="flex justify-center mb-8 md:mb-16">
       <div className="h-8 md:h-10 w-60 md:w-80 bg-gray-200 rounded-md"></div>
     </div>
-
-    {/* Org Chart Structure */}
     <div className="relative">
-      {/* Executives Level */}
       <div className="mb-8 md:mb-12">
         <div className="h-6 md:h-8 w-32 md:w-48 bg-gray-200 rounded-md mx-auto mb-4 md:mb-8"></div>
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4 md:gap-8">
@@ -71,13 +69,9 @@ const OrgChartSkeleton = () => (
           <div className="h-24 md:h-32 w-40 md:w-48 bg-gray-200 rounded-2xl"></div>
         </div>
       </div>
-
-      {/* Connecting Lines */}
       <div className="flex justify-center mb-4 md:mb-8">
         <div className="w-px h-8 md:h-12 bg-gray-200"></div>
       </div>
-
-      {/* Departments Level */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 mb-8 md:mb-12">
         <div className="h-64 md:h-80 bg-gray-200 rounded-3xl p-4 md:p-8 space-y-4">
             <div className="h-6 md:h-8 w-48 md:w-64 bg-gray-300 rounded-md mx-auto mb-4"></div>
@@ -91,13 +85,9 @@ const OrgChartSkeleton = () => (
             <div className="h-10 md:h-12 bg-gray-300 rounded-full"></div>
         </div>
       </div>
-
-      {/* Connecting Line to Mentors */}
       <div className="flex justify-center mb-4 md:mb-8">
         <div className="w-px h-8 md:h-12 bg-gray-200"></div>
       </div>
-
-      {/* Mentors Level */}
       <div className="flex justify-center">
         <div className="h-32 md:h-40 w-72 md:w-96 bg-gray-200 rounded-3xl"></div>
       </div>
@@ -112,21 +102,16 @@ export default function AISocietyOrgChart() {
   const sectionRef = useRef<HTMLElement>(null)
   const chartRef = useRef<HTMLDivElement>(null)
 
-  // Effect to simulate loading and switch off the skeleton
+  // useEffect hooks remain the same
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false)
-    }, 1000); // Adjust time as needed (e.g., 1000ms = 1s)
+    const timer = setTimeout(() => setIsLoading(false), 1000);
     return () => clearTimeout(timer);
   }, []);
 
-  // Effect for GSAP animations, runs only after loading is false
   useEffect(() => {
     if (!isLoading && chartRef.current) {
-      // Set initial states for animation
       gsap.set(".org-card, .dept-container, .connecting-line", { opacity: 0, y: 20 });
       gsap.set(".dept-card", {scale: 0.8, opacity: 0});
-
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
@@ -135,31 +120,11 @@ export default function AISocietyOrgChart() {
           toggleActions: "play none none reverse",
         },
       });
-
-      tl.to(
-        ".exec-card",
-        { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: "power3.out" },
-      )
-      .to(
-        ".connecting-line",
-        { y: 0, opacity: 1, duration: 0.3 },
-        "-=0.6"
-      )
-      .to(
-        ".dept-container",
-        { y: 0, opacity: 1, duration: 0.6, stagger: 0.2, ease: "power3.out" },
-        "-=0.2"
-      )
-      .to(
-        ".dept-card",
-        { scale: 1, opacity: 1, duration: 0.5, stagger: 0.08, ease: "back.out(1.7)" },
-        "-=0.3"
-      )
-      .to(
-        ".mentors-card",
-        { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" },
-        "-=0.2"
-      );
+      tl.to(".exec-card", { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: "power3.out" })
+      .to(".connecting-line", { y: 0, opacity: 1, duration: 0.3 }, "-=0.6")
+      .to(".dept-container", { y: 0, opacity: 1, duration: 0.6, stagger: 0.2, ease: "power3.out" }, "-=0.2")
+      .to(".dept-card", { scale: 1, opacity: 1, duration: 0.5, stagger: 0.08, ease: "back.out(1.7)" }, "-=0.3")
+      .to(".mentors-card", { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, "-=0.2");
     }
   }, [isLoading]);
 
@@ -177,52 +142,72 @@ export default function AISocietyOrgChart() {
             </div>
           </div>
 
-          {/* Org Chart Structure */}
           <div className="relative">
-            {/* Executives Level */}
+            {/* --- Executives Level --- */}
             <div className="mb-8 md:mb-12">
-              <h3 className="text-xl md:text-2xl font-black text-black text-center mb-6 md:mb-8">Executives</h3>
-              {/* Top Row - Larger Cards */}
-              {/* CHANGED: Added items-stretch to ensure cards stretch to the same height */}
-              <div className="flex flex-col sm:flex-row justify-center items-stretch gap-6 md:gap-8 relative">
-                {topExecutives.map((exec, index) => {
-                  const Icon = exec.icon
-                  return (
-                    <div key={index} className="org-card exec-card relative">
-                      {/* CHANGED: Standardized classes for symmetry */}
-                      <div className="flex flex-col items-center justify-center p-8 rounded-3xl bg-white border-2 border-black/20 hover:border-black/40 transition-all hover:shadow-xl w-full sm:w-64 md:w-72 min-h-[280px]">
-                        <div className="inline-flex items-center justify-center w-20 h-20 bg-black text-white rounded-full mb-6">
-                          <Icon size={28} />
-                        </div>
-                        <h4 className="text-lg font-bold text-black text-center">{exec.title}</h4>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
               
-              {/* Connecting line between executive rows */}
-              <div className="flex justify-center my-6 md:my-8">
-                <div className="connecting-line w-px h-8 md:h-12 bg-black/30 origin-top"></div>
+              {/* Desktop-only View (Multiple Cards) */}
+              <div className="hidden sm:block">
+                <h3 className="text-xl md:text-2xl font-black text-black text-center mb-6 md:mb-8">Executives</h3>
+                <div className="flex flex-col sm:flex-row justify-center items-stretch gap-6 md:gap-8 relative">
+                  {topExecutives.map((exec, index) => {
+                    const Icon = exec.icon;
+                    return (
+                      <div key={index} className="org-card exec-card relative">
+                        <div className="flex flex-col items-center justify-center p-8 rounded-3xl bg-white border-2 border-black/20 hover:border-black/40 transition-all hover:shadow-xl w-full sm:w-64 md:w-72 min-h-[280px]">
+                          <div className="inline-flex items-center justify-center w-20 h-20 bg-black text-white rounded-full mb-6">
+                            <Icon size={28} />
+                          </div>
+                          <h4 className="text-lg font-bold text-black text-center">{exec.title}</h4>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                
+                <div className="flex justify-center my-6 md:my-8">
+                  <div className="connecting-line w-px h-8 md:h-12 bg-black/30 origin-top"></div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row justify-center items-stretch gap-6 md:gap-8 relative">
+                  {cLevelExecutives.map((exec, index) => {
+                    const Icon = exec.icon;
+                    return (
+                      <div key={index} className="org-card exec-card relative">
+                        <div className="flex flex-col items-center justify-center p-8 rounded-3xl bg-white border-2 border-black/20 hover:border-black/40 transition-all hover:shadow-xl w-full sm:w-64 md:w-72 min-h-[280px]">
+                          <div className="inline-flex items-center justify-center w-20 h-20 bg-black text-white rounded-full mb-6">
+                            <Icon size={28} />
+                          </div>
+                          <h4 className="text-lg font-bold text-black text-center">{exec.title}</h4>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
 
-              {/* C-Level Row - Smaller Cards */}
-              {/* CHANGED: Added items-stretch to ensure cards stretch to the same height */}
-              <div className="flex flex-col sm:flex-row justify-center items-stretch gap-6 md:gap-8 relative">
-                {cLevelExecutives.map((exec, index) => {
-                  const Icon = exec.icon
-                  return (
-                    <div key={index} className="org-card exec-card relative">
-                      {/* CHANGED: Used the exact same classes as the top row for symmetry */}
-                      <div className="flex flex-col items-center justify-center p-8 rounded-3xl bg-white border-2 border-black/20 hover:border-black/40 transition-all hover:shadow-xl w-full sm:w-64 md:w-72 min-h-[280px]">
-                        <div className="inline-flex items-center justify-center w-20 h-20 bg-black text-white rounded-full mb-6">
-                          <Icon size={28} />
+              {/* Mobile-only View (Single Card) */}
+              <div className="block sm:hidden org-card exec-card">
+                 <div className="p-6 rounded-3xl bg-white border-2 border-black/20 shadow-lg flex flex-col">
+                  <h3 className="text-lg font-black text-black mb-4 text-center">Executives</h3>
+                  <div className="grid grid-cols-1 gap-3">
+                    {allExecutives.map((exec, index) => {
+                      const Icon = exec.icon;
+                      return (
+                        <div key={index} className="org-card dept-card">
+                          <div className="p-2 pl-3 pr-4 rounded-full bg-gray-50 border border-black/10">
+                            <div className="flex items-center gap-3">
+                              <div className="flex-shrink-0 w-8 h-8 bg-black text-white rounded-full flex items-center justify-center">
+                                <Icon size={14} />
+                              </div>
+                              <h4 className="text-xs font-bold text-black leading-tight">{exec.title}</h4>
+                            </div>
+                          </div>
                         </div>
-                        <h4 className="text-lg font-bold text-black text-center">{exec.title}</h4>
-                      </div>
-                    </div>
-                  )
-                })}
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -233,12 +218,13 @@ export default function AISocietyOrgChart() {
 
             {/* Departments Level */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 mb-8 md:mb-12">
-              <div className="dept-container relative h-full">
-                <div className="h-full p-8 pr-10 md:p-8 rounded-3xl bg-white border-2 border-black/20 hover:border-black/30 transition-all shadow-lg flex flex-col">
-                  <h3 className="text-lg md:text-2xl font-black text-black mb-4 md:mb-6 text-center">Technical Departments</h3>
-                  <div className="grid grid-cols-1 gap-3 md:gap-4 flex-1">
+              <div className="dept-container relative">
+                {/* --- CHANGE 1 & 2: Increased padding and internal gap --- */}
+                <div className="lg:h-full p-8 rounded-3xl bg-white border-2 border-black/20 hover:border-black/30 transition-all shadow-lg flex flex-col">
+                  <h3 className="text-lg md:text-2xl font-black text-black mb-6 text-center">Technical Departments</h3>
+                  <div className="grid grid-cols-1 gap-4 flex-1">
                     {technicalDepts.map((dept, index) => {
-                      const Icon = dept.icon
+                      const Icon = dept.icon;
                       return (
                         <div key={index} className="org-card dept-card">
                           <div className="p-2 pl-3 pr-6 rounded-full bg-gray-50 border border-black/10 hover:border-black/20 transition-all hover:shadow-md">
@@ -250,19 +236,18 @@ export default function AISocietyOrgChart() {
                             </div>
                           </div>
                         </div>
-                      )
+                      );
                     })}
                   </div>
                 </div>
               </div>
-              <div className="dept-container relative h-full">
-                <div className="h-full p-8 pr-10 md:p-8 rounded-3xl bg-white border-2 border-black/20 hover:border-black/30 transition-all shadow-lg flex flex-col">
-                  <h3 className="text-lg md:text-2xl font-black text-black mb-4 md:mb-6 text-center">Non-Technical Departments</h3>
-
-                  {/* CHANGED: Used grid here as well for better consistency with the technical side */}
-                  <div className="grid grid-cols-1 gap-3 md:gap-4 flex-1">
+              <div className="dept-container relative">
+                {/* --- CHANGE 1 & 2: Increased padding and internal gap --- */}
+                <div className="lg:h-full p-8 rounded-3xl bg-white border-2 border-black/20 hover:border-black/30 transition-all shadow-lg flex flex-col">
+                  <h3 className="text-lg md:text-2xl font-black text-black mb-6 text-center">Non-Technical Departments</h3>
+                  <div className="grid grid-cols-1 gap-4 flex-1">
                     {nonTechnicalDepts.map((dept, index) => {
-                      const Icon = dept.icon
+                      const Icon = dept.icon;
                       return (
                         <div key={index} className="org-card dept-card">
                           <div className="p-2 pl-3 pr-6 rounded-full bg-gray-50 border border-black/10 hover:border-black/20 transition-all hover:shadow-md">
@@ -274,7 +259,7 @@ export default function AISocietyOrgChart() {
                             </div>
                           </div>
                         </div>
-                      )
+                      );
                     })}
                   </div>
                 </div>
