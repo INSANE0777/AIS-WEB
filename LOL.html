@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Society - Announcements</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.min.js">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .star-path {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+        }
+        
+        .announcement-card {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .announcement-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), var(--spill-color, rgba(59, 130, 246, 0.1)), transparent 40%);
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .announcement-card > * {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .morphing-blob {
+            filter: blur(40px);
+            animation: morph 8s ease-in-out infinite;
+        }
+        
+        @keyframes morph {
+            0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+            50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+        }
+        
+        .text-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hover-glow:hover {
+            filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.5));
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 min-h-screen">
+    
+    <!-- Animated Background Blobs -->
+    <div class="fixed inset-0 -z-20 overflow-hidden">
+        <div class="morphing-blob absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-blue-400 to-purple-500 opacity-20"></div>
+        <div class="morphing-blob absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-r from-green-400 to-blue-500 opacity-20" style="animation-delay: -2s;"></div>
+        <div class="morphing-blob absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-purple-400 to-pink-500 opacity-10" style="animation-delay: -4s;"></div>
+    </div>
+
+    <div class="pt-32 pb-20 px-4 min-h-screen relative overflow-hidden">
+        
+        <!-- Logo -->
+        <div id="logo" class="absolute top-4 left-4 sm:top-6 sm:left-6 z-20 cursor-pointer">
+            <div class="w-12 h-12 sm:w-16 sm:h-16 bg-black rounded-full flex items-center justify-center hover-glow transition-all duration-300">
+                <svg width="24" height="24" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g clip-path="url(#clip0_logo)">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M100 0H0L100 100H0L100 200H200L100 100H200L100 0Z" fill="white"/>
+                    </g>
+                    <clipPath id="clip0_logo">
+                        <rect width="200" height="200" fill="white"/>
+                    </clipPath>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Floating SVG Stars -->
+        <div class="absolute inset-0 pointer-events-none -z-10">
+            <!-- Red Star -->
+            <svg id="star1" class="absolute top-[10%] left-[5%] w-24 h-24 sm:w-40 sm:h-40 cursor-pointer hover-glow" 
+                 style="pointer-events: all;" viewBox="0 0 200 200" fill="none">
+                <path class="star-path" d="M146.171 100C161.187 97.0302 175.962 89.6912 184.977 80.047L195.212 69.0981L180.496 66.2558C167.534 63.7521 151.267 66.5 137.373 72.9237C147.776 61.6944 155.416 47.0726 157.04 33.9716L158.885 19.0981L145.309 25.4484C133.351 31.0419 121.806 42.826 114.34 56.1898C116.156 40.9907 113.743 24.6707 107.356 13.1167L100.106 0L92.8553 13.1167C86.4688 24.6707 84.0554 40.9907 85.8712 56.1898C78.406 42.826 66.8609 31.0414 54.9028 25.4484L41.327 19.0981L43.1712 33.9716C44.7958 47.0726 52.4358 61.6944 62.8386 72.9237C48.9446 66.5 32.6772 63.7526 19.7153 66.2558L5 69.0981L15.2344 80.047C24.2493 89.6912 39.0242 97.0298 54.0409 100C39.0247 102.97 24.2493 110.308 15.2344 119.953L5 130.902L19.7153 133.744C32.6772 136.248 48.9442 133.5 62.8386 127.076C52.4358 138.306 44.7958 152.927 43.1712 166.028L41.327 180.901L54.9023 174.552C66.8605 168.958 78.4056 157.174 85.8707 143.81C84.0549 159.009 86.4684 175.329 92.8549 186.883L100.105 200L107.355 186.883C113.742 175.329 116.155 159.009 114.34 143.81C121.805 157.174 133.35 168.959 145.308 174.552L158.883 180.901L157.039 166.028C155.414 152.927 147.774 138.306 137.372 127.076C151.266 133.5 167.533 136.247 180.495 133.744L195.21 130.902L184.976 119.953C175.962 110.309 161.187 102.97 146.171 100Z" 
+                      fill="url(#paint0_red)" stroke="#EF4444" stroke-width="2"/>
+                <defs>
+                    <linearGradient id="paint0_red" x1="100.106" y1="0" x2="100.106" y2="200" gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#EF4444"/><stop offset="1" stop-color="#FCA5A5"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+
+            <!-- Yellow Star -->
+            <svg id="star2" class="absolute top-[20%] right-[10%] w-20 h-20 sm:w-32 sm:h-32 cursor-pointer hover-glow" 
+                 style="pointer-events: all;" viewBox="0 0 200 200" fill="none">
+                <path class="star-path" d="M146.171 100C161.187 97.0302 175.962 89.6912 184.977 80.047L195.212 69.0981L180.496 66.2558C167.534 63.7521 151.267 66.5 137.373 72.9237C147.776 61.6944 155.416 47.0726 157.04 33.9716L158.885 19.0981L145.309 25.4484C133.351 31.0419 121.806 42.826 114.34 56.1898C116.156 40.9907 113.743 24.6707 107.356 13.1167L100.106 0L92.8553 13.1167C86.4688 24.6707 84.0554 40.9907 85.8712 56.1898C78.406 42.826 66.8609 31.0414 54.9028 25.4484L41.327 19.0981L43.1712 33.9716C44.7958 47.0726 52.4358 61.6944 62.8386 72.9237C48.9446 66.5 32.6772 63.7526 19.7153 66.2558L5 69.0981L15.2344 80.047C24.2493 89.6912 39.0242 97.0298 54.0409 100C39.0247 102.97 24.2493 110.308 15.2344 119.953L5 130.902L19.7153 133.744C32.6772 136.248 48.9442 133.5 62.8386 127.076C52.4358 138.306 44.7958 152.927 43.1712 166.028L41.327 180.901L54.9023 174.552C66.8605 168.958 78.4056 157.174 85.8707 143.81C84.0549 159.009 86.4684 175.329 92.8549 186.883L100.105 200L107.355 186.883C113.742 175.329 116.155 159.009 114.34 143.81C121.805 157.174 133.35 168.959 145.308 174.552L158.883 180.901L157.039 166.028C155.414 152.927 147.774 138.306 137.372 127.076C151.266 133.5 167.533 136.247 180.495 133.744L195.21 130.902L184.976 119.953C175.962 110.309 161.187 102.97 146.171 100Z" 
+                      fill="url(#paint0_yellow)" stroke="#EAB308" stroke-width="2"/>
+                <defs>
+                    <linearGradient id="paint0_yellow" x1="100.106" y1="0" x2="100.106" y2="200" gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#EAB308"/><stop offset="1" stop-color="#FDE047"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+
+            <!-- Green Star -->
+            <svg id="star3" class="absolute bottom-[15%] left-[15%] w-28 h-28 sm:w-48 sm:h-48 cursor-pointer hover-glow" 
+                 style="pointer-events: all;" viewBox="0 0 200 200" fill="none">
+                <path class="star-path" d="M146.171 100C161.187 97.0302 175.962 89.6912 184.977 80.047L195.212 69.0981L180.496 66.2558C167.534 63.7521 151.267 66.5 137.373 72.9237C147.776 61.6944 155.416 47.0726 157.04 33.9716L158.885 19.0981L145.309 25.4484C133.351 31.0419 121.806 42.826 114.34 56.1898C116.156 40.9907 113.743 24.6707 107.356 13.1167L100.106 0L92.8553 13.1167C86.4688 24.6707 84.0554 40.9907 85.8712 56.1898C78.406 42.826 66.8609 31.0414 54.9028 25.4484L41.327 19.0981L43.1712 33.9716C44.7958 47.0726 52.4358 61.6944 62.8386 72.9237C48.9446 66.5 32.6772 63.7526 19.7153 66.2558L5 69.0981L15.2344 80.047C24.2493 89.6912 39.0242 97.0298 54.0409 100C39.0247 102.97 24.2493 110.308 15.2344 119.953L5 130.902L19.7153 133.744C32.6772 136.248 48.9442 133.5 62.8386 127.076C52.4358 138.306 44.7958 152.927 43.1712 166.028L41.327 180.901L54.9023 174.552C66.8605 168.958 78.4056 157.174 85.8707 143.81C84.0549 159.009 86.4684 175.329 92.8549 186.883L100.105 200L107.355 186.883C113.742 175.329 116.155 159.009 114.34 143.81C121.805 157.174 133.35 168.959 145.308 174.552L158.883 180.901L157.039 166.028C155.414 152.927 147.774 138.306 137.372 127.076C151.266 133.5 167.533 136.247 180.495 133.744L195.21 130.902L184.976 119.953C175.962 110.309 161.187 102.97 146.171 100Z" 
+                      fill="url(#paint0_green)" stroke="#22C55E" stroke-width="2"/>
+                <defs>
+                    <linearGradient id="paint0_green" x1="100.106" y1="0" x2="100.106" y2="200" gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#22C55E"/><stop offset="1" stop-color="#86EFAC"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+
+            <!-- Violet Star -->
+            <svg id="star4" class="absolute bottom-[5%] right-[5%] w-24 h-24 sm:w-40 sm:h-40 cursor-pointer hover-glow" 
+                 style="pointer-events: all;" viewBox="0 0 200 200" fill="none">
+                <path class="star-path" d="M146.171 100C161.187 97.0302 175.962 89.6912 184.977 80.047L195.212 69.0981L180.496 66.2558C167.534 63.7521 151.267 66.5 137.373 72.9237C147.776 61.6944 155.416 47.0726 157.04 33.9716L158.885 19.0981L145.309 25.4484C133.351 31.0419 121.806 42.826 114.34 56.1898C116.156 40.9907 113.743 24.6707 107.356 13.1167L100.106 0L92.8553 13.1167C86.4688 24.6707 84.0554 40.9907 85.8712 56.1898C78.406 42.826 66.8609 31.0414 54.9028 25.4484L41.327 19.0981L43.1712 33.9716C44.7958 47.0726 52.4358 61.6944 62.8386 72.9237C48.9446 66.5 32.6772 63.7526 19.7153 66.2558L5 69.0981L15.2344 80.047C24.2493 89.6912 39.0242 97.0298 54.0409 100C39.0247 102.97 24.2493 110.308 15.2344 119.953L5 130.902L19.7153 133.744C32.6772 136.248 48.9442 133.5 62.8386 127.076C52.4358 138.306 44.7958 152.927 43.1712 166.028L41.327 180.901L54.9023 174.552C66.8605 168.958 78.4056 157.174 85.8707 143.81C84.0549 159.009 86.4684 175.329 92.8549 186.883L100.105 200L107.355 186.883C113.742 175.329 116.155 159.009 114.34 143.81C121.805 157.174 133.35 168.959 145.308 174.552L158.883 180.901L157.039 166.028C155.414 152.927 147.774 138.306 137.372 127.076C151.266 133.5 167.533 136.247 180.495 133744L195.21 130.902L184.976 119.953C175.962 110.309 161.187 102.97 146.171 100Z" 
+                      fill="url(#paint0_violet)" stroke="#8B5CF6" stroke-width="2"/>
+                <defs>
+                    <linearGradient id="paint0_violet" x1="100.106" y1="0" x2="100.106" y2="200" gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#8B5CF6"/><stop offset="1" stop-color="#C4B5FD"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+        </div>
+
+        <div class="max-w-6xl mx-auto relative z-10">
+            <!-- Header -->
+            <div id="header" class="text-center mb-20 opacity-0">
+                <div class="inline-flex items-center space-x-2 bg-black text-white px-6 py-3 rounded-full text-sm font-medium mb-8">
+                    <svg width="20" height="20" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="transition-transform duration-500 hover:scale-110 hover:rotate-180">
+                        <g clip-path="url(#clip0_238_1296)">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M100 0H0L100 100H0L100 200H200L100 100H200L100 0Z" fill="white"/>
+                        </g>
+                        <clipPath id="clip0_238_1296">
+                            <rect width="200" height="200" fill="white"/>
+                        </clipPath>
+                    </svg>
+                    <span>Stay Updated</span>
+                </div>
+                <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-black mb-6 leading-tight text-gradient">
+                    Announcements
+                </h1>
+                <div class="w-24 h-1 bg-black mx-auto mb-8"></div>
+                <p class="text-lg sm:text-xl text-black/70 max-w-3xl mx-auto leading-relaxed px-4">
+                    Stay informed about the latest updates, opportunities, and events from the AI Society community.
+                </p>
+            </div>
+
+            <!-- Announcements -->
+            <div class="space-y-8">
+                <!-- Urgent Announcement -->
+                <div class="announcement-card bg-white/90 backdrop-blur-sm rounded-2xl border border-black/10 transition-all duration-300 hover:border-black/30 hover:shadow-2xl opacity-0 transform translate-y-10" 
+                     style="--spill-color: rgba(239, 68, 68, 0.15);">
+                    <div class="p-6 sm:p-8">
+                        <div class="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-6">
+                            <div class="w-16 h-16 bg-gradient-to-br from-red-500 to-orange-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg">
+                                <svg width="24" height="24" fill="white" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-x-4 gap-y-2 mb-3">
+                                    <span class="px-3 py-1 text-xs font-semibold rounded-full uppercase tracking-wider bg-red-100 text-red-800">urgent</span>
+                                    <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-1 sm:space-y-0 sm:space-x-4 text-black/60 text-sm">
+                                        <div class="flex items-center space-x-1">
+                                            <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+                                            <span>2025-01-15</span>
+                                        </div>
+                                        <div class="flex items-center space-x-1">
+                                            <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M16.2,16.2L11,13V7H12.5V12.2L17,14.7L16.2,16.2Z"/></svg>
+                                            <span>11:59 PM</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h3 class="text-xl sm:text-2xl font-bold text-black mb-3">HackAI 2025 Registration Extended</h3>
+                                <p class="text-black/70 leading-relaxed text-sm sm:text-base">Due to overwhelming response, we've extended the registration deadline for HackAI 2025 by one week.</p>
+                            </div>
+                            <div class="flex-shrink-0 self-start sm:self-center">
+                                <div class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event Announcement -->
+                <div class="announcement-card bg-white/90 backdrop-blur-sm rounded-2xl border border-black/10 transition-all duration-300 hover:border-black/30 hover:shadow-2xl opacity-0 transform translate-y-10" 
+                     style="--spill-color: rgba(59, 130, 246, 0.15);">
+                    <div class="p-6 sm:p-8">
+                        <div class="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-6">
+                            <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg">
+                                <svg width="24" height="24" fill="white" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-x-4 gap-y-2 mb-3">
+                                    <span class="px-3 py-1 text-xs font-semibold rounded-full uppercase tracking-wider bg-blue-100 text-blue-800">event</span>
+                                    <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-1 sm:space-y-0 sm:space-x-4 text-black/60 text-sm">
+                                        <div class="flex items-center space-x-1">
+                                            <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+                                            <span>2025-01-20</span>
+                                        </div>
+                                        <div class="flex items-center space-x-1">
+                                            <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M16.2,16.2L11,13V7H12.5V12.2L17,14.7L16.2,16.2Z"/></svg>
+                                            <span>3:00 PM</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h3 class="text-xl sm:text-2xl font-bold text-black mb-3">Guest Lecture: Future of AI</h3>
+                                <p class="text-black/70 leading-relaxed text-sm sm:text-base">Join us for an exclusive lecture by Dr. Sarah Chen, AI Research Director at Google DeepMind.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Opportunity Announcement -->
+                <div class="announcement-card bg-white/90 backdrop-blur-sm rounded-2xl border border-black/10 transition-all duration-300 hover:border-black/30 hover:shadow-2xl opacity-0 transform translate-y-10" 
+                     style="--spill-color: rgba(16, 185, 129, 0.15);">
+                    <div class="p-6 sm:p-8">
+                        <div class="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-6">
+                            <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-teal-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg">
+                                <svg width="24" height="24" fill="white" viewBox="0 0 24 24"><path d="M13 2.05v3.03c3.39.49 6 3.39 6 6.92 0 .9-.18 1.75-.48 2.54l2.6 1.53c.56-1.24.88-2.62.88-4.07 0-5.18-3.95-9.45-9-9.95zM12 19c-3.87 0-7-3.13-7-7 0-3.53 2.61-6.43 6-6.92V2.05c-5.06.5-9 4.76-9 9.95 0 5.52 4.47 10 9.99 10 3.31 0 6.24-1.61 8.06-4.09l-2.6-1.53C16.17 17.98 14.21 19 12 19z"/></svg>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-x-4 gap-y-2 mb-3">
+                                    <span class="px-3 py-1 text-xs font-semibold rounded-full uppercase tracking-wider bg-green-100 text-green-800">opportunity</span>
+                                    <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-1 sm:space-y-0 sm:space-x-4 text-black/60 text-sm">
+                                        <div class="flex items-center space-x-1">
+                                            <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+                                            <span>2025-01-25</span>
+                                        </div>
+                                        <div class="flex items-center space-x-1">
+                                            <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M16.2,16.2L11,13V7H12.5V12.2L17,14.7L16.2,16.2Z"/></svg>
+                                            <span>5:00 PM</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h3 class="text-xl sm:text-2xl font-bold text-black mb-3">Research Internship Applications Open</h3>
+                                <p class="text-black/70 leading-relaxed text-sm sm:text-base">Apply for summer research internships with our partner companies and research institutions.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- General Announcement -->
+                <div class="announcement-card bg-white/90 backdrop-blur-sm rounded-2xl border border-black/10 transition-all duration-300 hover:border-black/30 hover:shadow-2xl opacity-0 transform translate-y-10" 
+                     style="--spill-color: rgba(168, 85, 247, 0.15);">
+                    <div class="p-6 sm:p-8">
+                        <div class="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-6">
+                            <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg">
+                                <svg width="24" height="24" fill="white" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-x-4 gap-y-2 mb-3">
+                                    <span class="px-3 py-1 text-xs font-semibold rounded-full uppercase tracking-wider bg-gray-100 text-gray-800">general</span>
+                                    <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-1 sm:space-y-0 sm:space-x-4 text-black/60 text-sm">
+                                        <div class="flex items-center space-x-1">
+                                            <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+                                            <span>2025-01-10</span>
+                                        </div>
+                                        <div class="flex items-center space-x-1">
+                                            <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M16.2,16.2L11,13V7H12.5V12.2L17,14.7L16.2,16.2Z"/></svg>
+                                            <span>9:00 AM</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h3 class="text-xl sm:text-2xl font-bold text-black mb-3">New AI Lab Equipment Arrival</h3>
+                                <p class="text-black/70 leading-relaxed text-sm sm:text-base">State-of-the-art GPU clusters and quantum computing simulators now available for member projects.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subscription Section -->
+            <div id="subscription" class="mt-20 text-center opacity-0">
+                <div class="announcement-card bg-black text-white p-8 sm:p-12 rounded-2xl" style="--spill-color: rgba(59, 130, 246, 0.2);">
+                    <div class="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-2 mb-4">
+                        <svg width="24" height="24" fill="#60a5fa" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                        <h2 class="text-2xl sm:text-3xl font-bold text-center">Never Miss an Update</h2>
+                        <svg width="24" height="24" fill="#fbbf24" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    </div>
+                    <p class="text-white/80 mb-8 max-w-2xl mx-auto text-sm sm:text-base px-4">
+                        Subscribe to our announcement feed and get instant notifications about important updates, deadlines, and opportunities.
+                    </p>
+                    <div class="flex flex-col sm:flex-row max-w-md mx-auto gap-4">
+                        <input type="email" placeholder="Enter your email" class="flex-1 px-4 py-3 rounded-full text-black focus:outline-none focus:ring-2 focus:ring-white text-sm sm:text-base"/>
+                        <button class="bg-white text-black px-6 py-3 rounded-full font-semibold hover:bg-white/90 transition-colors text-sm sm:text-base whitespace-nowrap hover-glow">
+                            Subscribe
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Register GSAP plugins
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Initialize animations when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Master timeline for initial animations
+            const tl = gsap.timeline();
+
+            // Animate logo entrance
+            tl.fromTo('#logo', 
+                { scale: 0, rotation: -180, opacity: 0 },
+                { scale: 1, rotation: 0, opacity: 1, duration: 1, ease: "back.out(1.7)" }
+            )
+            
+            // Animate header
+            .fromTo('#header',
+                { y: 100, opacity: 0 },
+                { y: 0, opacity: 1, duration: 1.2, ease: "power3.out" },
+                "-=0.5"
+            )
+
+            // Animate announcement cards
+            .to('.announcement-card', {
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                stagger: 0.15,
+                ease: "back.out(1.7)"
+            }, "-=0.8")
+
+            // Animate subscription section
+            .to('#subscription', {
+                opacity: 1,
+                duration: 1,
+                ease: "power2.out"
+            }, "-=0.3");
+
+            // Advanced SVG Star Animations
+            const stars = ['#star1', '#star2', '#star3', '#star4'];
+            const colors = ['#EF4444', '#EAB308', '#22C55E', '#8B5CF6'];
+            
+            stars.forEach((starId, index) => {
+                const star = document.querySelector(starId);
+                const path = star.querySelector('path');
+                
+                if (star && path) {
+                    // Animate SVG path drawing
+                    gsap.fromTo(path, 
+                        { strokeDashoffset: 1000 },
+                        { 
+                            strokeDashoffset: 0, 
+                            duration: 3, 
+                            delay: index * 0.5 + 1,
+                            ease: "power2.inOut"
+                        }
+                    );
+
+                    // Complex floating animation
+                    gsap.to(star, {
+                        y: -30,
+                        x: 20,
+                        rotation: 360,
+                        scale: 1.1,
+                        duration: 4 + index * 0.5,
+                        repeat: -1,
+                        yoyo: true,
+                        ease: "sine.inOut",
+                        delay: index * 0.3,
+                    });
+
+                    // Interactive hover animations
+                    star.addEventListener('mouseenter', () => {
+                        gsap.to(star, {
+                            scale: 1.4,
+                            rotation: "+=45",
+                            duration: 0.3,
+                            ease: "back.out(1.7)",
+                            filter: `drop-shadow(0 0 30px ${colors[index]})`
+                        });
+                    });
+
+                    star.addEventListener('mouseleave', () => {
+                        gsap.to(star, {
+                            scale: 1.1,
+                            rotation: "-=45",
+                            duration: 0.3,
+                            ease: "back.out(1.7)",
+                            filter: "drop-shadow(0 0 0px transparent)"
+                        });
+                    });
+
+                    // Click animation for fun interaction
+                    star.addEventListener('click', () => {
+                        gsap.to(star, {
+                            rotation: "+=720",
+                            scale: 1.6,
+                            duration: 0.6,
+                            ease: "power2.out",
+                            yoyo: true,
+                            repeat: 1
+                        });
+                    });
+                }
+            });
+
+            // Logo continuous animation
+            gsap.to('#logo', {
+                rotation: 5,
+                duration: 2,
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut"
+            });
+
+            // Interactive card mouse tracking
+            document.querySelectorAll('.announcement-card').forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    card.style.setProperty('--mouse-x', `${x}px`);
+                    card.style.setProperty('--mouse-y', `${y}px`);
+                });
+
+                // Scroll-triggered animations for cards
+                gsap.fromTo(card, 
+                    { x: Math.random() > 0.5 ? -100 : 100, opacity: 0.5 },
+                    {
+                        x: 0,
+                        opacity: 1,
+                        duration: 1,
+                        ease: "power2.out",
+                        scrollTrigger: {
+                            trigger: card,
+                            start: "top 80%",
+                            end: "bottom 20%",
+                            toggleActions: "play none none reverse"
+                        }
+                    }
+                );
+            });
+
+            // Parallax effect for background elements
+            gsap.to('.morphing-blob', {
+                y: -50,
+                duration: 10,
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut",
+                stagger: 2
+            });
+
+            // Text gradient animation
+            gsap.to('.text-gradient', {
+                backgroundPosition: '200% center',
+                duration: 3,
+                repeat: -1,
+                ease: "none"
+            });
+
+            // Button hover animations
+            document.querySelectorAll('button').forEach(button => {
+                button.addEventListener('mouseenter', () => {
+                    gsap.to(button, {
+                        scale: 1.05,
+                        duration: 0.2,
+                        ease: "power2.out"
+                    });
+                });
+
+                button.addEventListener('mouseleave', () => {
+                    gsap.to(button, {
+                        scale: 1,
+                        duration: 0.2,
+                        ease: "power2.out"
+                    });
+                });
+            });
+
+            // Add some sparkle effects
+            function createSparkle() {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'fixed w-2 h-2 bg-yellow-400 rounded-full pointer-events-none z-50';
+                sparkle.style.left = Math.random() * window.innerWidth + 'px';
+                sparkle.style.top = Math.random() * window.innerHeight + 'px';
+                document.body.appendChild(sparkle);
+
+                gsap.fromTo(sparkle, 
+                    { scale: 0, opacity: 1 },
+                    { 
+                        scale: 1.5, 
+                        opacity: 0, 
+                        duration: 2,
+                        ease: "power2.out",
+                        onComplete: () => sparkle.remove()
+                    }
+                );
+            }
+
+            // Create sparkles periodically
+            setInterval(createSparkle, 3000);
+
+            // Add scroll-based color changes to header
+            ScrollTrigger.create({
+                trigger: "body",
+                start: "top top",
+                end: "bottom bottom",
+                onUpdate: self => {
+                    const progress = self.progress;
+                    const hue = Math.floor(progress * 360);
+                    document.querySelector('#header h1').style.filter = `hue-rotate(${hue}deg)`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -27,12 +27,14 @@ const topExecutives = [
   { icon: User, title: "Vice-President" },
   { icon: UserCheck, title: "President" },
   { icon: FileText, title: "General Secretary" },
+ 
 ]
 
 const cLevelExecutives = [
   { icon: Code, title: "Chief Technology Officer" },
   { icon: Briefcase, title: "Chief Operating Officer" },
   { icon: Megaphone, title: "Chief Marketing Officer" },
+   { icon: GraduationCap, title: "Advisor" },
 ]
 
 // Combine all executives into a single array for the mobile view

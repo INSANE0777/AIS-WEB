@@ -67,6 +67,7 @@ const FloatingSvgBackground: React.FC = () => {
   return <div ref={containerRef} className="absolute inset-0 w-full h-full -z-10 overflow-hidden" />;
 };
 
+
 // --- Helper Components & Hooks ---
 
 interface MagneticButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -368,7 +369,7 @@ export default function JoinUs() {
 
         <section className="form-section mb-12">
           <h2 className="text-3xl font-bold text-black mb-8 text-center">Our Organizational Structure</h2>
-          <div className="bg-white p-4 rounded-2xl border border-black/10 hover:border-black/20 transition-all"><img src="/images/org-chart.avif" alt="AI Society Organizational Chart" className="w-full h-auto object-contain rounded-xl" /></div>
+          <div className="bg-white p-4 rounded-2xl border border-black/10 hover:border-black/20 transition-all"><img src="/images/neworg.jpg" alt="AI Society Organizational Chart" className="w-full h-auto object-contain rounded-xl" /></div>
         </section>
 
         <section className="form-section bg-white p-8 rounded-2xl border border-black/10 hover:border-black/20 transition-all mb-12 group">
