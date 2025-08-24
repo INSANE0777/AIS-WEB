@@ -34,14 +34,11 @@ export default function SpaceFooter() {
     const footer = footerRef.current
     if (!footer || reducedMotion) return
 
-    // SOLVED: Use GSAP Context for proper animation scoping and cleanup.
-    // This prevents animations from one state (e.g., desktop) from "leaking" into another (e.g., mobile).
     const ctx = gsap.context(() => {
       const title = titleRef.current
       const wrapper = footer.querySelector('.footer-content-wrapper')
       if (!title || !wrapper) return;
 
-      // Desktop-only parallax animation
       if (!isMobile) {
         gsap.to(wrapper, {
           yPercent: -10,
@@ -54,12 +51,10 @@ export default function SpaceFooter() {
           },
         })
       } 
-      // SOLVED: Explicitly reset the position on mobile to prevent leftover transforms.
       else {
         gsap.set(wrapper, { yPercent: 0 });
       }
 
-      // Title rotation animation
       gsap.set(title, { transformPerspective: 1000 })
       gsap.to(title, {
         rotationX: isMobile ? 2 : 3,
@@ -70,7 +65,6 @@ export default function SpaceFooter() {
         ease: "sine.inOut",
       })
       
-      // Grid dot animation
       gsap.to(".grid-dot", {
         scale: isMobile ? 1.2 : 1.5,
         opacity: 0.6,
@@ -84,7 +78,6 @@ export default function SpaceFooter() {
         },
       })
       
-      // Social icon float animation
       gsap.to(".social-float", {
         y: isMobile ? -5 : -8,
         rotation: isMobile ? 3 : 4,
@@ -94,9 +87,8 @@ export default function SpaceFooter() {
         ease: "sine.inOut",
         stagger: 0.15,
       })
-    }, footerRef); // Scope the context to the footer element
+    }, footerRef); 
 
-    // SOLVED: Return the cleanup function. GSAP will revert all animations within the context.
     return () => ctx.revert();
     
   }, [isMobile, reducedMotion])
@@ -107,7 +99,6 @@ export default function SpaceFooter() {
     setSubmitMessage("");
 
     try {
-      // Create document in Appwrite database
       await databases.createDocument(
         process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
         process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID!,
@@ -122,7 +113,6 @@ export default function SpaceFooter() {
       setSubmitMessage("Successfully subscribed to newsletter!");
       setEmail('');
       
-      // Clear success message after 3 seconds
       setTimeout(() => {
         setSubmitMessage("");
       }, 3000);
@@ -130,14 +120,12 @@ export default function SpaceFooter() {
     } catch (error: any) {
       console.error('Newsletter signup error:', error);
       
-      // Handle specific error cases
       if (error.code === 409) {
         setSubmitMessage("Email already subscribed!");
       } else {
         setSubmitMessage("Something went wrong. Please try again.");
       }
       
-      // Clear error message after 3 seconds
       setTimeout(() => {
         setSubmitMessage("");
       }, 3000);
@@ -149,20 +137,24 @@ export default function SpaceFooter() {
   return (
     <footer ref={footerRef} className="relative bg-black text-white pt-12 pb-8 px-4 overflow-hidden border-t border-white/20">
       
-      {/* This DIV is the key. -mt-px pulls the content up to hide the footer's own top border. */}
       <div className="footer-content-wrapper -mt-px">
 
         {/* Optimized Animated Grid Background */}
-        <div className="absolute inset-0 opacity-10 sm:opacity-20">
-          {Array.from({ length: isMobile ? 36 : 100 }).map((_, i) => (
-            <div
+        <div className="absolute inset-0 opacity-20 sm:opacity-30">
+          {Array.from({ length: isMobile ? 36 : 120 }).map((_, i) => (
+            <svg
               key={i}
-              className="grid-dot absolute w-0.5 h-0.5 sm:w-1 sm:h-1 bg-white rounded-full"
+              // --- FIX: Increased size to make stars bigger ---
+              className="grid-dot absolute w-2 h-2 sm:w-3 sm:h-3"
               style={{
                 left: `${(i % (isMobile ? 6 : 10)) * (100 / (isMobile ? 6 : 10))}%`,
-                top: `${Math.floor(i / (isMobile ? 6 : 10)) * (100 / (isMobile ? 6 : 10))}%`,
+                top: `${Math.floor(i / (isMobile ? 6 : 10)) * (100 / (isMobile ? 6 : 12))}%`,
               }}
-            />
+              viewBox="0 0 200 200"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M100 0L105.94 94.0603L200 100L105.94 105.94L100 200L94.0603 105.94L0 100L94.0603 94.0603L100 0Z" fill="white"/>
+            </svg>
           ))}
         </div>
 
@@ -248,7 +240,7 @@ export default function SpaceFooter() {
                 <div className="text-center lg:text-right">
                   <div className="text-sm sm:text-lg font-bold">SIGN UP TO OUR NEWSLETTER</div>
                 </div>
-                <form onSubmit={handleNewsletterSubmit} className="relative max-w-sm mx-auto lg:mx-0 lg:ml-auto">
+                <form onSubmit={handleNewsletterSubmit} className="relative max-w-sm lg:max-w-none mx-auto lg:mx-0 lg:ml-auto">
                   <input
                     type="email"
                     value={email}
