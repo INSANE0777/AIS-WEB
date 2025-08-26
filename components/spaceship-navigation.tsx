@@ -15,7 +15,6 @@ import {
   Youtube,
 } from "lucide-react"
 import { gsap } from "gsap"
-import { MorphSVGPlugin } from "gsap/MorphSVGPlugin"
 
 // A simple hook to detect mobile screen sizes with debouncing
 const useIsMobile = (breakpoint = 768) => {
@@ -27,7 +26,7 @@ const useIsMobile = (breakpoint = 768) => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current)
       timeoutRef.current = setTimeout(() => {
         setIsMobile(window.innerWidth < breakpoint)
-      }, 100)
+      }, 100) // Debounce resize events
     }
     checkScreenSize()
     window.addEventListener("resize", checkScreenSize, { passive: true })
@@ -69,13 +68,13 @@ export default function SpaceshipNavigation() {
   const hubPositionRef = useRef({ x: 0, y: 0 });
   const navigationTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const navIconRef = useRef<SVGSVGElement>(null);
+  const topBarRef = useRef<SVGRectElement>(null);
+  const middleBarRef = useRef<SVGRectElement>(null);
+  const bottomBarRef = useRef<SVGRectElement>(null);
+  const hamburgerTimeline = useRef<gsap.core.Timeline | null>(null);
   const rippleTimeline = useRef<gsap.core.Timeline | null>(null);
 
-  const INITIAL_SHAPE = "M100 0H0V100H100V200H200V100H100V0Z";
-  const HOVER_SHAPE = "M0 0H50V50H0V0ZM100 50H50V100H0V150H50V200H100V150H150V200H200V150H150V100H200V50H150V0H100V50ZM100 100H150V50H100V100ZM100 100V150H50V100H100Z";
-  const OPEN_SHAPE = "M0 0H66.6667V66.6667H0V0ZM133.333 66.6667H66.6667V133.333H0V200H66.6667V133.333H133.333V200H200V133.333H133.333V66.6667ZM133.333 66.6667H200V0H133.333V66.6667Z";
-
+  // Memoized responsive constants to prevent recalculation
   const dimensions = useMemo(() => ({
     navSize: isMobile ? 340 : 500,
     navItemRadius: isMobile ? 120 : 180,
@@ -89,13 +88,15 @@ export default function SpaceshipNavigation() {
     rippleScale: isMobile ? 4.5 : 6
   }), [isMobile])
 
+  // Memoized position calculator
   const getItemPosition = useCallback((angle: number, radius: number) => ({
     left: `calc(50% + ${radius * Math.cos(angle*Math.PI/180)}px)`,
     top: `calc(50% + ${radius * Math.sin(angle*Math.PI/180)}px)`,
     transform: 'translate(-50%, -50%)',
-    willChange: 'transform'
+    willChange: 'transform' // Optimize for transforms
   }), [])
 
+  // Memoized pie slice path generator
   const createPieSlice = useCallback((angle: number, rO: number, rI: number) => {
     const s = angle - 36, e = angle + 36
     const sr = (s * Math.PI) / 180, er = (e * Math.PI) / 180
@@ -107,33 +108,20 @@ export default function SpaceshipNavigation() {
   }, [])
 
   useEffect(() => {
-    gsap.registerPlugin(MorphSVGPlugin);
-    const iconPath = navIconRef.current?.querySelector("#nav-icon-path");
-    const buttonElement = navIconRef.current?.parentElement;
-
-    if (!iconPath || !buttonElement) return;
-
-    gsap.set(iconPath, { force3D: true });
-
-    // Timeline for the hover animation (only when closed)
-    const hoverTimeline = gsap.timeline({ paused: true })
-      .to(iconPath, {
-        morphSVG: HOVER_SHAPE,
-        fill: '#4B5563', // Dark gray on hover
-        duration: 0.4,
-        ease: 'power2.out'
-      });
-      
-    const handleMouseEnter = () => {
-      if (!isOpen) hoverTimeline.play();
-    };
-    const handleMouseLeave = () => {
-      hoverTimeline.reverse();
-    };
+    // Use will-change for better performance
+    gsap.set([topBarRef.current, middleBarRef.current, bottomBarRef.current], { 
+      transformOrigin: '50% 50%',
+      force3D: true // Force hardware acceleration
+    });
     
-    buttonElement.addEventListener('mouseenter', handleMouseEnter);
-    buttonElement.addEventListener('mouseleave', handleMouseLeave);
-    
+    hamburgerTimeline.current = gsap.timeline({ paused: true })
+      .to([topBarRef.current, bottomBarRef.current], { fill: '#FFFFFF', duration: 0.4 }, 0)
+      .to(middleBarRef.current, { scaleX: 0, opacity: 0, duration: 0.2, ease: 'power2.in' }, 0)
+      .to(topBarRef.current, { y: 10, duration: 0.4, ease: 'power3.inOut' }, 0)
+      .to(bottomBarRef.current, { y: -10, duration: 0.4, ease: 'power3.inOut' }, 0)
+      .to(topBarRef.current, { rotation: 45, duration: 0.4, ease: 'power3.out' }, 0.2)
+      .to(bottomBarRef.current, { rotation: -45, duration: 0.4, ease: 'power3.out' }, 0.2);
+
     rippleTimeline.current = gsap.timeline({ paused: true, repeat: -1 });
     rippleTimeline.current.fromTo(".ripple-circle", 
         { scale: 1, opacity: 0.5, force3D: true },
@@ -143,36 +131,19 @@ export default function SpaceshipNavigation() {
             duration: 5,
             stagger: 1.5,
             ease: "power1.out",
-            force3D: true
+            force3D: true // Hardware acceleration
         }
     );
-
-    return () => {
-        buttonElement.removeEventListener('mouseenter', handleMouseEnter);
-        buttonElement.removeEventListener('mouseleave', handleMouseLeave);
-    }
-  }, [isOpen, dimensions.rippleScale, HOVER_SHAPE]);
+  }, [dimensions.rippleScale]);
 
   useEffect(() => {
-    const iconPath = navIconRef.current?.querySelector("#nav-icon-path");
-    if (!iconPath) return;
-    
-    // THE FIX: Use explicit animations instead of a reversible timeline
     if (isOpen) {
-      // Pause any ongoing hover animation before opening
-      gsap.getTweensOf(iconPath).forEach(tween => tween.pause());
-      
-      gsap.to(iconPath, {
-        morphSVG: OPEN_SHAPE,
-        fill: '#FFFFFF',
-        duration: 0.6,
-        ease: 'power3.inOut'
-      });
-
+      hamburgerTimeline.current?.play();
       rippleTimeline.current?.play(0);
       setHubPosition({ x: 0, y: 0 });
       hubPositionRef.current = { x: 0, y: 0 };
       
+      // Batch DOM updates for better performance
       gsap.set([".nav-overlay", ".grid-line", ".central-hub", ".nav-item", ".social-icon"], { force3D: true });
       
       gsap.to(".nav-overlay", { autoAlpha: 1, duration: 0.5, ease: "power3.out" });
@@ -181,17 +152,11 @@ export default function SpaceshipNavigation() {
       gsap.fromTo(".nav-item", { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, stagger: 0.1, ease: "back.out(1.7)", delay: 0.4 });
       gsap.fromTo(".social-icon", { y: -50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, stagger: 0.1, ease: "power3.out", delay: 0.6 });
     } else {
-      gsap.to(iconPath, {
-        morphSVG: INITIAL_SHAPE, // Always return to the initial shape
-        fill: 'black',
-        duration: 0.6,
-        ease: 'power3.inOut'
-      });
-
+      hamburgerTimeline.current?.reverse();
       rippleTimeline.current?.pause().progress(0);
       gsap.to(".nav-overlay", { autoAlpha: 0, duration: 0.3, ease: "power3.in" });
     }
-  }, [isOpen, INITIAL_SHAPE, OPEN_SHAPE]);
+  }, [isOpen]);
 
   const clearNavigationTimer = useCallback(() => {
     if (navigationTimerRef.current) clearTimeout(navigationTimerRef.current);
@@ -214,6 +179,7 @@ export default function SpaceshipNavigation() {
     gsap.killTweensOf(hubPositionRef.current);
   }, []);
 
+  // Optimized drag handler with requestAnimationFrame for smooth mobile performance
   const handleDragMove = useCallback((e: React.MouseEvent | React.TouchEvent) => {
     if (!isDragging || !navContainerRef.current) return;
 
@@ -271,6 +237,7 @@ export default function SpaceshipNavigation() {
     });
   }, [isDragging, clearNavigationTimer]);
 
+  // Passive event listeners for better mobile performance
   useEffect(() => {
     const moveHandler = handleDragMove as any;
     const endHandler = handleDragEnd as any;
@@ -288,6 +255,7 @@ export default function SpaceshipNavigation() {
     };
   }, [isDragging, handleDragMove, handleDragEnd]);
 
+  // Memoized grid lines to prevent re-rendering
   const gridLines = useMemo(() => (
     <>
       {Array.from({ length: 20 }).map((_, i) => (
@@ -299,6 +267,7 @@ export default function SpaceshipNavigation() {
     </>
   ), [])
 
+  // Memoized social icons
   const socialIcons = useMemo(() => (
     socialLinks.map((social, index) => {
       const Icon = social.icon;
@@ -313,11 +282,14 @@ export default function SpaceshipNavigation() {
   return (
     <>
       <button onClick={toggleMenu} className="fixed top-4 right-4 sm:top-8 sm:right-8 z-50 w-16 h-16 flex items-center justify-center focus:outline-none group" aria-label="Toggle Navigation">
-        <svg ref={navIconRef} width="32" height="32" viewBox="0 0 200 200" className="overflow-visible" style={{ willChange: 'transform' }}>
-          <path id="nav-icon-path" d={INITIAL_SHAPE} fill="black" />
+        <svg width="32" height="32" viewBox="0 0 32 32" className="overflow-visible" style={{ willChange: 'transform' }}>
+          <rect ref={topBarRef} width="32" height="4" y="4" fill="black" rx="2" />
+          <rect ref={middleBarRef} width="32" height="4" y="14" fill="black" rx="2" />
+          <rect ref={bottomBarRef} width="32" height="4" y="24" fill="black" rx="2" />
         </svg>
       </button>
 
+      {/* Optimized overlay with better backdrop-filter performance */}
       <div className="nav-overlay fixed inset-0 z-40 bg-black/75 backdrop-blur-2xl invisible" style={{ willChange: 'auto' }}>
         <div className="absolute inset-0 overflow-hidden">
           {gridLines}

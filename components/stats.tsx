@@ -49,11 +49,11 @@ const technicalDepts = [
 ]
 
 const nonTechnicalDepts = [
-  { icon: Share2, title: "Social Media Managers" },
-  { icon: Palette, title: "Designers" },
-  { icon: Calendar, title: "Event Managers" },
-  { icon: Camera, title: "Video Editors // Photographers" },
-  { icon: Mic, title: "Public Speakers // Sponsorship Outreach" },
+  { icon: Share2, title: "Management Team" },
+  { icon: Palette, title: "Outreach Team" },
+  { icon: Calendar, title: "Creative Team" },
+  { icon: Camera, title: "Multimedia Team" },
+  { icon: Mic, title: "Editorial Team" },
 ]
 
 // --- Skeleton Loader Component (unchanged) ---
@@ -281,7 +281,7 @@ export default function AISocietyOrgChart() {
                   <div className="inline-flex items-center justify-center w-12 md:w-16 h-12 md:h-16 bg-black text-white rounded-full mb-3 md:mb-4">
                     <GraduationCap size={18} className="md:w-6 md:h-6" />
                   </div>
-                  <h3 className="text-lg md:text-2xl font-black text-black mb-2">Mentors</h3>
+                  <h3 className="text-lg md:text-2xl font-black text-black mb-2">Mentors(3rd/ 4th Year Students+Faculties)</h3>
                   <p className="text-black/60 font-medium text-sm md:text-base">(3rd/ 4th Year Students)</p>
                 </div>
               </div>
