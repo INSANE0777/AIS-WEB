@@ -192,7 +192,7 @@ export default function SpaceFooter() {
                 </div>
                 <div className="grid grid-cols-2 lg:grid-cols-1 gap-2 text-xs sm:text-sm text-white/60">
                   <Link href="/" className="hover:text-white transition-colors cursor-pointer">HOME</Link>
-                  <Link href="/about" className="hover:text-white transition-colors cursor-pointer">ABOUT</Link>
+                  <Link href="/join" className="hover:text-white transition-colors cursor-pointer">JOIN US</Link>
                   <Link href="/projects" className="hover:text-white transition-colors cursor-pointer">PROJECTS</Link>
                   <Link href="/announcements" className="hover:text-white transition-colors cursor-pointer">ANNOUNCEMENTS</Link>
                   <Link href="/events" className="hover:text-white transition-colors cursor-pointer">EVENTS</Link>
