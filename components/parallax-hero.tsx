@@ -161,7 +161,7 @@ export default function ParallaxHero() {
       {!isMobile && (<div ref={techLogosRef} className="absolute inset-0 pointer-events-none"><TechLogo className="tech-logo-github absolute top-20 left-20"><GitHubLogo isMobile={false} /></TechLogo><TechLogo className="tech-logo-hf absolute top-32 right-32"><HuggingFaceLogo isMobile={false} /></TechLogo><TechLogo className="tech-logo-tf absolute bottom-40 left-32"><TensorFlowLogo isMobile={false} /></TechLogo><TechLogo className="tech-logo-pytorch absolute bottom-32 right-24"><PyTorchLogo isMobile={false} /></TechLogo><TechLogo className="tech-logo-keras absolute top-1/2 left-16"><KerasLogo isMobile={false} /></TechLogo></div>)}
       <div ref={backgroundRef} className="absolute inset-0 parallax-element"><div className="absolute top-20 left-2 sm:left-10 w-1 h-1 sm:w-2 sm:h-2 bg-black rounded-full opacity-20 animate-pulse float-1"></div><div className="absolute top-40 right-2 sm:right-20 w-2 h-2 sm:w-3 sm:h-3 bg-black rounded-full opacity-15 animate-bounce float-2"></div><div className="absolute bottom-40 left-2 sm:left-1/4 w-1 h-1 bg-black rounded-full opacity-25 animate-ping"></div><div className="absolute bottom-20 right-2 sm:right-10 w-1 h-1 sm:w-2 sm:h-2 bg-black rounded-full opacity-10 animate-pulse"></div></div>
 
-      <div className={`relative z-10 text-center w-full max-w-6xl mx-auto px-4 ${isMobile ? 'pt-20' : 'pt-20'}`}>
+      <div className={`relative z-10 text-center w-full max-w-6xl mx-auto ${isMobile ? 'pl-8 pr-4 pt-20' : 'px-4 pt-20'}`}>
         
         <div ref={logoRef} className="sm:hidden w-full flex justify-center items-center gap-6 mb-4">
           <img src="/images/cabinet-logo.png" alt="Student Cabinet Logo" className="object-contain w-24 h-24" />
