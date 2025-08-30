@@ -24,10 +24,10 @@ const CustomStar = () => (
   </svg>
 );
 
-// --- CHANGED: Updated teamData with new executive roles ---
 const teamData = {
   executives: {
     members: [
+      // Top Tier
       {
         name: "Samaksh Tyagi",
         role: "President",
@@ -40,14 +40,15 @@ const teamData = {
       },
       {
         name: "Mann Acharya",
-        role: "Mentor / Ex-Chairperson",
+        role: "General Secretary",
         avatar: "/placeholder.svg?height=128&width=128&query=experienced+wise+mentor",
       },
       {
-        name: "WAIT",
-        role: "Chief Technology Officer",
-        avatar: "/placeholder.svg?height=128&width=128&query=tech+lead+focused",
+        name: "WAIT-3",
+        role: "Advisor",
+        avatar: "/placeholder.svg?height=128&width=128&query=creative+marketing+person",
       },
+      // Centered C-Suite
       {
         name: "WAIT-1",
         role: "Chief Operating Officer",
@@ -57,6 +58,11 @@ const teamData = {
         name: "WAIT-2",
         role: "Chief Marketing Officer",
         avatar: "/placeholder.svg?height=128&width=128&query=creative+marketing+person",
+      },
+      {
+        name: "WAIT",
+        role: "Chief Technology Officer",
+        avatar: "/placeholder.svg?height=128&width=128&query=tech+lead+focused",
       },
     ],
   },
@@ -164,6 +170,10 @@ export default function EnhancedTeamCards() {
 
   }, [])
 
+  // Splitting executive members for layout purposes
+  const topExecutives = teamData.executives.members.slice(0, 4);
+  const centralOfficers = teamData.executives.members.slice(4);
+
   return (
     <section ref={sectionRef} className="py-24 md:py-32 px-4 bg-white relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,_rgba(0,0,0,0.02)_0%,_transparent_50%)]"></div>
@@ -188,9 +198,10 @@ export default function EnhancedTeamCards() {
 
         <div className="mb-16 md:mb-20">
           <h3 className="text-3xl font-bold text-black mb-8 text-center">Executive Leadership</h3>
-          {/* --- CHANGED: Updated grid layout for better responsiveness --- */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {teamData.executives.members.map((member) => (
+          
+          {/* Top Row of Executives */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {topExecutives.map((member) => (
               <div key={member.name} className="team-card will-change-transform">
                 <div className="card-content w-full h-full bg-white/70 p-8 rounded-2xl border border-gray-300 backdrop-blur-md text-center relative overflow-hidden">
                    <div className="card-glare absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_var(--mx)_var(--my),rgba(0,0,0,0.1),rgba(0,0,0,0)_40%)] opacity-0 pointer-events-none"></div>
@@ -207,6 +218,29 @@ export default function EnhancedTeamCards() {
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Centered Row for CMO, CTO, and COO */}
+          <div className="mt-8 flex justify-center">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+              {centralOfficers.map((member) => (
+                <div key={member.name} className="team-card will-change-transform">
+                  <div className="card-content w-full h-full bg-white/70 p-8 rounded-2xl border border-gray-300 backdrop-blur-md text-center relative overflow-hidden">
+                    <div className="card-glare absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_var(--mx)_var(--my),rgba(0,0,0,0.1),rgba(0,0,0,0)_40%)] opacity-0 pointer-events-none"></div>
+                    <div className="card-avatar relative mb-6">
+                      <div className="w-32 h-32 mx-auto rounded-full overflow-hidden border-4 border-black relative">
+                        <img src={member.avatar} alt={member.name} className="w-full h-full object-cover" />
+                      </div>
+                      <div className="card-icon absolute -top-2 -right-2 w-10 h-10 bg-black border-2 border-white rounded-full flex items-center justify-center">
+                        <Crown size={20} className="text-white" />
+                      </div>
+                    </div>
+                    <h3 className="card-title text-2xl font-bold text-black mb-2">{member.name}</h3>
+                    <p className="card-role text-lg text-black mb-3 font-semibold">{member.role}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
