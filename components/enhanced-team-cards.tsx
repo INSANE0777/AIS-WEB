@@ -29,40 +29,40 @@ const teamData = {
     members: [
       // Top Tier
       {
-        name: "Samaksh Tyagi",
+        name: "Afjal Hussein",
         role: "President",
-        avatar: "/placeholder.svg?height=128&width=128&query=professional+man+with+glasses",
+        avatar: "/images/AFJAL.jpg",
       },
       {
-        name: "Aviral Jain",
+        name: "Ayush Tandon",
         role: "Vice President",
-        avatar: "/placeholder.svg?height=128&width=128&query=professional+man+in+suit",
+        avatar: "/images/AYUSH.jpg",
       },
       {
-        name: "Mann Acharya",
+        name: "Aparna Singh",
         role: "General Secretary",
-        avatar: "/placeholder.svg?height=128&width=128&query=experienced+wise+mentor",
+        avatar: "/images/APARNA.jpg",
       },
       {
-        name: "WAIT-3",
+        name: "Arisha Ali",
         role: "Advisor",
-        avatar: "/placeholder.svg?height=128&width=128&query=creative+marketing+person",
+        avatar: "/images/ARISHA.jpg",
       },
-      // Centered C-Suite
+     
       {
-        name: "WAIT-1",
+        name: "Devansh Tyagi",
         role: "Chief Operating Officer",
-        avatar: "/placeholder.svg?height=128&width=128&query=professional+woman+organized",
+        avatar: "/images/DEVANSH.jpg",
       },
       {
-        name: "WAIT-2",
+        name: "Aviral Gupta",
         role: "Chief Marketing Officer",
-        avatar: "/placeholder.svg?height=128&width=128&query=creative+marketing+person",
+        avatar: "/images/AVIRAL.jpg",
       },
       {
-        name: "WAIT",
+        name: "Gyanendra Prakash",
         role: "Chief Technology Officer",
-        avatar: "/placeholder.svg?height=128&width=128&query=tech+lead+focused",
+        avatar: "/images/GYANENDRA.jpg",
       },
     ],
   },

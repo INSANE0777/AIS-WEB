@@ -2,6 +2,7 @@
 
 import type React from "react"
 import { useEffect, useRef, useState } from "react"
+import { createPortal } from "react-dom" // <-- Import createPortal
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -15,6 +16,25 @@ import {
 } from "lucide-react"
 import toast from "react-hot-toast"
 import { databases, ID } from "./appwrite/app";
+
+// --- NEW: Portal Component ---
+// This component teleports its children to the end of the document body,
+// which is essential for modals to break out of parent stacking contexts.
+const Portal: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
+
+  return createPortal(children, document.body);
+};
+
 
 // --- Floating SVG Background Component ---
 const FloatingSvgBackground: React.FC = () => {
@@ -233,6 +253,25 @@ export default function JoinUs() {
     setValue("department", "")
   }
 
+  // --- Robust Modal Scroll Lock Effect ---
+  useEffect(() => {
+    if (isConfirming) {
+      const scrollY = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%'; // Prevent content shift
+      
+      return () => {
+        const scrollYRestored = document.body.style.top;
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        window.scrollTo(0, parseInt(scrollYRestored || '0') * -1);
+      };
+    }
+  }, [isConfirming]);
+
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const savedFormData = localStorage.getItem("ais-registration-form")
@@ -333,52 +372,55 @@ export default function JoinUs() {
     <div ref={pageRef} className="pt-32 pb-20 px-4 min-h-screen relative overflow-hidden bg-gray-50">
       <FloatingSvgBackground />
 
-      <AnimatePresence>
-        {isConfirming && dataToSubmit && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50"
-            onClick={() => setIsConfirming(false)}
-          >
+      {/* MODAL IS NOW WRAPPED IN THE PORTAL */}
+      <Portal>
+        <AnimatePresence>
+          {isConfirming && dataToSubmit && (
             <motion.div
-              initial={{ scale: 0.9, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 20 }}
-              transition={{ type: "spring", stiffness: 300, damping: 25 }}
-              className="bg-white rounded-2xl p-8 max-w-lg w-full shadow-2xl text-center"
-              onClick={(e) => e.stopPropagation()}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+              onClick={() => setIsConfirming(false)}
             >
-              <h3 className="text-2xl font-bold text-black mb-4">Confirm Your Application</h3>
-              <p className="text-black/70 mb-2">Please confirm that you want to apply for the:</p>
-              <p className="text-lg font-semibold text-black bg-gray-100 py-2 px-4 rounded-lg inline-block mb-6">
-                {dataToSubmit.department}
-              </p>
-              <p className="text-sm text-black/60 mb-8">Make sure all your details are correct before submitting. This action cannot be undone.</p>
-              <div className="flex justify-center gap-4">
-                <MagneticButton
-                  onClick={() => setIsConfirming(false)}
-                  className="px-8 py-3 bg-gray-200 text-black rounded-full font-semibold hover:bg-gray-300 transition-colors"
-                >
-                  Cancel
-                </MagneticButton>
-                <MagneticButton
-                  onClick={onFinalSubmit}
-                  disabled={submissionStatus === "loading"}
-                  className="px-8 py-3 bg-black text-white rounded-full font-semibold hover:bg-black/80 transition-colors flex items-center justify-center space-x-2 disabled:bg-gray-500"
-                >
-                  {submissionStatus === "loading" ? (
-                    <><LoaderIcon className="animate-spin" size={20} /><span>Submitting...</span></>
-                  ) : (
-                    "Confirm & Submit"
-                  )}
-                </MagneticButton>
-              </div>
+              <motion.div
+                initial={{ scale: 0.9, y: 20 }}
+                animate={{ scale: 1, y: 0 }}
+                exit={{ scale: 0.9, y: 20 }}
+                transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                className="bg-white rounded-2xl p-8 max-w-lg w-full shadow-2xl text-center"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <h3 className="text-2xl font-bold text-black mb-4">Confirm Your Application</h3>
+                <p className="text-black/70 mb-2">Please confirm that you want to apply for the:</p>
+                <p className="text-lg font-semibold text-black bg-gray-100 py-2 px-4 rounded-lg inline-block mb-6">
+                  {dataToSubmit.department}
+                </p>
+                <p className="text-sm text-black/60 mb-8">Make sure all your details are correct before submitting. This action cannot be undone.</p>
+                <div className="flex justify-center gap-4">
+                  <MagneticButton
+                    onClick={() => setIsConfirming(false)}
+                    className="px-8 py-3 bg-gray-200 text-black rounded-full font-semibold hover:bg-gray-300 transition-colors"
+                  >
+                    Cancel
+                  </MagneticButton>
+                  <MagneticButton
+                    onClick={onFinalSubmit}
+                    disabled={submissionStatus === "loading"}
+                    className="px-8 py-3 bg-black text-white rounded-full font-semibold hover:bg-black/80 transition-colors flex items-center justify-center space-x-2 disabled:bg-gray-500"
+                  >
+                    {submissionStatus === "loading" ? (
+                      <><LoaderIcon className="animate-spin" size={20} /><span>Submitting...</span></>
+                    ) : (
+                      "Confirm & Submit"
+                    )}
+                  </MagneticButton>
+                </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>
+      </Portal>
 
       <div className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20 cursor-pointer hover:scale-110 transition-transform duration-300">
         <img src="/images/BIAS.png" alt="AI Society Logo" className="w-12 h-12 sm:w-16 sm:h-16 object-contain drop-shadow-lg" />
