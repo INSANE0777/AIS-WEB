@@ -39,9 +39,9 @@ const teamData = {
         avatar: "/images/AYUSH.jpg",
       },
       {
-        name: "Aparna Singh",
+        name: "Devansh Tyagi",
         role: "General Secretary",
-        avatar: "/images/APARNA.jpg",
+        avatar: "/images/DEVANSH.jpg",
       },
       {
         name: "Arisha Ali",
@@ -50,9 +50,9 @@ const teamData = {
       },
      
       {
-        name: "Devansh Tyagi",
+        name: "Kriti Sharma",
         role: "Chief Operating Officer",
-        avatar: "/images/DEVANSH.jpg",
+        avatar: "/images/KRITI.jpg",
       },
       {
         name: "Aviral Gupta",
@@ -68,18 +68,20 @@ const teamData = {
   },
   technical: {
     departments: {
-      "Natural Language Processing": ["Madhav Gupta", "Sanya Wadhawan"],
-      "Reinforcement Learning": ["Afjal Hussein", "Gyanendra Prakash"],
-      "Computer Vision": ["Mayank Kumar", "Sukant Aryan"],
-      "Generative AI": ["Aniya Tyagi", "Archit Ojha"],
+      "Natural Language Processing": ["Jackiv Garg", "Ohm Gupta"],
+      "Reinforcement Learning": ["Saatvik Sharma", "Someone"],
+      "Computer Vision": ["Himanshu Shekhar", "Tanish Ramgopal"],
+      "Generative AI": ["Pranav Kumar", "Sneh Gupta"],
+      "Research":["Avishi Mishra","Arpit Bhardwaj"]
     },
   },
   community: {
     departments: {
-      "Social Media": ["Anvesh Mishra", "Palak Virk"],
-      "Design Team": ["Dhruv Kumar", "Pragyan Pant"],
-      "Event Management": ["Arisha Ali", "Anshika Agrahari"],
-      "Content Creation": ["Shruti Pandey", "Raghav Karnatak"],
+      "Social Media": ["Siddhi Sanap", "Someone"],
+      "Design Team": ["Aditi Garg", "Aashima Makani"],
+      "Management": ["Samridhi Agrawal", "Lakshay Khasa"],
+      "Pr/Outreach": ["Ayushka Mandal", "Sarbojit Das", "Vamika Singh"],
+      "Multimedia": ["Krishna Goyal", "Someone"],
     },
   },
 }
