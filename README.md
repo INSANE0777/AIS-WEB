@@ -6,7 +6,7 @@ A modern, interactive website for the Artificial Intelligence Society at Bennett
 
 ## 🚀 Live Demo
 
-Visit our website: [ais-bennett.com](https://ai-society.club)
+Visit our website: [ai-society.club](https://ai-society.club)
 
 ## 📋 Table of Contents
 
