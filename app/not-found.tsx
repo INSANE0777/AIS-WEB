@@ -303,7 +303,7 @@ function CircleAnimation() {
 
       const context = canvas.getContext("2d")
       if (context) {
-        // @ts-expect-error reset exists in modern canvases
+      
         context.reset?.()
       }
 
