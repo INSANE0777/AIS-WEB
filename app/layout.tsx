@@ -7,7 +7,7 @@ import "./globals.css"
 import SpaceshipNavigation from "@/components/spaceship-navigation"
 import SpaceFooter from "@/components/space-footer"
 import PageTransition from "@/components/page-transition"
-import FluidGradient from "@/components/fluid-gradient"
+
 import RightScrollProgress from "@/components/right-scroll-progress"
 import { ReactLenis } from "lenis/react"
 import CustomCursor from "@/components/cutom-cursor"
@@ -42,7 +42,7 @@ export default function RootLayout({
         <ReactLenis root>
           <RightScrollProgress />
           <div className="fixed inset-0 z-40 pointer-events-none">
-            <FluidGradient />
+          
           </div>
           
           {/* Keep SpaceshipNavigation outside of the main content that transitions */}

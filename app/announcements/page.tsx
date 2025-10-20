@@ -19,7 +19,7 @@ import {
 } from "lucide-react"
 import TextReveal from "@/components/text-reveal"
 import InteractiveCard from "@/components/InteractiveCard"
-import FluidGradient from "@/components/fluid-gradient"
+
 
 const announcements = [
   { id: 1, type: "urgent", title: "HackAI 2025 Registration Extended", description: "Due to overwhelming response, we've extended the registration deadline for HackAI 2025 by one week.", date: "2025-01-15", time: "11:59 PM", icon: Trophy, color: "from-red-500 to-orange-500" },
@@ -153,7 +153,7 @@ export default function Announcements() {
       ref={pageRef}
       className="pt-32 pb-20 px-4 min-h-screen relative overflow-hidden"
     >
-      <FluidGradient />
+      
 
       <div className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20 cursor-pointer hover:scale-110 transition-transform duration-300">
         <img
