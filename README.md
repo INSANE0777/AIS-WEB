@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🌟 AIS-WEB
+# ![AIS-WEB](./readme_assets/ais-logo.png)
 
 ### AI Society - Bennett University Official Website
 
