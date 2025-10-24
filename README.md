@@ -679,7 +679,7 @@ If you find this project useful, please consider giving it a star ⭐
 
 _Training Minds, One Epoch at a Time_ 🧠✨
 
-![GitHub stars](https://img.shields.io/github/stars/your-username/AIS-WEB?style=social)
-![GitHub forks](https://img.shields.io/github/forks/your-username/AIS-WEB?style=social)
+![GitHub stars](https://img.shields.io/github/stars/INSANE0777/AIS-WEB?style=social)
+![GitHub forks](https://img.shields.io/github/forks/INSANE0777/AIS-WEB?style=social)
 
 </div>
