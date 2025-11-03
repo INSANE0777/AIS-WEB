@@ -7,33 +7,15 @@ import { MorphSVGPlugin } from "gsap/MorphSVGPlugin"
 import { DrawSVGPlugin } from "gsap/DrawSVGPlugin"
 import { MotionPathPlugin } from "gsap/MotionPathPlugin"
 
-import Image from "next/image"
 import {
   Megaphone,
-  Calendar,
-  Clock,
   Star,
-  AlertCircle,
-  Trophy,
-  Zap,
 } from "lucide-react"
 import TextReveal from "@/components/text-reveal"
 import InteractiveCard from "@/components/InteractiveCard"
 
 
-const announcements = [
-  { id: 1, type: "urgent", title: "HackAI 2025 Registration Extended", description: "Due to overwhelming response, we've extended the registration deadline for HackAI 2025 by one week.", date: "2025-01-15", time: "11:59 PM", icon: Trophy, color: "from-red-500 to-orange-500" },
-  { id: 2, type: "event", title: "Guest Lecture: Future of AI", description: "Join us for an exclusive lecture by Dr. Sarah Chen, AI Research Director at Google DeepMind.", date: "2025-01-20", time: "3:00 PM", icon: Star, color: "from-blue-500 to-purple-500" },
-  { id: 3, type: "opportunity", title: "Research Internship Applications Open", description: "Apply for summer research internships with our partner companies and research institutions.", date: "2025-01-25", time: "5:00 PM", icon: Zap, color: "from-green-500 to-teal-500" },
-  { id: 4, type: "general", title: "New AI Lab Equipment Arrival", description: "State-of-the-art GPU clusters and quantum computing simulators now available for member projects.", date: "2025-01-10", time: "9:00 AM", icon: AlertCircle, color: "from-purple-500 to-pink-500" },
-]
-
-const spillColorMap: { [key: string]: string } = {
-  urgent: "rgba(239, 68, 68, 0.15)",
-  event: "rgba(59, 130, 246, 0.15)",
-  opportunity: "rgba(16, 185, 129, 0.15)",
-  general: "rgba(168, 85, 247, 0.15)",
-}
+const announcements: never[] = []
 
 export default function Announcements() {
   const pageRef = useRef<HTMLDivElement>(null)
@@ -51,19 +33,6 @@ export default function Announcements() {
       { y: 100, opacity: 0 },
       { y: 0, opacity: 1, duration: 1.2, ease: "power3.out" },
     )
-      .fromTo(
-        ".announcement-card",
-        { y: 50, opacity: 0, scale: 0.9 },
-        {
-          y: 0,
-          opacity: 1,
-          scale: 1,
-          duration: 0.8,
-          stagger: 0.15,
-          ease: "back.out(1.7)",
-        },
-        "-=0.8",
-      )
       // Animate the star shapes drawing themselves on load
       .fromTo(
         ".float-element path",
@@ -248,65 +217,19 @@ export default function Announcements() {
           </p>
         </div>
 
-        <div className="space-y-8">
-          {announcements.map((announcement) => {
-            const Icon = announcement.icon
-            return (
-              <InteractiveCard
-                key={announcement.id}
-                spillColor={spillColorMap[announcement.type]}
-                className="announcement-card bg-white/90 backdrop-blur-sm rounded-2xl border border-black/10 transition-all duration-300 group-hover:border-black/30 group-hover:shadow-xl"
-              >
-                <div className="p-6 sm:p-8">
-                  <div className="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-6">
-                    <div
-                      className={`w-16 h-16 bg-gradient-to-br ${announcement.color} rounded-full flex items-center justify-center flex-shrink-0 shadow-lg`}
-                    >
-                      <Icon size={24} className="text-white" />
-                    </div>
-                    <div className="flex-1 w-full sm:w-auto">
-                      <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-x-4 gap-y-2 mb-3">
-                        <span
-                          className={`px-3 py-1 text-xs font-semibold rounded-full uppercase tracking-wider ${
-                            announcement.type === "urgent"
-                              ? "bg-red-100 text-red-800"
-                              : announcement.type === "event"
-                              ? "bg-blue-100 text-blue-800"
-                              : announcement.type === "opportunity"
-                              ? "bg-green-100 text-green-800"
-                              : "bg-gray-100 text-gray-800"
-                          }`}
-                        >
-                          {announcement.type}
-                        </span>
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-1 sm:space-y-0 sm:space-x-4 text-black/60 text-sm">
-                          <div className="flex items-center space-x-1">
-                            <Calendar size={14} />
-                            <span>{announcement.date}</span>
-                          </div>
-                          <div className="flex items-center space-x-1">
-                            <Clock size={14} />
-                            <span>{announcement.time}</span>
-                          </div>
-                        </div>
-                      </div>
-                      <h3 className="text-xl sm:text-2xl font-bold text-black mb-3 break-words">
-                        {announcement.title}
-                      </h3>
-                      <p className="text-black/70 leading-relaxed text-sm sm:text-base">
-                        {announcement.description}
-                      </p>
-                    </div>
-                    {announcement.type === "urgent" && (
-                      <div className="flex-shrink-0 self-start sm:self-center">
-                        <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </InteractiveCard>
-            )
-          })}
+        <div className="text-center py-20">
+          <InteractiveCard
+            className="bg-white/90 backdrop-blur-sm rounded-2xl border border-black/10 p-12 sm:p-16 max-w-2xl mx-auto"
+            spillColor="rgba(0, 0, 0, 0.05)"
+          >
+            <Megaphone size={48} className="text-black/30 mx-auto mb-6" />
+            <h3 className="text-2xl sm:text-3xl font-bold text-black mb-4">
+              No Announcements Yet
+            </h3>
+            <p className="text-black/60 text-base sm:text-lg leading-relaxed">
+              Check back soon for updates, events, and opportunities from the AI Society.
+            </p>
+          </InteractiveCard>
         </div>
 
         <div className="mt-20 text-center">
