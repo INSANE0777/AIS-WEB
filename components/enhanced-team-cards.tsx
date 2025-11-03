@@ -29,14 +29,14 @@ const teamData = {
     members: [
       // Top Tier
       {
+        name: "Ayush Tandon",
+        role: "Vice President",
+        avatar: "/images/ayush.jpg",
+      },
+      {
         name: "Afjal Hussein",
         role: "President",
         avatar: "/images/AFJAL.jpg",
-      },
-      {
-        name: "Ayush Tandon",
-        role: "Vice President",
-        avatar: "/images/AYUSH.jpg",
       },
       {
         name: "Devansh Tyagi",
@@ -46,23 +46,23 @@ const teamData = {
       {
         name: "Arisha Ali",
         role: "Advisor",
-        avatar: "/images/ARISHA.jpg",
+        avatar: "/images/arisha.jpg",
       },
      
       {
         name: "Kriti Sharma",
         role: "Chief Operating Officer",
-        avatar: "/images/KRITI.jpg",
+        avatar: "/images/kriti.jpg",
       },
       {
         name: "Aviral Gupta",
         role: "Chief Marketing Officer",
-        avatar: "/images/AVIRAL.jpg",
+        avatar: "/images/aviral.jpg",
       },
       {
         name: "Gyanendra Prakash",
-        role: "Chief Technology Officer",
-        avatar: "/images/GYANENDRA.jpg",
+        role: "Chief Technical Officer",
+        avatar: "/images/gyanendra.jpg",
       },
     ],
   },
@@ -173,8 +173,8 @@ export default function EnhancedTeamCards() {
   }, [])
 
   // Splitting executive members for layout purposes
-  const topExecutives = teamData.executives.members.slice(0, 4);
-  const centralOfficers = teamData.executives.members.slice(4);
+  const topExecutives = teamData.executives.members.slice(0, 3);
+  const centralOfficers = teamData.executives.members.slice(3);
 
   return (
     <section ref={sectionRef} className="py-24 md:py-32 px-4 bg-white relative overflow-hidden">
@@ -202,7 +202,7 @@ export default function EnhancedTeamCards() {
           <h3 className="text-3xl font-bold text-black mb-8 text-center">Executive Leadership</h3>
           
           {/* Top Row of Executives */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {topExecutives.map((member) => (
               <div key={member.name} className="team-card will-change-transform">
                 <div className="card-content w-full h-full bg-white/70 p-8 rounded-2xl border border-gray-300 backdrop-blur-md text-center relative overflow-hidden">
@@ -222,9 +222,9 @@ export default function EnhancedTeamCards() {
             ))}
           </div>
 
-          {/* Centered Row for CMO, CTO, and COO */}
+          {/* Centered Row for Advisor, CMO, CTO, and COO */}
           <div className="mt-8 flex justify-center">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
               {centralOfficers.map((member) => (
                 <div key={member.name} className="team-card will-change-transform">
                   <div className="card-content w-full h-full bg-white/70 p-8 rounded-2xl border border-gray-300 backdrop-blur-md text-center relative overflow-hidden">
