@@ -193,7 +193,8 @@ const NON_TECH_DEPARTMENTS: { [key: string]: DepartmentInfo } = {
     "Management Team": { icon: Award, description: "Oversee the administrative and logistical backbone of the society. Coordinate meetings, manage events, and ensure smooth operations.", skills: ["Event Planning", "Project Management", "Leadership", "Coordination"] }, 
     "PR/Outreach Team": { icon: Megaphone, description: "Act as the ambassadors of AIS. Engage with external organizations, build partnerships, and secure sponsorships.", skills: ["Public Speaking", "Networking", "Sponsorships", "PR"] }, 
     "Creative Team": { icon: Sparkles, description: "Define the visual identity of AIS. Creative team consists of Design, Social Media, Editorial, and PR/Outreach. Design stunning graphics, posters, and UI/UX for all our events and projects.", skills: ["Canva/Figma", "Graphic Design", "UI/UX", "Branding", "Social Media", "Content Writing"] }, 
-    "Multimedia Team": { icon: Zap, description: "Capture the essence of our events. Handle photography, videography, and create engaging video content and reels.", skills: ["Photography", "Video Editing", "Motion Graphics", "Storytelling"] }
+    "Multimedia Team": { icon: Zap, description: "Capture the essence of our events. Handle photography, videography, and create engaging video content and reels.", skills: ["Photography", "Video Editing", "Motion Graphics", "Storytelling"] },
+    "Social Media": { icon: Globe, description: "Manage and grow AIS's online presence across all social media platforms. Create engaging content, schedule posts, interact with our community, and build our digital brand.", skills: ["Social Media Management", "Content Creation", "Analytics", "Community Engagement", "Trend Analysis"] }
 }
 
 const ALL_DEPARTMENTS = { Tech: Object.keys(TECH_DEPARTMENTS), "Non-Tech": Object.keys(NON_TECH_DEPARTMENTS) }

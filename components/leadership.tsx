@@ -8,7 +8,7 @@ const leaders = [
   {
     name: "Mann Acharya",
     role: "Mentor / Ex-Chairperson",
-    image: "/images/Mann.png", // ✅ image path in /public/leaders/
+    image: "/images/Mann.png", 
     description: "Visionary leader who established the foundation of AI Society",
     achievements: ["Founded AI Society", "Published 10+ Papers", "Industry Mentor"],
   },

@@ -14,39 +14,36 @@ import {
   Palette,
   Calendar,
   Camera,
-  Mic,
   GraduationCap,
   Brain,
   Code,
   Briefcase,
   Megaphone,
+  Globe,
 } from "lucide-react"
 
 // --- Data ---
 // --- Data ---
 const topExecutives = [
-  { icon: User, title: "Advisor" },
   { icon: UserCheck, title: "President" },
   { icon: FileText, title: "Vice-President" },
   { icon: GraduationCap, title: "General Secretary" },
- 
 ]
 
 const cLevelExecutives = [
+  { icon: User, title: "Advisor" },
   { icon: Megaphone, title: "Chief Marketing Officer" },
   { icon: Code, title: "Chief Technology Officer" },
   { icon: Briefcase, title: "Chief Operating Officer" },
-  
 ]
 
 // Combine all executives into a single array for the mobile view
 // FIX: Reorder topExecutives specifically for the mobile view
 const allExecutives = [
-  topExecutives[1], // President
-  topExecutives[0], // Advisor
-  topExecutives[2], // Vice-President
-  topExecutives[3], // General Secretary
-  ...cLevelExecutives // Then the C-level executives
+  topExecutives[0], // President
+  topExecutives[1], // Vice-President
+  topExecutives[2], // General Secretary
+  ...cLevelExecutives // Then the C-level executives (Advisor, CMO, CTO, COO)
 ];
 
 // ... rest of your component code
@@ -64,7 +61,7 @@ const nonTechnicalDepts = [
   { icon: Palette, title: "Outreach Team" },
   { icon: Calendar, title: "Creative Team" },
   { icon: Camera, title: "Multimedia Team" },
-  { icon: Mic, title: "Editorial Team" },
+  { icon: Globe, title: "Social Media" },
 ]
 
 // --- Skeleton Loader Component (unchanged) ---
