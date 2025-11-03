@@ -36,7 +36,7 @@ const teamData = {
       {
         name: "Afjal Hussein",
         role: "President",
-        avatar: "/images/AFJAL.jpg",
+        avatar: "/images/afjal.jpg",
       },
       {
         name: "Devansh Tyagi",
