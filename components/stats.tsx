@@ -25,8 +25,8 @@ import {
 // --- Data ---
 // --- Data ---
 const topExecutives = [
-  { icon: UserCheck, title: "President" },
   { icon: FileText, title: "Vice-President" },
+  { icon: UserCheck, title: "President" },
   { icon: GraduationCap, title: "General Secretary" },
 ]
 
@@ -38,10 +38,10 @@ const cLevelExecutives = [
 ]
 
 // Combine all executives into a single array for the mobile view
-// FIX: Reorder topExecutives specifically for the mobile view
+// FIX: Reorder topExecutives specifically for the mobile view (President first)
 const allExecutives = [
-  topExecutives[0], // President
-  topExecutives[1], // Vice-President
+  topExecutives[1], // President (first for mobile)
+  topExecutives[0], // Vice-President
   topExecutives[2], // General Secretary
   ...cLevelExecutives // Then the C-level executives (Advisor, CMO, CTO, COO)
 ];
