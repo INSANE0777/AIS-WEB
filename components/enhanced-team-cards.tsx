@@ -29,14 +29,14 @@ const teamData = {
     members: [
       // Top Tier
       {
-        name: "Afjal Hussein",
-        role: "President",
-        avatar: "/images/afjal.jpg",
-      },
-      {
         name: "Ayush Tandon",
         role: "Vice President",
         avatar: "/images/ayush.jpg",
+      },
+      {
+        name: "Afjal Hussein",
+        role: "President",
+        avatar: "/images/afjal.jpg",
       },
       {
         name: "Devansh Tyagi",
