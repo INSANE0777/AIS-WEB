@@ -173,7 +173,13 @@ export default function EnhancedTeamCards() {
   }, [])
 
   // Splitting executive members for layout purposes
-  const topExecutives = teamData.executives.members.slice(0, 3);
+  // Desktop order: VP, President (middle), GS
+  // Mobile order: President (first), VP, GS
+  const topExecutives = [
+    teamData.executives.members[1], // President (first for mobile, middle for desktop)
+    teamData.executives.members[0], // VP (second for mobile, first for desktop)
+    teamData.executives.members[2], // GS (third for both)
+  ];
   const centralOfficers = teamData.executives.members.slice(3);
 
   return (
@@ -203,8 +209,9 @@ export default function EnhancedTeamCards() {
           
           {/* Top Row of Executives */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {topExecutives.map((member) => (
-              <div key={member.name} className="team-card will-change-transform">
+            {/* Mobile: President first, Desktop: President in middle (VP, President, GS) */}
+            {topExecutives.map((member, index) => (
+              <div key={member.name} className={`team-card will-change-transform ${index === 0 ? 'order-1 lg:order-2' : index === 1 ? 'order-2 lg:order-1' : 'order-3 lg:order-3'}`}>
                 <div className="card-content w-full h-full bg-white/70 p-8 rounded-2xl border border-gray-300 backdrop-blur-md text-center relative overflow-hidden">
                    <div className="card-glare absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_var(--mx)_var(--my),rgba(0,0,0,0.1),rgba(0,0,0,0)_40%)] opacity-0 pointer-events-none"></div>
                    <div className="card-avatar relative mb-6">
