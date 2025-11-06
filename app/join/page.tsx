@@ -673,6 +673,7 @@ export default function JoinUs() {
   );
   const [isConfirming, setIsConfirming] = useState(false);
   const [dataToSubmit, setDataToSubmit] = useState<FormData | null>(null);
+  const [isButtonHovered, setIsButtonHovered] = useState(false);
 
   const {
     register,
@@ -1000,20 +1001,177 @@ export default function JoinUs() {
           {/* ──────────────────────────────────────── */}
           {/* B&W "Join the AI Revolution" BUTTON */}
           {/* ──────────────────────────────────────── */}
-          <motion.button
-            onClick={() => {
-              document.querySelector("[data-dept-selector]")?.scrollIntoView({
-                behavior: "smooth",
-                block: "center",
-              });
-            }}
-            className="group relative inline-flex items-center space-x-3 bg-black text-white px-8 py-4 rounded-full text-sm font-bold shadow-2xl overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(255,255,255,0.4)] cursor-pointer"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "backOut" }}
+          <div 
+            className="flex flex-col items-center mb-4 relative"
+            onMouseEnter={() => setIsButtonHovered(true)}
+            onMouseLeave={() => setIsButtonHovered(false)}
           >
+            {/* Anime Mascot */}
+            <motion.div
+              className="absolute -top-10 left-1/2 -translate-x-1/2 pointer-events-none z-10"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: "backOut" }}
+            >
+              <div className="relative w-14 h-14">
+                {/* Black circular background */}
+                <div className="absolute w-14 h-14 bg-black rounded-full left-26 -translate-x-1/2 -z-10" />
+                
+                <motion.div 
+                  className="absolute w-10 h-10 bg-white rounded-full left-26 -translate-x-1/2 shadow-lg"
+                  animate={
+                    isButtonHovered ? {
+                      scale: [1, 1.1, 1],
+                      rotate: [0, -5, 5, 0],
+                      transition: {
+                        duration: 0.5,
+                        ease: "easeInOut"
+                      }
+                    } : {
+                      y: [0, -3, 0],
+                      transition: {
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }
+                    }
+                  }
+                >
+                  {/* Eyes */}
+                  <motion.div 
+                    className="absolute w-2 h-2 bg-black rounded-full"
+                    animate={
+                      isButtonHovered ? {
+                        scaleY: [1, 0.2, 1],
+                        transition: {
+                          duration: 0.2,
+                          times: [0, 0.5, 1]
+                        }
+                      } : {}
+                    }
+                    style={{ left: '25%', top: '40%' }}
+                  />
+                  <motion.div 
+                    className="absolute w-2 h-2 bg-black rounded-full"
+                    animate={
+                      isButtonHovered ? {
+                        scaleY: [1, 0.2, 1],
+                        transition: {
+                          duration: 0.2,
+                          times: [0, 0.5, 1]
+                        }
+                      } : {}
+                    }
+                    style={{ right: '25%', top: '40%' }}
+                  />
+                  {/* Cheeks */}
+                  <motion.div 
+                    className="absolute w-2 h-1.5 bg-pink-300 rounded-full"
+                    animate={{
+                      opacity: isButtonHovered ? 0.8 : 0.6
+                    }}
+                    style={{ left: '15%', top: '55%' }}
+                  />
+                  <motion.div 
+                    className="absolute w-2 h-1.5 bg-pink-300 rounded-full"
+                    animate={{
+                      opacity: isButtonHovered ? 0.8 : 0.6
+                    }}
+                    style={{ right: '15%', top: '55%' }}
+                  />
+                  {/* Mouth */}
+                  <motion.div 
+                    className="absolute w-4 h-2 border-b-2 border-black rounded-full"
+                    animate={
+                      isButtonHovered ? {
+                        scaleY: 1.5,
+                        y: -1
+                      } : {
+                        scaleY: 1,
+                        y: 0
+                      }
+                    }
+                    style={{ left: '30%', top: '60%' }}
+                  />
+                  {/* Sparkles on hover */}
+                  <AnimatePresence>
+                    {isButtonHovered && (
+                      <>
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0 }}
+                          className="absolute -top-1 -right-1 w-2 h-2 text-yellow-300"
+                        >
+                          ✨
+                        </motion.div>
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0 }}
+                          transition={{ delay: 0.1 }}
+                          className="absolute -top-2 left-0 w-2 h-2 text-yellow-300"
+                        >
+                          ✨
+                        </motion.div>
+                      </>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+                {/* Body/Diamond shape */}
+                <motion.div
+                  className="absolute -bottom-1 left-1/2 w-4 h-4 -translate-x-1/2"
+                  animate={
+                    isButtonHovered ? {
+                      y: [0, -4, 0],
+                      transition: {
+                        duration: 0.3,
+                        repeat: Infinity,
+                        repeatType: "reverse"
+                      }
+                    } : {
+                      y: [0, 2, 0],
+                      transition: {
+                        duration: 1,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: 0.5
+                      }
+                    }
+                  }
+                >
+                  <div className="w-full h-full bg-white rotate-45 transform origin-center shadow-md" />
+                </motion.div>
+              </div>
+            </motion.div>
+
+            {/* Click me text */}
+            <motion.div
+              className="text-sm text-black/60 mb-2 flex items-center space-x-1 mt-12 cursor-pointer"
+              animate={{ y: [0, -5, 0] }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            >
+              <span className="font-medium">Click me!</span>
+            </motion.div>
+
+            <motion.button
+              onClick={() => {
+                document.querySelector("[data-dept-selector]")?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
+              }}
+              className="group relative inline-flex items-center space-x-3 bg-black text-white px-10 py-5 rounded-full text-sm md:text-base font-bold shadow-2xl overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(255,255,255,0.4)] cursor-pointer border-2 border-gray-300 hover:border-white"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: "backOut" }}
+            >
             {/* Animated Sparkles (White) */}
             <motion.div
               className="absolute inset-0 pointer-events-none"
@@ -1118,6 +1276,7 @@ export default function JoinUs() {
               }}
             />
           </motion.button>
+          </div>
           <h1 className="text-5xl md:text-6xl font-black text-black mb-6">
             Registration <span className="text-black/60">Form</span>
           </h1>
