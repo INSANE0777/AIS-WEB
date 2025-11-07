@@ -644,14 +644,59 @@ const FAQ_ITEMS: FAQItem[] = [
   },
 ];
 const getFriendlyErrorMessage = (error: any): string => {
-  const message = error.message || "An unknown error occurred.";
-  if (message.includes("Network"))
-    return "Network Error: Please check your internet connection.";
-  if (message.toLowerCase().includes("permission"))
-    return "Permission Denied: Please contact support.";
-  if (message.toLowerCase().includes("configured"))
+  // Log the full error for debugging (only in development)
+  if (process.env.NODE_ENV === "development") {
+    console.error("Form submission error:", error);
+  }
+
+  // Check for Appwrite error structure
+  const appwriteError = error.response || error;
+  const errorCode = appwriteError.code || error.code;
+  const errorMessage = appwriteError.message || error.message || "An unknown error occurred.";
+  const errorType = appwriteError.type || error.type;
+
+  // Handle specific Appwrite error codes
+  if (errorCode === 401 || errorCode === 403) {
+    return "Permission Denied: You don't have permission to submit this form. Please contact support.";
+  }
+  if (errorCode === 404) {
+    return "Configuration Error: Database or collection not found. Please contact the administrator.";
+  }
+  if (errorCode === 409) {
+    return "Duplicate Entry: This email may already be registered. Please use a different email or contact support.";
+  }
+  if (errorCode === 429) {
+    return "Rate Limit Exceeded: Too many requests. Please wait a moment and try again.";
+  }
+  if (errorCode === 500 || errorCode === 502 || errorCode === 503) {
+    return "Server Error: The server is temporarily unavailable. Please try again later.";
+  }
+
+  // Check error message patterns
+  const lowerMessage = errorMessage.toLowerCase();
+  
+  if (lowerMessage.includes("network") || lowerMessage.includes("fetch") || lowerMessage.includes("connection")) {
+    return "Network Error: Please check your internet connection and try again.";
+  }
+  if (lowerMessage.includes("permission") || lowerMessage.includes("unauthorized") || lowerMessage.includes("forbidden")) {
+    return "Permission Denied: Please contact support if this issue persists.";
+  }
+  if (lowerMessage.includes("configured") || lowerMessage.includes("not found") || lowerMessage.includes("missing")) {
     return "Configuration Error: Please contact the administrator.";
-  return `An unexpected error occurred. Please try again later.`;
+  }
+  if (lowerMessage.includes("validation") || lowerMessage.includes("invalid")) {
+    return "Validation Error: Please check your form data and try again.";
+  }
+  if (lowerMessage.includes("timeout")) {
+    return "Request Timeout: The request took too long. Please try again.";
+  }
+
+  // Return the actual error message if it's informative, otherwise use generic message
+  if (errorMessage && errorMessage !== "An unknown error occurred." && errorMessage.length < 200) {
+    return `Error: ${errorMessage}`;
+  }
+
+  return "An unexpected error occurred. Please try again later. If the problem persists, please contact support.";
 };
 
 // --- Main Component ---
