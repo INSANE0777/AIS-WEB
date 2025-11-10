@@ -191,15 +191,6 @@ a:focus {
   }
 }
 
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
-
 /* Utility animations */
 .animate-fade-in-up {
   animation: fadeInUp 0.4s ease-out;

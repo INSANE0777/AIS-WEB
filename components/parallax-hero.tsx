@@ -1,12 +1,11 @@
 "use client"
 import { useRouter } from "next/navigation"
-import { useEffect, useRef, useState, useMemo, useId } from "react"
+import { useEffect, useRef } from "react"
 import { gsap } from "gsap"
 import { MorphSVGPlugin } from "gsap/MorphSVGPlugin"
 import MagneticButton from "./magnetic-button"
 import { useMobileOptimization, getOptimizedDuration, getOptimizedEase } from "./mobile-optimized-animations"
 import React, { HTMLAttributes } from 'react';
-import { Newspaper } from "lucide-react"
 
 interface CustomStarProps {
   width?: string | number;
@@ -59,7 +58,6 @@ export default function ParallaxHero() {
   const parallaxLayer2Ref = useRef<HTMLDivElement>(null)
   const parallaxLayer3Ref = useRef<HTMLDivElement>(null)
   const customStarRef = useRef<SVGSVGElement>(null);
-  const newsletterButtonRef = useRef<HTMLButtonElement>(null);
   const { isMobile, reducedMotion } = useMobileOptimization()
   const router = useRouter()
 
@@ -133,39 +131,6 @@ export default function ParallaxHero() {
       logo.addEventListener('mouseenter', () => { gsap.to(logo, { scale: 1.2, duration: 0.3, ease: "power2.out" }) }); 
       logo.addEventListener('mouseleave', () => { gsap.to(logo, { scale: 1, duration: 0.3, ease: "power2.out" }) }); 
     });
-
-    // Newsletter button animation with pop effect and attention-grabbing animation
-    if (newsletterButtonRef.current && !reducedMotion) {
-      gsap.set(newsletterButtonRef.current, { opacity: 0, scale: 0, x: -20, y: -20 });
-      
-      // Pop-in animation
-      const popIn = gsap.timeline({ delay: 1.5 });
-      popIn.to(newsletterButtonRef.current, {
-        opacity: 1,
-        scale: 1.15,
-        x: 0,
-        y: 0,
-        duration: 0.4,
-        ease: "back.out(2.5)"
-      })
-      .to(newsletterButtonRef.current, {
-        scale: 1,
-        duration: 0.3,
-        ease: "power2.out"
-      });
-
-      // Continuous subtle pulse to draw attention
-      if (!isMobile) {
-        gsap.to(newsletterButtonRef.current, {
-          scale: 1.05,
-          duration: 2,
-          repeat: -1,
-          yoyo: true,
-          ease: "sine.inOut",
-          delay: 2.2
-        });
-      }
-    }
   }, [isMobile, reducedMotion, router]);
 
   return (
@@ -183,77 +148,6 @@ export default function ParallaxHero() {
           <img src="/images/bennett-logo.webp" alt="Bennett University Logo" className="object-contain w-32 h-32" />
         </div>
       )}
-
-      {/* Newsletter Button */}
-      <div className="fixed z-[100] top-0 left-0">
-        <svg width="0" height="0" style={{ position: 'absolute' }}>
-          <defs>
-            <clipPath id="curved-button-clip" clipPathUnits="objectBoundingBox">
-              <path d="M 0,0.3 Q 0,0 0.3,0 L 1,0 L 1,1 L 0,1 Z" />
-            </clipPath>
-            <linearGradient id="button-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#000000" />
-              <stop offset="50%" stopColor="#1a1a1a" />
-              <stop offset="100%" stopColor="#000000" />
-            </linearGradient>
-          </defs>
-        </svg>
-
-        {/* Attractive Button with Multiple Effects */}
-        <button
-          ref={newsletterButtonRef}
-          onClick={() => router.push("/announcements")}
-          className="group relative flex items-center gap-2 
-                     px-4 py-2.5 
-                     shadow-2xl hover:shadow-black/50
-                     transition-all duration-500 ease-out
-                     hover:scale-110 hover:-translate-y-1 hover:rotate-1
-                     active:scale-95
-                     overflow-hidden
-                     border-2 border-white/30"
-          style={{
-            clipPath: 'url(#curved-button-clip)',
-            borderRadius: '0 0 12px 0',
-            background: 'linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%)',
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-          }}
-          aria-label="Watch our newsletter"
-        >
-          {/* Animated background gradient shimmer */}
-          <div 
-            className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-            style={{
-              background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%)',
-              backgroundSize: '200% 100%',
-              animation: 'shimmer 2s infinite'
-            }}
-          ></div>
-          
-          {/* Pulsing glow effect */}
-          <div className="absolute inset-0 bg-white/5 rounded-lg opacity-0 group-hover:opacity-100 animate-pulse"></div>
-          
-          {/* Icon with special effects */}
-          <div className="relative z-10">
-            <div className="absolute inset-0 bg-white/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-           
-            {/* Sparkle effect */}
-            <div className="absolute -top-1 -right-1 w-1.5 h-1.5 bg-white rounded-full opacity-0 group-hover:opacity-100 animate-ping"></div>
-            <div className="absolute -top-1 -right-1 w-1.5 h-1.5 bg-white rounded-full opacity-0 group-hover:opacity-100"></div>
-          </div>
-          
-          {/* Text with glow */}
-          <span className="relative z-10 text-xs font-bold tracking-wide text-white drop-shadow-lg">
-            Newsletter
-          </span>
-          
-          {/* Arrow indicator */}
-          <div className="relative z-10 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-0 group-hover:translate-x-1">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-              <path d="M1 6H11M11 6L6 1M11 6L6 11" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </div>
-        </button>
-      </div>
 
       {isMobile && (
           <div className="absolute z-20 top-5 left-8">
