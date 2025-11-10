@@ -245,7 +245,7 @@ export default function Announcements() {
               </p>
             </div>
             <PDFFlipbook 
-              pdfUrl="/AIS Newsletter Epoch - The Emergence.pdf"
+              pdfUrl="/AIS Newsletter.pdf"
               className="w-full"
             />
           </InteractiveCard>
