@@ -69,7 +69,7 @@ const teamData = {
   technical: {
     departments: {
       "Natural Language Processing": ["Jackiv Garg", "Ohm Gupta"],
-      "Reinforcement Learning": ["Saatvik Sharma", "Someone"],
+      "Reinforcement Learning": ["Saatvik Sharma", "Devansh Gupta"],
       "Computer Vision": ["Himanshu Shekhar", "Tanish Ramgopal"],
       "Generative AI": ["Pranav Kumar", "Sneh Gupta"],
       "Research":["Avishi Mishra","Arpit Bhardwaj"]
@@ -81,7 +81,7 @@ const teamData = {
       "Design Team": ["Aditi Garg", "Aashima Makani"],
       "Management": ["Samridhi Agrawal", "Lakshay Khasa"],
       "Pr/Outreach": ["Ayushka Mandal", "Sarbojit Das", "Vamika Singh"],
-      "Multimedia": ["Krishna Goyal", "Someone"],
+      "Multimedia": ["Harshiv Batra", "Krishna Goyal"],
     },
   },
 }
