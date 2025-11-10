@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef, useCallback } from "react"
-import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, RotateCw } from "lucide-react"
+import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, RotateCw, Download } from "lucide-react" // 1. Import Download icon
 
 // Props interface for the component
 interface PDFFlipbookProps {
@@ -18,7 +18,7 @@ declare global {
 
 /**
  * An enhanced, stylish, and responsive PDF viewer with a seamless flipbook effect.
- * It includes controls for navigation, zoom, and rotation.
+ * It includes controls for navigation, zoom, rotation, and downloading.
  * The component is styled with Tailwind CSS and uses PDF.js for rendering.
  *
  * @param {PDFFlipbookProps} props - The props for the component.
@@ -96,41 +96,36 @@ export default function PDFFlipbook({ pdfUrl, className = "" }: PDFFlipbookProps
     document.body.appendChild(script);
 
     return () => {
-      if (script.parentNode) {
-        script.parentNode.removeChild(script);
-      }
+      if (script.parentNode) script.parentNode.removeChild(script);
     };
   }, []);
 
   // Callback to load the PDF document
   const loadPDF = useCallback(async () => {
     if (!window.pdfjsLib || !pdfUrl) return;
-
+    setLoading(true);
+    setError(null);
     try {
-      setLoading(true);
-      setError(null);
       const loadingTask = window.pdfjsLib.getDocument(pdfUrl);
       const pdf = await loadingTask.promise;
       setPdfDoc(pdf);
       setNumPages(pdf.numPages);
       const firstPage = await pdf.getPage(1);
       setScale(calculateResponsiveScale(firstPage));
-      setLoading(false);
     } catch (err) {
       console.error("PDF load error:", err);
       setError("Failed to load PDF. Please check the URL or try again.");
+    } finally {
       setLoading(false);
     }
   }, [pdfUrl, calculateResponsiveScale]);
 
-  // Effect to render a page of the PDF onto the canvas
+  // Effect to render a page of the PDF onto the canvas at high quality
   useEffect(() => {
     if (!pdfDoc || !canvasRef.current || pageNumber < 1) return;
 
     const renderPage = async () => {
-      if (isRenderingRef.current) {
-        renderTaskRef.current?.cancel();
-      }
+      if (isRenderingRef.current) renderTaskRef.current?.cancel();
       isRenderingRef.current = true;
 
       try {
@@ -141,6 +136,8 @@ export default function PDFFlipbook({ pdfUrl, className = "" }: PDFFlipbookProps
         if (!context) { isRenderingRef.current = false; return; }
 
         const viewport = page.getViewport({ scale, rotation });
+        
+        // Use devicePixelRatio for high-res screens to ensure max quality
         const devicePixelRatio = window.devicePixelRatio || 1;
 
         canvas.width = Math.floor(viewport.width * devicePixelRatio);
@@ -198,6 +195,17 @@ export default function PDFFlipbook({ pdfUrl, className = "" }: PDFFlipbookProps
   const handleZoomOut = () => setScale((prev) => Math.max(prev - 0.2, 0.3));
   const handleRotate = () => setRotation((prev) => (prev + 90) % 360);
 
+  // 2. Add Download Handler function
+  const handleDownload = () => {
+    const link = document.createElement('a');
+    link.href = pdfUrl;
+    // Extract filename from URL or use a generic name
+    link.download = pdfUrl.substring(pdfUrl.lastIndexOf('/') + 1) || 'document.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   // Effect for keyboard navigation
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
@@ -208,7 +216,6 @@ export default function PDFFlipbook({ pdfUrl, className = "" }: PDFFlipbookProps
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [goToPage, pageNumber]);
 
-  // Render error state
   if (error) {
     return (
       <div className={`flex items-center justify-center p-8 bg-red-100/50 rounded-2xl border-2 border-red-200/60 ${className}`}>
@@ -221,7 +228,6 @@ export default function PDFFlipbook({ pdfUrl, className = "" }: PDFFlipbookProps
     );
   }
 
-  // Main component render
   return (
     <div className={`flex flex-col items-center w-full ${className}`}>
       {/* Controls */}
@@ -244,9 +250,15 @@ export default function PDFFlipbook({ pdfUrl, className = "" }: PDFFlipbookProps
           <ZoomIn size={isMobile ? 18 : 20} />
         </button>
         {!isMobile && (
-          <button onClick={handleRotate} className="p-3 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 transition-all duration-300 ease-in-out hover:scale-110 active:scale-95 hover:rotate-90" aria-label="Rotate">
-            <RotateCw size={20} />
-          </button>
+          <>
+            <button onClick={handleRotate} className="p-3 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 transition-all duration-300 ease-in-out hover:scale-110 active:scale-95 hover:rotate-90" aria-label="Rotate">
+              <RotateCw size={20} />
+            </button>
+            {/* 3. Add Download button to JSX */}
+            <button onClick={handleDownload} className="p-3 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 transition-all duration-300 ease-in-out hover:scale-110 active:scale-95" aria-label="Download PDF">
+              <Download size={20} />
+            </button>
+          </>
         )}
       </div>
 
