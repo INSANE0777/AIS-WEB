@@ -3,472 +3,270 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, RotateCw } from "lucide-react"
 
+// Props interface for the component
 interface PDFFlipbookProps {
   pdfUrl: string
   className?: string
 }
 
+// Ensure pdfjsLib is available on the window object
 declare global {
   interface Window {
     pdfjsLib: any
   }
 }
 
-export default function PDFFlipbook({ pdfUrl, className = "" }: PDFFlipbookProps) {
+/**
+ * An enhanced, stylish, and responsive PDF viewer with a seamless flipbook effect.
+ * It includes controls for navigation, zoom, and rotation.
+ * The component is styled with Tailwind CSS and uses PDF.js for rendering.
+ *
+ * @param {PDFFlipbookProps} props - The props for the component.
+ * @param {string} props.pdfUrl - The URL of the PDF file to display.
+ * @param {string} [props.className] - Optional additional CSS classes for the root container.
+ * @returns {JSX.Element} The rendered PDFFlipbook component.
+ */
+export default function PDFFlipbook({ pdfUrl, className = "" }: PDFFlipbookProps): JSX.Element {
+  // State management
   const [numPages, setNumPages] = useState<number>(0)
   const [pageNumber, setPageNumber] = useState<number>(1)
-  const [scale, setScale] = useState<number>(0.89)
+  const [scale, setScale] = useState<number>(1.0)
   const [rotation, setRotation] = useState<number>(0)
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
   const [pdfDoc, setPdfDoc] = useState<any>(null)
   const [pageWidth, setPageWidth] = useState<number>(0)
   const [pageHeight, setPageHeight] = useState<number>(0)
-  const [isPageTransitioning, setIsPageTransitioning] = useState<boolean>(false)
+  const [isMobile, setIsMobile] = useState<boolean>(false)
+  const [animationClass, setAnimationClass] = useState<string>("")
   
-  const pageRef = useRef<HTMLDivElement>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
+  // Refs for DOM elements and state that doesn't trigger re-renders
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const viewerRef = useRef<HTMLDivElement>(null)
   const pdfjsLoaded = useRef<boolean>(false)
   const renderTaskRef = useRef<any>(null)
   const isRenderingRef = useRef<boolean>(false)
-  const renderTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Load PDF.js from CDN
+  // Effect to detect if the user is on a mobile device
   useEffect(() => {
-    if (pdfjsLoaded.current) return
+    const checkMobile = () => setIsMobile(window.innerWidth < 768)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
-    const script = document.createElement("script")
-    script.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"
-    script.async = true
+  // Callback to calculate the optimal scale for the PDF page
+  const calculateResponsiveScale = useCallback((pdfPage: any) => {
+    if (!viewerRef.current) return 1.0;
+  
+    const viewport = pdfPage.getViewport({ scale: 1.0, rotation: 0 });
+    const containerWidth = viewerRef.current.clientWidth;
+    const containerHeight = window.innerHeight;
+  
+    const padding = isMobile ? 20 : 40;
+    const desktopHeightMultiplier = isMobile ? 0.6 : 0.85; 
+  
+    const availableWidth = containerWidth - padding;
+    const availableHeight = (containerHeight * desktopHeightMultiplier) - padding;
+    
+    const scaleWidth = availableWidth / viewport.width;
+    const scaleHeight = availableHeight / viewport.height;
+    
+    return Math.min(scaleWidth, scaleHeight, isMobile ? 1.0 : 2.0);
+  }, [isMobile]);
+
+  // Effect to load the PDF.js library from a CDN
+  useEffect(() => {
+    if (pdfjsLoaded.current) return;
+
+    const script = document.createElement("script");
+    script.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+    script.async = true;
     script.onload = () => {
       if (window.pdfjsLib) {
-        window.pdfjsLib.GlobalWorkerOptions.workerSrc = 
-          "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"
-        pdfjsLoaded.current = true
-        loadPDF()
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+        pdfjsLoaded.current = true;
+        loadPDF();
       }
-    }
+    };
     script.onerror = () => {
-      setError("Failed to load PDF.js library")
-      setLoading(false)
-    }
-    document.body.appendChild(script)
+      setError("Failed to load PDF.js library.");
+      setLoading(false);
+    };
+    document.body.appendChild(script);
 
     return () => {
       if (script.parentNode) {
-        script.parentNode.removeChild(script)
+        script.parentNode.removeChild(script);
       }
-    }
-  }, [])
+    };
+  }, []);
 
+  // Callback to load the PDF document
   const loadPDF = useCallback(async () => {
-    if (!window.pdfjsLib || !pdfUrl) return
+    if (!window.pdfjsLib || !pdfUrl) return;
 
     try {
-      setLoading(true)
-      setError(null)
-      
-      const loadingTask = window.pdfjsLib.getDocument(pdfUrl)
-      const pdf = await loadingTask.promise
-      
-      setPdfDoc(pdf)
-      setNumPages(pdf.numPages)
-      setLoading(false)
+      setLoading(true);
+      setError(null);
+      const loadingTask = window.pdfjsLib.getDocument(pdfUrl);
+      const pdf = await loadingTask.promise;
+      setPdfDoc(pdf);
+      setNumPages(pdf.numPages);
+      const firstPage = await pdf.getPage(1);
+      setScale(calculateResponsiveScale(firstPage));
+      setLoading(false);
     } catch (err) {
-      console.error("PDF load error:", err)
-      setError("Failed to load PDF. Please try again.")
-      setLoading(false)
+      console.error("PDF load error:", err);
+      setError("Failed to load PDF. Please check the URL or try again.");
+      setLoading(false);
     }
-  }, [pdfUrl])
+  }, [pdfUrl, calculateResponsiveScale]);
 
-  // Calculate initial scale to fit page width
-  const calculateFitToWidth = useCallback((pdfPage: any, containerWidth: number) => {
-    const viewport = pdfPage.getViewport({ scale: 1.0, rotation: 0 })
-    const containerPadding = 40 // Account for padding
-    const availableWidth = containerWidth - containerPadding
-    return availableWidth / viewport.width
-  }, [])
-
-  // Initial scale is set to 0.89 (89%) by default - no automatic fit-to-width
-
-  // Render PDF page with cancellation and performance optimization
+  // Effect to render a page of the PDF onto the canvas
   useEffect(() => {
-    if (!pdfDoc || !canvasRef.current || pageNumber < 1) return
+    if (!pdfDoc || !canvasRef.current || pageNumber < 1) return;
 
-    // Clear any pending render timeout
-    if (renderTimeoutRef.current) {
-      clearTimeout(renderTimeoutRef.current)
-      renderTimeoutRef.current = null
-    }
-
-    // Cancel any ongoing render task
-    const cancelPreviousRender = () => {
-      if (renderTaskRef.current) {
-        try {
-          renderTaskRef.current.cancel()
-        } catch (e) {
-          // Ignore cancellation errors
-        }
-        renderTaskRef.current = null
+    const renderPage = async () => {
+      if (isRenderingRef.current) {
+        renderTaskRef.current?.cancel();
       }
-      isRenderingRef.current = false
-    }
+      isRenderingRef.current = true;
 
-    // For page changes, render immediately. For zoom/rotation, debounce.
-    const isPageChange = true // We can detect this by checking if pageNumber changed
-    const debounceDelay = 100 // Only debounce zoom/rotation changes
+      try {
+        const page = await pdfDoc.getPage(pageNumber);
+        const canvas = canvasRef.current;
+        if (!canvas) { isRenderingRef.current = false; return; }
+        const context = canvas.getContext("2d", { alpha: false });
+        if (!context) { isRenderingRef.current = false; return; }
 
-    renderTimeoutRef.current = setTimeout(async () => {
-      // Cancel any previous render first
-      cancelPreviousRender()
-      
-      // Wait a bit to ensure cancellation is complete
-      await new Promise(resolve => setTimeout(resolve, 10))
+        const viewport = page.getViewport({ scale, rotation });
+        const devicePixelRatio = window.devicePixelRatio || 1;
 
-      const renderPage = async () => {
-        // Double-check we're not already rendering
-        if (isRenderingRef.current) {
-          return
+        canvas.width = Math.floor(viewport.width * devicePixelRatio);
+        canvas.height = Math.floor(viewport.height * devicePixelRatio);
+        canvas.style.width = `${viewport.width}px`;
+        canvas.style.height = `${viewport.height}px`;
+
+        setPageWidth(viewport.width);
+        setPageHeight(viewport.height);
+
+        const renderContext = {
+          canvasContext: context,
+          viewport: viewport,
+          transform: devicePixelRatio !== 1 ? [devicePixelRatio, 0, 0, devicePixelRatio, 0, 0] : undefined,
+        };
+
+        const renderTask = page.render(renderContext);
+        renderTaskRef.current = renderTask;
+        await renderTask.promise;
+      } catch (err: any) {
+        if (err?.name !== 'RenderingCancelledException') {
+          console.error("Page render error:", err);
+          setError("Failed to render PDF page.");
         }
-
-        try {
-          isRenderingRef.current = true
-          
-          // Get page and canvas
-          const page = await pdfDoc.getPage(pageNumber)
-          const canvas = canvasRef.current
-          
-          // Verify canvas and pdf still exist
-          if (!canvas || !pdfDoc) {
-            isRenderingRef.current = false
-            return
-          }
-
-          const context = canvas.getContext("2d", { alpha: false })
-          if (!context) {
-            isRenderingRef.current = false
-            return
-          }
-
-          const viewport = page.getViewport({ scale, rotation })
-
-          // Set canvas dimensions with device pixel ratio for crisp rendering
-          const devicePixelRatio = window.devicePixelRatio || 1
-          const outputScale = devicePixelRatio
-
-          const canvasWidth = Math.floor(viewport.width * outputScale)
-          const canvasHeight = Math.floor(viewport.height * outputScale)
-          
-          // Store current dimensions before changing
-          const currentWidth = canvas.width
-          const currentHeight = canvas.height
-          
-          // Always update canvas dimensions for page changes, or if dimensions changed
-          if (canvasWidth !== currentWidth || canvasHeight !== currentHeight) {
-            // Set new dimensions (this clears the canvas automatically)
-            canvas.width = canvasWidth
-            canvas.height = canvasHeight
-            canvas.style.width = `${viewport.width}px`
-            canvas.style.height = `${viewport.height}px`
-            
-            // Clear canvas explicitly
-            context.clearRect(0, 0, canvasWidth, canvasHeight)
-          } else {
-            // Even if dimensions are same, clear the canvas for page changes
-            context.clearRect(0, 0, canvasWidth, canvasHeight)
-          }
-
-          // Store page dimensions (actual rendered size) - update immediately
-          setPageWidth(viewport.width)
-          setPageHeight(viewport.height)
-
-          const transform = outputScale !== 1
-            ? [outputScale, 0, 0, outputScale, 0, 0]
-            : undefined
-
-          const renderContext = {
-            canvasContext: context,
-            viewport: viewport,
-            transform: transform,
-          }
-
-          // Start render and store the task
-          const renderTask = page.render(renderContext)
-          renderTaskRef.current = renderTask
-
-          await renderTask.promise
-          
-          // Only update state if this render completed successfully
-          if (renderTaskRef.current === renderTask) {
-            renderTaskRef.current = null
-            isRenderingRef.current = false
-          }
-        } catch (err: any) {
-          // Only log error if it's not a cancellation
-          const isCancellation = err?.name === "RenderingCancelledException" || 
-                                err?.name === "AbortException" ||
-                                err?.message?.includes("cancelled")
-          
-          if (!isCancellation) {
-            console.error("Page render error:", err)
-            setError("Failed to render PDF page")
-          }
-          
-          // Reset state
-          if (renderTaskRef.current) {
-            renderTaskRef.current = null
-          }
-          isRenderingRef.current = false
-        }
+      } finally {
+        isRenderingRef.current = false;
       }
+    };
 
-      renderPage()
-    }, 100) // Debounce delay
+    renderPage();
+    return () => { renderTaskRef.current?.cancel(); };
+  }, [pdfDoc, pageNumber, scale, rotation]);
 
-    // Cleanup function
-    return () => {
-      if (renderTimeoutRef.current) {
-        clearTimeout(renderTimeoutRef.current)
-      }
-      if (renderTaskRef.current) {
-        try {
-          renderTaskRef.current.cancel()
-        } catch (e) {
-          // Ignore cancellation errors
-        }
-        renderTaskRef.current = null
-      }
-      isRenderingRef.current = false
-    }
-  }, [pdfDoc, pageNumber, scale, rotation])
-
-  // Reload PDF when URL changes
+  // Effect to reload the PDF if the URL changes
   useEffect(() => {
-    if (pdfjsLoaded.current) {
-      loadPDF()
-    }
-  }, [pdfUrl, loadPDF])
+    if (pdfjsLoaded.current) loadPDF();
+  }, [pdfUrl, loadPDF]);
 
-  const goToPrevPage = useCallback(() => {
-    if (pageNumber > 1 && !isPageTransitioning) {
-      setIsPageTransitioning(true)
-      setPageNumber((prev) => prev - 1)
-      setTimeout(() => setIsPageTransitioning(false), 300)
-    }
-  }, [pageNumber, isPageTransitioning])
-
-  const goToNextPage = useCallback(() => {
-    if (pageNumber < numPages && !isPageTransitioning) {
-      setIsPageTransitioning(true)
-      setPageNumber((prev) => prev + 1)
-      setTimeout(() => setIsPageTransitioning(false), 300)
-    }
-  }, [pageNumber, numPages, isPageTransitioning])
-
-  const handleZoomIn = () => {
-    setScale((prev) => Math.min(prev + 0.2, 3.0))
-  }
-
-  const handleZoomOut = () => {
-    setScale((prev) => Math.max(prev - 0.2, 0.5))
-  }
-
-  const handleRotate = () => {
-    setRotation((prev) => (prev + 90) % 360)
-  }
-
-  const handleFitToWidth = useCallback(async () => {
-    if (!pdfDoc || !viewerRef.current || pageNumber < 1) return
+  // Master function to handle page navigation with smooth animation
+  const goToPage = useCallback((newPageNumber: number) => {
+    if (newPageNumber === pageNumber || !!animationClass || newPageNumber < 1 || newPageNumber > numPages) return;
     
-    try {
-      // Cancel any ongoing render
-      if (renderTaskRef.current) {
-        try {
-          renderTaskRef.current.cancel()
-        } catch (e) {
-          // Ignore cancellation errors
-        }
-        renderTaskRef.current = null
-      }
-      
-      const page = await pdfDoc.getPage(pageNumber)
-      const viewer = viewerRef.current
-      const containerWidth = viewer.clientWidth || 800
-      const fitScale = calculateFitToWidth(page, containerWidth)
-      setScale(fitScale)
-    } catch (err) {
-      console.error("Fit to width error:", err)
-    }
-  }, [pdfDoc, pageNumber, calculateFitToWidth])
+    const isNext = newPageNumber > pageNumber;
+    setAnimationClass(isNext ? 'flip-out-right' : 'flip-out-left');
+    
+    setTimeout(() => {
+      setPageNumber(newPageNumber);
+      setAnimationClass(isNext ? 'flip-in-right' : 'flip-in-left');
+      setTimeout(() => setAnimationClass(''), 300); // Animation duration
+    }, 300); // Animation duration
+  }, [pageNumber, numPages, animationClass]);
 
-  // Keyboard navigation
+  // Control handlers
+  const handleZoomIn = () => setScale((prev) => Math.min(prev + 0.2, 3.0));
+  const handleZoomOut = () => setScale((prev) => Math.max(prev - 0.2, 0.3));
+  const handleRotate = () => setRotation((prev) => (prev + 90) % 360);
+
+  // Effect for keyboard navigation
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") goToPrevPage()
-      if (e.key === "ArrowRight") goToNextPage()
-    }
+      if (e.key === "ArrowLeft") goToPage(pageNumber - 1);
+      if (e.key === "ArrowRight") goToPage(pageNumber + 1);
+    };
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [goToPage, pageNumber]);
 
-    window.addEventListener("keydown", handleKeyPress)
-    return () => window.removeEventListener("keydown", handleKeyPress)
-  }, [goToPrevPage, goToNextPage])
-
+  // Render error state
   if (error) {
     return (
-      <div className={`flex items-center justify-center p-12 bg-red-50/50 backdrop-blur-sm rounded-2xl border border-red-200/50 shadow-lg ${className}`}>
+      <div className={`flex items-center justify-center p-8 bg-red-100/50 rounded-2xl border-2 border-red-200/60 ${className}`}>
         <div className="text-center space-y-3">
-          <div className="w-12 h-12 mx-auto bg-red-100 rounded-full flex items-center justify-center">
-            <span className="text-2xl">⚠️</span>
-          </div>
-          <p className="text-red-600 font-semibold text-lg">Error loading PDF</p>
+          <div className="w-16 h-16 mx-auto bg-red-200/70 rounded-full flex items-center justify-center animate-pulse"><span className="text-4xl">⚠️</span></div>
+          <p className="text-red-700 font-bold text-lg">Error loading PDF</p>
           <p className="text-red-500 text-sm max-w-md">{error}</p>
         </div>
       </div>
-    )
+    );
   }
 
+  // Main component render
   return (
-    <div className={`flex flex-col items-center ${className}`} ref={containerRef}>
+    <div className={`flex flex-col items-center w-full ${className}`}>
       {/* Controls */}
-      <div className="flex items-center justify-center gap-3 mb-8 flex-wrap px-4">
-        <button
-          onClick={goToPrevPage}
-          disabled={pageNumber <= 1 || loading || isPageTransitioning}
-          className="group relative p-3 rounded-xl bg-black text-white hover:bg-black/90 disabled:opacity-40 disabled:cursor-not-allowed 
-                     transition-all duration-300 ease-out
-                     hover:scale-110 hover:shadow-lg hover:shadow-black/20
-                     active:scale-95
-                     disabled:hover:scale-100 disabled:hover:shadow-none"
-          aria-label="Previous page"
-        >
-          <ChevronLeft size={20} className="transition-transform duration-300 group-hover:-translate-x-0.5" />
-          <span className="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+      <div className="flex items-center justify-center gap-2 md:gap-4 mb-6 md:mb-10 flex-wrap px-4 py-3 bg-white/50 backdrop-blur-md border border-gray-200/80 rounded-full shadow-lg">
+        <button onClick={() => goToPage(pageNumber - 1)} disabled={pageNumber <= 1 || loading || !!animationClass} className="p-3 rounded-full bg-gray-900 text-white hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 ease-in-out hover:scale-110 active:scale-95" aria-label="Previous page">
+          <ChevronLeft size={isMobile ? 20 : 24} />
         </button>
-
-        <div className="relative px-5 py-2.5 bg-white/90 backdrop-blur-sm rounded-xl border border-black/10 shadow-sm">
-          <span className="text-sm font-semibold text-black tabular-nums">
-            <span className="inline-block transition-all duration-300 ease-out">{pageNumber}</span>
-            <span className="mx-1.5 text-black/40">/</span>
-            <span className="text-black/60">{numPages || "..."}</span>
-          </span>
+        <div className="px-4 md:px-6 py-2 bg-gray-100 rounded-full">
+          <span className="text-sm md:text-base font-bold text-gray-800 tabular-nums">{pageNumber} / {numPages || "..."}</span>
         </div>
-
-        <button
-          onClick={goToNextPage}
-          disabled={pageNumber >= numPages || loading || isPageTransitioning}
-          className="group relative p-3 rounded-xl bg-black text-white hover:bg-black/90 disabled:opacity-40 disabled:cursor-not-allowed 
-                     transition-all duration-300 ease-out
-                     hover:scale-110 hover:shadow-lg hover:shadow-black/20
-                     active:scale-95
-                     disabled:hover:scale-100 disabled:hover:shadow-none"
-          aria-label="Next page"
-        >
-          <ChevronRight size={20} className="transition-transform duration-300 group-hover:translate-x-0.5" />
-          <span className="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+        <button onClick={() => goToPage(pageNumber + 1)} disabled={pageNumber >= numPages || loading || !!animationClass} className="p-3 rounded-full bg-gray-900 text-white hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 ease-in-out hover:scale-110 active:scale-95" aria-label="Next page">
+          <ChevronRight size={isMobile ? 20 : 24} />
         </button>
-
-        <div className="h-8 w-px bg-gradient-to-b from-transparent via-black/20 to-transparent mx-1" />
-
-        <button
-          onClick={handleZoomOut}
-          disabled={scale <= 0.5}
-          className="group relative p-3 rounded-xl bg-white/90 backdrop-blur-sm text-black border border-black/10
-                     hover:bg-white hover:border-black/20 disabled:opacity-40 disabled:cursor-not-allowed 
-                     transition-all duration-300 ease-out
-                     hover:scale-110 hover:shadow-md
-                     active:scale-95
-                     disabled:hover:scale-100 disabled:hover:shadow-none"
-          aria-label="Zoom out"
-        >
-          <ZoomOut size={20} className="transition-transform duration-300 group-hover:scale-90" />
+        <div className="h-8 w-px bg-gray-300 mx-2" />
+        <button onClick={handleZoomOut} disabled={scale <= 0.3} className="p-3 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 ease-in-out hover:scale-110 active:scale-95" aria-label="Zoom out">
+          <ZoomOut size={isMobile ? 18 : 20} />
         </button>
-
-        <div className="relative px-4 py-2 bg-black/5 rounded-lg min-w-[3.5rem]">
-          <span className="text-xs font-bold text-black tabular-nums transition-all duration-300 ease-out">
-            {Math.round(scale * 100)}%
-          </span>
-        </div>
-
-        <button
-          onClick={handleZoomIn}
-          disabled={scale >= 3.0}
-          className="group relative p-3 rounded-xl bg-white/90 backdrop-blur-sm text-black border border-black/10
-                     hover:bg-white hover:border-black/20 disabled:opacity-40 disabled:cursor-not-allowed 
-                     transition-all duration-300 ease-out
-                     hover:scale-110 hover:shadow-md
-                     active:scale-95
-                     disabled:hover:scale-100 disabled:hover:shadow-none"
-          aria-label="Zoom in"
-        >
-          <ZoomIn size={20} className="transition-transform duration-300 group-hover:scale-110" />
+        <div className="px-4 py-2 bg-gray-100 rounded-full text-sm md:text-base font-bold text-gray-800 tabular-nums min-w-[4rem] md:min-w-[5rem] text-center">{Math.round(scale * 100)}%</div>
+        <button onClick={handleZoomIn} disabled={scale >= 3.0} className="p-3 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 ease-in-out hover:scale-110 active:scale-95" aria-label="Zoom in">
+          <ZoomIn size={isMobile ? 18 : 20} />
         </button>
-
-        <button
-          onClick={handleRotate}
-          className="group relative p-3 rounded-xl bg-white/90 backdrop-blur-sm text-black border border-black/10
-                     hover:bg-white hover:border-black/20
-                     transition-all duration-300 ease-out
-                     hover:scale-110 hover:shadow-md hover:rotate-12
-                     active:scale-95"
-          aria-label="Rotate"
-        >
-          <RotateCw size={20} className="transition-transform duration-500 group-hover:rotate-180" />
-        </button>
+        {!isMobile && (
+          <button onClick={handleRotate} className="p-3 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 transition-all duration-300 ease-in-out hover:scale-110 active:scale-95 hover:rotate-90" aria-label="Rotate">
+            <RotateCw size={20} />
+          </button>
+        )}
       </div>
 
       {/* PDF Viewer */}
-      <div
-        ref={viewerRef}
-        className="relative bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl shadow-2xl overflow-auto w-full
-                   border border-black/5
-                   transition-all duration-500 ease-out"
-        style={{
-          minHeight: "800px",
-          maxHeight: "95vh",
-        }}
-      >
-        <div
-          ref={pageRef}
-          className="relative flex justify-center items-start"
-          style={{
-            padding: "24px",
-            minHeight: "100%",
-          }}
-        >
+      <div ref={viewerRef} className="relative bg-gradient-to-tr from-gray-100 to-gray-200 rounded-2xl md:rounded-3xl shadow-2xl overflow-hidden w-full border-4 border-white" style={{ minHeight: isMobile ? "450px" : "600px", maxHeight: isMobile ? "70vh" : "85vh" }}>
+        <div className="relative flex justify-center items-center h-full" style={{ padding: isMobile ? "16px" : "32px", perspective: "2500px" }}>
           {loading && (
-            <div className="flex items-center justify-center w-full min-h-[600px]">
+            <div className="flex items-center justify-center w-full h-full">
               <div className="text-center space-y-4">
-                <div className="relative w-16 h-16 mx-auto">
-                  <div className="absolute inset-0 border-4 border-black/10 rounded-full"></div>
-                  <div className="absolute inset-0 border-4 border-black border-t-transparent rounded-full animate-spin"></div>
+                <div className="relative w-16 h-16 md:w-20 md:h-20 mx-auto">
+                  <div className="absolute inset-0 border-8 border-gray-300/80 rounded-full"></div>
+                  <div className="absolute inset-0 border-8 border-gray-800 border-t-transparent rounded-full animate-spin"></div>
                 </div>
-                <p className="text-black/60 font-medium animate-pulse">Loading PDF...</p>
+                <p className="text-gray-600 text-base md:text-lg font-semibold animate-pulse">Loading PDF...</p>
               </div>
             </div>
           )}
-
           {!loading && pdfDoc && (
-            <div 
-              className={`relative shadow-2xl bg-white mx-auto rounded-sm overflow-hidden
-                         transition-all duration-500 ease-out
-                         ${isPageTransitioning ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}
-              style={{
-                width: pageWidth > 0 ? `${pageWidth}px` : "auto",
-                height: pageHeight > 0 ? `${pageHeight}px` : "auto",
-                maxWidth: "100%",
-                boxShadow: "0 20px 60px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.05)",
-              }}
-            >
-              <canvas
-                ref={canvasRef}
-                className="block"
-                style={{
-                  display: "block",
-                  width: pageWidth > 0 ? `${pageWidth}px` : "auto",
-                  height: pageHeight > 0 ? `${pageHeight}px` : "auto",
-                }}
-              />
+            <div className={`relative shadow-2xl bg-white mx-auto rounded-md overflow-hidden transform-gpu ${animationClass}`} style={{ width: pageWidth > 0 ? `${pageWidth}px` : "auto", height: pageHeight > 0 ? `${pageHeight}px` : "auto", maxWidth: "100%", transformStyle: "preserve-3d", boxShadow: "0 25px 70px -15px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.08)"}}>
+              <canvas ref={canvasRef} className="block" style={{ display: "block", width: pageWidth > 0 ? `${pageWidth}px` : "auto", height: pageHeight > 0 ? `${pageHeight}px` : "auto" }}/>
             </div>
           )}
         </div>
@@ -476,51 +274,29 @@ export default function PDFFlipbook({ pdfUrl, className = "" }: PDFFlipbookProps
 
       {/* Page indicator dots */}
       {numPages > 1 && !loading && (
-        <div className="flex items-center gap-2 mt-8 px-4 py-3 bg-white/60 backdrop-blur-sm rounded-xl border border-black/10 shadow-sm">
-          {Array.from({ length: Math.min(numPages, 10) }, (_, i) => {
-            const pageIndex = i + 1
-            const isActive = pageNumber === pageIndex
+        <div className="flex items-center gap-2 md:gap-3 mt-6 md:mt-8 px-4 py-3 bg-white/60 backdrop-blur-md border border-gray-200/90 rounded-full shadow-md">
+          {Array.from({ length: Math.min(numPages, isMobile ? 5 : 10) }, (_, i) => {
+            const pageIndex = i + 1;
+            const isActive = pageNumber === pageIndex;
             return (
-              <button
-                key={i}
-                onClick={() => {
-                  if (!isPageTransitioning) {
-                    setIsPageTransitioning(true)
-                    setPageNumber(pageIndex)
-                    setTimeout(() => setIsPageTransitioning(false), 300)
-                  }
-                }}
-                className={`relative rounded-full transition-all duration-300 ease-out
-                          ${isActive 
-                            ? "w-8 h-2 bg-black shadow-md" 
-                            : "w-2 h-2 bg-black/30 hover:bg-black/50 hover:w-3 hover:h-3"
-                          }`}
-                aria-label={`Go to page ${pageIndex}`}
-              >
-                {isActive && (
-                  <span className="absolute inset-0 rounded-full bg-black/20 animate-pulse"></span>
-                )}
-              </button>
-            )
+              <button key={i} onClick={() => goToPage(pageIndex)} className={`rounded-full transition-all duration-300 ease-in-out ${isActive ? "w-8 md:w-10 h-2 bg-gray-800" : "w-2 h-2 bg-gray-400/70 hover:bg-gray-500"}`} aria-label={`Go to page ${pageIndex}`} />
+            );
           })}
-          {numPages > 10 && (
-            <span className="text-xs text-black/50 ml-3 self-center font-medium">
-              ... {numPages} pages
-            </span>
-          )}
+          {numPages > (isMobile ? 5 : 10) && <span className="text-xs md:text-sm text-gray-600 ml-2 font-medium">+{numPages - (isMobile ? 5 : 10)}</span>}
         </div>
       )}
 
-      {/* Instructions */}
-      <div className="mt-6 px-4 py-2 bg-black/5 rounded-lg">
-        <p className="text-xs text-black/50 text-center font-medium">
-          <span className="inline-flex items-center gap-1">
-            <kbd className="px-2 py-0.5 bg-white/80 border border-black/10 rounded text-[10px] font-mono shadow-sm">←</kbd>
-            <kbd className="px-2 py-0.5 bg-white/80 border border-black/10 rounded text-[10px] font-mono shadow-sm">→</kbd>
-            <span className="mx-1">to navigate</span>
-          </span>
-        </p>
-      </div>
+      {/* Keyboard instructions */}
+      {!isMobile && (
+        <div className="mt-5 px-4 py-2 bg-gray-100/80 rounded-full border border-gray-200/90">
+          <p className="text-sm text-gray-700 text-center font-medium">
+            Use <kbd className="px-2 py-1 bg-white border border-gray-300 rounded-md text-xs font-mono shadow-sm">←</kbd>
+            {' '}and{' '}
+            <kbd className="px-2 py-1 bg-white border border-gray-300 rounded-md text-xs font-mono shadow-sm">→</kbd>
+            {' '}to navigate
+          </p>
+        </div>
+      )}
     </div>
   )
 }

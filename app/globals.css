@@ -442,3 +442,49 @@ body:has(#custom-cursor-container) * {
 .background-svg-particle svg path {
   fill: #000000 !important;
 }
+/*
+ * PDF Flipbook Animation Styles v2 (Seamless)
+ * Add these to your global stylesheet (e.g., globals.css)
+ */
+
+/* --- Page Flip Out Animations --- */
+@keyframes flip-out-right {
+  from { transform: rotateY(0deg); }
+  to { transform: rotateY(-90deg); }
+}
+
+.flip-out-right {
+  transform-origin: left center;
+  animation: flip-out-right 0.3s linear forwards;
+}
+
+@keyframes flip-out-left {
+  from { transform: rotateY(0deg); }
+  to { transform: rotateY(90deg); }
+}
+
+.flip-out-left {
+  transform-origin: right center;
+  animation: flip-out-left 0.3s linear forwards;
+}
+
+/* --- Page Flip In Animations --- */
+@keyframes flip-in-right {
+  from { transform: rotateY(-90deg); }
+  to { transform: rotateY(0deg); }
+}
+
+.flip-in-right {
+  transform-origin: left center;
+  animation: flip-in-right 0.3s linear forwards;
+}
+
+@keyframes flip-in-left {
+  from { transform: rotateY(90deg); }
+  to { transform: rotateY(0deg); }
+}
+
+.flip-in-left {
+  transform-origin: right center;
+  animation: flip-in-left 0.3s linear forwards;
+}
