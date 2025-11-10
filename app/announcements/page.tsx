@@ -11,8 +11,22 @@ import {
   Megaphone,
   Star,
 } from "lucide-react"
+import dynamic from "next/dynamic"
 import TextReveal from "@/components/text-reveal"
 import InteractiveCard from "@/components/InteractiveCard"
+
+// Dynamically import PDFFlipbook with no SSR to avoid webpack issues
+const PDFFlipbook = dynamic(() => import("@/components/pdf-flipbook"), {
+  ssr: false,
+  loading: () => (
+    <div className="flex items-center justify-center w-full min-h-[600px] bg-gray-100 rounded-lg">
+      <div className="text-center">
+        <div className="w-12 h-12 border-4 border-black border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <p className="text-black/60">Loading PDF viewer...</p>
+      </div>
+    </div>
+  ),
+})
 
 
 const announcements: never[] = []
@@ -217,18 +231,23 @@ export default function Announcements() {
           </p>
         </div>
 
-        <div className="text-center py-20">
+        <div className="py-20">
           <InteractiveCard
-            className="bg-white/90 backdrop-blur-sm rounded-2xl border border-black/10 p-12 sm:p-16 max-w-2xl mx-auto"
+            className="bg-white/90 backdrop-blur-sm rounded-2xl border border-black/10 p-8 sm:p-12 max-w-5xl mx-auto"
             spillColor="rgba(0, 0, 0, 0.05)"
           >
-            <Megaphone size={48} className="text-black/30 mx-auto mb-6" />
-            <h3 className="text-2xl sm:text-3xl font-bold text-black mb-4">
-              No Announcements Yet
-            </h3>
-            <p className="text-black/60 text-base sm:text-lg leading-relaxed">
-              Check back soon for updates, events, and opportunities from the AI Society.
-            </p>
+            <div className="text-center mb-8">
+              <h3 className="text-2xl sm:text-3xl font-bold text-black mb-2">
+                AIS Newsletter Epoch - The Emergence
+              </h3>
+              <p className="text-black/60 text-base sm:text-lg">
+                Explore our latest newsletter with interactive page-flipping experience
+              </p>
+            </div>
+            <PDFFlipbook 
+              pdfUrl="/AIS Newsletter Epoch - The Emergence.pdf"
+              className="w-full"
+            />
           </InteractiveCard>
         </div>
 
