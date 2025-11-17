@@ -652,7 +652,8 @@ const getFriendlyErrorMessage = (error: any): string => {
   // Check for Appwrite error structure
   const appwriteError = error.response || error;
   const errorCode = appwriteError.code || error.code;
-  const errorMessage = appwriteError.message || error.message || "An unknown error occurred.";
+  const errorMessage =
+    appwriteError.message || error.message || "An unknown error occurred.";
   const errorType = appwriteError.type || error.type;
 
   // Handle specific Appwrite error codes
@@ -674,14 +675,26 @@ const getFriendlyErrorMessage = (error: any): string => {
 
   // Check error message patterns
   const lowerMessage = errorMessage.toLowerCase();
-  
-  if (lowerMessage.includes("network") || lowerMessage.includes("fetch") || lowerMessage.includes("connection")) {
+
+  if (
+    lowerMessage.includes("network") ||
+    lowerMessage.includes("fetch") ||
+    lowerMessage.includes("connection")
+  ) {
     return "Network Error: Please check your internet connection and try again.";
   }
-  if (lowerMessage.includes("permission") || lowerMessage.includes("unauthorized") || lowerMessage.includes("forbidden")) {
+  if (
+    lowerMessage.includes("permission") ||
+    lowerMessage.includes("unauthorized") ||
+    lowerMessage.includes("forbidden")
+  ) {
     return "Permission Denied: Please contact support if this issue persists.";
   }
-  if (lowerMessage.includes("configured") || lowerMessage.includes("not found") || lowerMessage.includes("missing")) {
+  if (
+    lowerMessage.includes("configured") ||
+    lowerMessage.includes("not found") ||
+    lowerMessage.includes("missing")
+  ) {
     return "Configuration Error: Please contact the administrator.";
   }
   if (lowerMessage.includes("validation") || lowerMessage.includes("invalid")) {
@@ -692,7 +705,11 @@ const getFriendlyErrorMessage = (error: any): string => {
   }
 
   // Return the actual error message if it's informative, otherwise use generic message
-  if (errorMessage && errorMessage !== "An unknown error occurred." && errorMessage.length < 200) {
+  if (
+    errorMessage &&
+    errorMessage !== "An unknown error occurred." &&
+    errorMessage.length < 200
+  ) {
     return `Error: ${errorMessage}`;
   }
 
@@ -1124,7 +1141,7 @@ export default function JoinUs() {
           {/* ──────────────────────────────────────── */}
           {/* B&W "Join the AI Revolution" BUTTON */}
           {/* ──────────────────────────────────────── */}
-          <div 
+          <div
             className="flex flex-col items-center mb-4 relative"
             onMouseEnter={() => setIsButtonHovered(true)}
             onMouseLeave={() => setIsButtonHovered(false)}
@@ -1139,82 +1156,90 @@ export default function JoinUs() {
               <div className="relative w-14 h-14">
                 {/* Black circular background */}
                 <div className="absolute w-14 h-14 bg-black rounded-full left-26 -translate-x-1/2 -z-10" />
-                
-                <motion.div 
+
+                <motion.div
                   className="absolute w-10 h-10 bg-white rounded-full left-26 -translate-x-1/2 shadow-lg"
                   animate={
-                    isButtonHovered ? {
-                      scale: [1, 1.1, 1],
-                      rotate: [0, -5, 5, 0],
-                      transition: {
-                        duration: 0.5,
-                        ease: "easeInOut"
-                      }
-                    } : {
-                      y: [0, -3, 0],
-                      transition: {
-                        duration: 2,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                      }
-                    }
+                    isButtonHovered
+                      ? {
+                          scale: [1, 1.1, 1],
+                          rotate: [0, -5, 5, 0],
+                          transition: {
+                            duration: 0.5,
+                            ease: "easeInOut",
+                          },
+                        }
+                      : {
+                          y: [0, -3, 0],
+                          transition: {
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                          },
+                        }
                   }
                 >
                   {/* Eyes */}
-                  <motion.div 
+                  <motion.div
                     className="absolute w-2 h-2 bg-black rounded-full"
                     animate={
-                      isButtonHovered ? {
-                        scaleY: [1, 0.2, 1],
-                        transition: {
-                          duration: 0.2,
-                          times: [0, 0.5, 1]
-                        }
-                      } : {}
+                      isButtonHovered
+                        ? {
+                            scaleY: [1, 0.2, 1],
+                            transition: {
+                              duration: 0.2,
+                              times: [0, 0.5, 1],
+                            },
+                          }
+                        : {}
                     }
-                    style={{ left: '25%', top: '40%' }}
+                    style={{ left: "25%", top: "40%" }}
                   />
-                  <motion.div 
+                  <motion.div
                     className="absolute w-2 h-2 bg-black rounded-full"
                     animate={
-                      isButtonHovered ? {
-                        scaleY: [1, 0.2, 1],
-                        transition: {
-                          duration: 0.2,
-                          times: [0, 0.5, 1]
-                        }
-                      } : {}
+                      isButtonHovered
+                        ? {
+                            scaleY: [1, 0.2, 1],
+                            transition: {
+                              duration: 0.2,
+                              times: [0, 0.5, 1],
+                            },
+                          }
+                        : {}
                     }
-                    style={{ right: '25%', top: '40%' }}
+                    style={{ right: "25%", top: "40%" }}
                   />
                   {/* Cheeks */}
-                  <motion.div 
+                  <motion.div
                     className="absolute w-2 h-1.5 bg-pink-300 rounded-full"
                     animate={{
-                      opacity: isButtonHovered ? 0.8 : 0.6
+                      opacity: isButtonHovered ? 0.8 : 0.6,
                     }}
-                    style={{ left: '15%', top: '55%' }}
+                    style={{ left: "15%", top: "55%" }}
                   />
-                  <motion.div 
+                  <motion.div
                     className="absolute w-2 h-1.5 bg-pink-300 rounded-full"
                     animate={{
-                      opacity: isButtonHovered ? 0.8 : 0.6
+                      opacity: isButtonHovered ? 0.8 : 0.6,
                     }}
-                    style={{ right: '15%', top: '55%' }}
+                    style={{ right: "15%", top: "55%" }}
                   />
                   {/* Mouth */}
-                  <motion.div 
+                  <motion.div
                     className="absolute w-4 h-2 border-b-2 border-black rounded-full"
                     animate={
-                      isButtonHovered ? {
-                        scaleY: 1.5,
-                        y: -1
-                      } : {
-                        scaleY: 1,
-                        y: 0
-                      }
+                      isButtonHovered
+                        ? {
+                            scaleY: 1.5,
+                            y: -1,
+                          }
+                        : {
+                            scaleY: 1,
+                            y: 0,
+                          }
                     }
-                    style={{ left: '30%', top: '60%' }}
+                    style={{ left: "30%", top: "60%" }}
                   />
                   {/* Sparkles on hover */}
                   <AnimatePresence>
@@ -1245,22 +1270,24 @@ export default function JoinUs() {
                 <motion.div
                   className="absolute -bottom-1 left-1/2 w-4 h-4 -translate-x-1/2"
                   animate={
-                    isButtonHovered ? {
-                      y: [0, -4, 0],
-                      transition: {
-                        duration: 0.3,
-                        repeat: Infinity,
-                        repeatType: "reverse"
-                      }
-                    } : {
-                      y: [0, 2, 0],
-                      transition: {
-                        duration: 1,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                        delay: 0.5
-                      }
-                    }
+                    isButtonHovered
+                      ? {
+                          y: [0, -4, 0],
+                          transition: {
+                            duration: 0.3,
+                            repeat: Infinity,
+                            repeatType: "reverse",
+                          },
+                        }
+                      : {
+                          y: [0, 2, 0],
+                          transition: {
+                            duration: 1,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                            delay: 0.5,
+                          },
+                        }
                   }
                 >
                   <div className="w-full h-full bg-white rotate-45 transform origin-center shadow-md" />
@@ -1295,88 +1322,88 @@ export default function JoinUs() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: "backOut" }}
             >
-            {/* Animated Sparkles (White) */}
-            <motion.div
-              className="absolute inset-0 pointer-events-none"
-              initial={{ opacity: 0 }}
-              whileHover={{ opacity: 1 }}
-            >
-              {[...Array(6)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="absolute w-1 h-1 bg-white rounded-full"
-                  initial={{ x: 0, y: 0, scale: 0 }}
-                  animate={{
-                    x: [0, (i % 2 === 0 ? 1 : -1) * (20 + i * 10), 0],
-                    y: [0, -30 - i * 5, 0],
-                    scale: [0, 1.5, 0],
-                    opacity: [0, 1, 0],
-                  }}
-                  transition={{
-                    duration: 0.8,
-                    repeat: Infinity,
-                    repeatDelay: 1 + i * 0.2,
-                    ease: "easeOut",
-                  }}
-                  style={{
-                    left: `${20 + i * 10}%`,
-                    top: "50%",
-                  }}
-                />
-              ))}
-            </motion.div>
-
-            {/* SVG with "clink" rotation */}
-            <motion.div
-              className="relative z-10"
-              animate={{ rotate: [0, -10, 10, 0] }}
-              transition={{
-                duration: 0.6,
-                repeat: Infinity,
-                repeatDelay: 3,
-                ease: "easeInOut",
-              }}
-            >
-              <svg
-                width="28"
-                height="28"
-                viewBox="0 0 200 200"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="drop-shadow-md"
+              {/* Animated Sparkles (White) */}
+              <motion.div
+                className="absolute inset-0 pointer-events-none"
+                initial={{ opacity: 0 }}
+                whileHover={{ opacity: 1 }}
               >
-                <g clipPath="url(#clip0_119_300)">
-                  <path
-                    d="M99.6778 105.287C99.6778 -81.6924 145.108 21.3021 98.3534 102.278C145.098 21.3021 257.091 9.12898 95.091 102.638C257.052 9.14845 190.528 99.9892 97.0387 99.9892C190.528 99.9892 257.062 190.859 95.091 97.3404C257.052 190.83 145.108 178.686 98.3534 97.7007C145.098 178.686 99.6778 281.759 99.6778 94.7012C99.6778 281.681 54.2379 178.686 100.993 97.7007C54.2477 178.686 -57.7451 190.859 104.255 97.3404C-57.7062 190.83 8.81757 99.9892 102.307 99.9892C8.81757 99.9892 -57.7159 9.12898 104.255 102.638C-57.7062 9.14845 54.2379 21.3021 100.993 102.278C54.2379 21.3021 99.6778 -81.7411 99.6778 105.287Z"
-                    fill="currentColor"
+                {[...Array(6)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute w-1 h-1 bg-white rounded-full"
+                    initial={{ x: 0, y: 0, scale: 0 }}
+                    animate={{
+                      x: [0, (i % 2 === 0 ? 1 : -1) * (20 + i * 10), 0],
+                      y: [0, -30 - i * 5, 0],
+                      scale: [0, 1.5, 0],
+                      opacity: [0, 1, 0],
+                    }}
+                    transition={{
+                      duration: 0.8,
+                      repeat: Infinity,
+                      repeatDelay: 1 + i * 0.2,
+                      ease: "easeOut",
+                    }}
+                    style={{
+                      left: `${20 + i * 10}%`,
+                      top: "50%",
+                    }}
                   />
-                </g>
-                <defs>
-                  <clipPath id="clip0_119_300">
-                    <rect width="200" height="200" fill="white" />
-                  </clipPath>
-                </defs>
-              </svg>
-            </motion.div>
+                ))}
+              </motion.div>
 
-            <span className="relative z-10 tracking-wide">
-              Join the AI Revolution
-            </span>
+              {/* SVG with "clink" rotation */}
+              <motion.div
+                className="relative z-10"
+                animate={{ rotate: [0, -10, 10, 0] }}
+                transition={{
+                  duration: 0.6,
+                  repeat: Infinity,
+                  repeatDelay: 3,
+                  ease: "easeInOut",
+                }}
+              >
+                <svg
+                  width="28"
+                  height="28"
+                  viewBox="0 0 200 200"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="drop-shadow-md"
+                >
+                  <g clipPath="url(#clip0_119_300)">
+                    <path
+                      d="M99.6778 105.287C99.6778 -81.6924 145.108 21.3021 98.3534 102.278C145.098 21.3021 257.091 9.12898 95.091 102.638C257.052 9.14845 190.528 99.9892 97.0387 99.9892C190.528 99.9892 257.062 190.859 95.091 97.3404C257.052 190.83 145.108 178.686 98.3534 97.7007C145.098 178.686 99.6778 281.759 99.6778 94.7012C99.6778 281.681 54.2379 178.686 100.993 97.7007C54.2477 178.686 -57.7451 190.859 104.255 97.3404C-57.7062 190.83 8.81757 99.9892 102.307 99.9892C8.81757 99.9892 -57.7159 9.12898 104.255 102.638C-57.7062 9.14845 54.2379 21.3021 100.993 102.278C54.2379 21.3021 99.6778 -81.7411 99.6778 105.287Z"
+                      fill="currentColor"
+                    />
+                  </g>
+                  <defs>
+                    <clipPath id="clip0_119_300">
+                      <rect width="200" height="200" fill="white" />
+                    </clipPath>
+                  </defs>
+                </svg>
+              </motion.div>
 
-            {/* Glow Pulse (White) */}
-            <motion.div
-              className="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-30"
-              animate={{
-                scale: [1, 1.3, 1],
-                opacity: [0.3, 0, 0.3],
-              }}
-              transition={{
-                duration: 1.5,
-                delay: 0.5,
-                repeat: Infinity,
-              }}
-            />
-          </motion.button>
+              <span className="relative z-10 tracking-wide">
+                Join the AI Revolution
+              </span>
+
+              {/* Glow Pulse (White) */}
+              <motion.div
+                className="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-30"
+                animate={{
+                  scale: [1, 1.3, 1],
+                  opacity: [0.3, 0, 0.3],
+                }}
+                transition={{
+                  duration: 1.5,
+                  delay: 0.5,
+                  repeat: Infinity,
+                }}
+              />
+            </motion.button>
           </div>
           <h1 className="text-5xl md:text-6xl font-black text-black mb-6">
             Registration <span className="text-black/60">Form</span>
