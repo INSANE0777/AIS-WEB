@@ -14,14 +14,14 @@ const leaders = [
   },
   {
     name: "Samaksh Tyagi",
-    role: "President",
+    role: "Ex-President",
     image: "/images/Sam Photo from AI Society.png",
     description: "Current president driving innovation and community growth",
     achievements: ["Led 25+ Projects", "Hackathon Champion", "Research Leader"],
   },
   {
     name: "Aviral Jain",
-    role: "Vice President",
+    role: "Ex-Vice President",
     image: "/images/Aviral.png",
 
     description: "Strategic operations leader and community builder",
