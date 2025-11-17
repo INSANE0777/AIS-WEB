@@ -67,8 +67,8 @@ const FloatingSvgBackground: React.FC = () => {
   const { reducedMotion } = useMobileOptimization();
 
   const svgs = [
-    `<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#clip0_234_943)"> <path fill-rule="evenodd" clip-rule="evenodd" d="M200 50V4.37114e-06L100 0V49.9803C99.9893 22.3751 77.6077 4.37114e-06 50 4.37114e-06H2.18557e-06V100H50C22.3858 100 -1.20706e-06 122.386 0 150L2.18557e-06 200H100L100 150C100 177.614 122.386 200 150 200H200L200 100H150.02C177.625 99.9893 200 77.6077 200 50Z" fill="url(#paint0_linear_234_943)"/> </g> <defs> <linearGradient id="paint0_linear_234_943" x1="27.5" y1="19" x2="149" y2="174.5" gradientUnits="userSpaceOnUse"> <stop stop-color="#FFD9A0"/> <stop offset="1" stop-color="#FFF5F1"/> </linearGradient> <clipPath id="clip0_234_943"> <rect width="200" height="200" fill="white"/> </clipPath> </defs> </svg>`,
-    `<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#clip0_234_869)"> <path fill-rule="evenodd" clip-rule="evenodd" d="M50 0H0V100H50C22.3858 100 0 122.386 0 150V200H100V150C100 177.614 122.386 200 150 200H200V100H150C177.614 100 200 77.6142 200 50V0H100V50C100 22.3858 77.6142 0 50 0ZM100 100H50C77.6142 100 100 122.386 100 150V100ZM100 100V50C100 77.6142 122.386 100 150 100H100Z" fill="url(#paint0_linear_234_869)"/> </g> <defs> <linearGradient id="paint0_linear_234_869" x1="100" y1="0" x2="100" y2="200" gradientUnits="userSpaceOnUse"> <stop stop-color="#A7B5FF"/> <stop offset="1" stop-color="#F3ACFF"/> </linearGradient> <clipPath id="clip0_234_869"> <rect width="200" height="200" fill="white"/> </clipPath> </defs> </svg>`,
+    `<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clipPath="url(#clip0_234_943)"> <path fillRule="evenodd" clipRule="evenodd" d="M200 50V4.37114e-06L100 0V49.9803C99.9893 22.3751 77.6077 4.37114e-06 50 4.37114e-06H2.18557e-06V100H50C22.3858 100 -1.20706e-06 122.386 0 150L2.18557e-06 200H100L100 150C100 177.614 122.386 200 150 200H200L200 100H150.02C177.625 99.9893 200 77.6077 200 50Z" fill="url(#paint0_linear_234_943)"/> </g> <defs> <linearGradient id="paint0_linear_234_943" x1="27.5" y1="19" x2="149" y2="174.5" gradientUnits="userSpaceOnUse"> <stop stopColor="#FFD9A0"/> <stop offset="1" stopColor="#FFF5F1"/> </linearGradient> <clipPath id="clip0_234_943"> <rect width="200" height="200" fill="white"/> </clipPath> </defs> </svg>`,
+    `<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clipPath="url(#clip0_234_869)"> <path fillRule="evenodd" clipRule="evenodd" d="M50 0H0V100H50C22.3858 100 0 122.386 0 150V200H100V150C100 177.614 122.386 200 150 200H200V100H150C177.614 100 200 77.6142 200 50V0H100V50C100 22.3858 77.6142 0 50 0ZM100 100H50C77.6142 100 100 122.386 100 150V100ZM100 100V50C100 77.6142 122.386 100 150 100H100Z" fill="url(#paint0_linear_234_869)"/> </g> <defs> <linearGradient id="paint0_linear_234_869" x1="100" y1="0" x2="100" y2="200" gradientUnits="userSpaceOnUse"> <stop stopColor="#A7B5FF"/> <stop offset="1" stopColor="#F3ACFF"/> </linearGradient> <clipPath id="clip0_234_869"> <rect width="200" height="200" fill="white"/> </clipPath> </defs> </svg>`,
   ];
 
   useEffect(() => {
@@ -674,6 +674,71 @@ export default function JoinUs() {
   const [isConfirming, setIsConfirming] = useState(false);
   const [dataToSubmit, setDataToSubmit] = useState<FormData | null>(null);
 
+  const [charCounts, setCharCounts] = useState({
+    portfolioLinks: 0,
+    elaborateChoices: 0,
+    hobbies: 0,
+    whyJoinUs: 0,
+  });
+
+  const WORD_LIMITS = {
+    portfolioLinks: 500,
+    elaborateChoices: 750,
+    hobbies: 750,
+    whyJoinUs: 750,
+  };
+
+  const handleTextChange = (
+    fieldName: keyof typeof WORD_LIMITS,
+    value: string
+  ) => {
+    setCharCounts((prev) => ({
+      ...prev,
+      [fieldName]: value.length,
+    }));
+  };
+
+  const CharacterCounter = ({
+    fieldName,
+    limit,
+  }: {
+    fieldName: keyof typeof WORD_LIMITS;
+    limit: number;
+  }) => {
+    const count = charCounts[fieldName];
+    const percentage = (count / limit) * 100;
+    const isWarning = percentage > 80;
+    const isExceeded = count > limit;
+
+    return (
+      <div className="flex items-center justify-between mt-1 text-xs">
+        <span
+          className={`${
+            isExceeded
+              ? "text-red-600 font-semibold"
+              : isWarning
+              ? "text-amber-600"
+              : "text-gray-500"
+          }`}
+        >
+          {count} / {limit} characters
+        </span>
+        <div className="w-24 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+          <div
+            className={`h-full transition-all ${
+              isExceeded
+                ? "bg-red-500"
+                : isWarning
+                ? "bg-amber-500"
+                : "bg-green-500"
+            }`}
+            style={{ width: `${Math.min(percentage, 100)}%` }}
+          />
+        </div>
+      </div>
+    );
+  };
+
   const {
     register,
     handleSubmit,
@@ -745,6 +810,13 @@ export default function JoinUs() {
           Object.entries(parsedData).forEach(([key, value]) => {
             if (key in formSchema._def.schema.shape && value) {
               setValue(key as keyof FormData, value as any);
+              // Update charCounts from loaded data
+              if (key in WORD_LIMITS) {
+                handleTextChange(
+                  key as keyof typeof WORD_LIMITS,
+                  value as string
+                );
+              }
             }
           });
         } catch (error) {
@@ -860,6 +932,12 @@ export default function JoinUs() {
         localStorage.removeItem("ais-registration-form");
       setDataToSubmit(null);
       reset();
+      setCharCounts({
+        portfolioLinks: 0,
+        elaborateChoices: 0,
+        hobbies: 0,
+        whyJoinUs: 0,
+      });
     } catch (error: any) {
       const friendlyError = getFriendlyErrorMessage(error);
       setErrorMessage(friendlyError);
@@ -1081,28 +1159,6 @@ export default function JoinUs() {
             <span className="relative z-10 tracking-wide">
               Join the AI Revolution
             </span>
-
-            {/* Glass Clink Icon */}
-            <motion.div
-              className="relative z-10 ml-1"
-              initial={{ x: -5, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.3 }}
-            >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                className="text-white"
-              >
-                <path d="M15 11L12 8L9 11" />
-                <path d="M12 8V16" />
-                <path d="M9 13L12 16L15 13" />
-              </svg>
-            </motion.div>
 
             {/* Glow Pulse (White) */}
             <motion.div
@@ -1382,7 +1438,7 @@ export default function JoinUs() {
 
         <div
           ref={formRef}
-          className="form-section bg-white p-6 sm:p-8 rounded-2xl border border-black/10 hover:border-black/20 transition-all scroll-mt-24"
+          className="form-section mb-12 bg-white p-6 sm:p-8 rounded-2xl border border-black/10 hover:border-black/20 transition-all scroll-mt-24"
         >
           <div className="flex items-center space-x-3 mb-8">
             <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center">
@@ -1588,8 +1644,16 @@ export default function JoinUs() {
                 <textarea
                   {...register("portfolioLinks")}
                   rows={3}
+                  maxLength={WORD_LIMITS.portfolioLinks}
+                  onChange={(e) =>
+                    handleTextChange("portfolioLinks", e.target.value)
+                  }
                   className="w-full px-4 py-3 border-2 border-black/20 rounded-2xl focus:outline-none focus:border-black transition-colors hover:border-black/40 resize-none"
                   placeholder="Add text, project descriptions, or links..."
+                />
+                <CharacterCounter
+                  fieldName="portfolioLinks"
+                  limit={WORD_LIMITS.portfolioLinks}
                 />
                 {renderError("portfolioLinks")}
               </div>
@@ -1604,8 +1668,16 @@ export default function JoinUs() {
                     {...register("elaborateChoices")}
                     required
                     rows={4}
+                    maxLength={WORD_LIMITS.elaborateChoices}
+                    onChange={(e) =>
+                      handleTextChange("elaborateChoices", e.target.value)
+                    }
                     className="w-full px-4 py-3 border-2 border-black/20 rounded-2xl focus:outline-none focus:border-black transition-colors hover:border-black/40 resize-none"
                     placeholder="Explain your department and skill choices"
+                  />
+                  <CharacterCounter
+                    fieldName="elaborateChoices"
+                    limit={WORD_LIMITS.elaborateChoices}
                   />
                   {renderError("elaborateChoices")}
                 </div>
@@ -1617,8 +1689,16 @@ export default function JoinUs() {
                     {...register("hobbies")}
                     required
                     rows={4}
+                    maxLength={WORD_LIMITS.hobbies}
+                    onChange={(e) =>
+                      handleTextChange("hobbies", e.target.value)
+                    }
                     className="w-full px-4 py-3 border-2 border-black/20 rounded-2xl focus:outline-none focus:border-black transition-colors hover:border-black/40 resize-none"
                     placeholder="Describe your hobbies in a few lines"
+                  />
+                  <CharacterCounter
+                    fieldName="hobbies"
+                    limit={WORD_LIMITS.hobbies}
                   />
                   {renderError("hobbies")}
                 </div>
@@ -1632,7 +1712,7 @@ export default function JoinUs() {
                     {...register("fictionalCharacter")}
                     required
                     className="w-full px-4 py-3 border-2 border-black/20 rounded-full focus:outline-none focus:border-black transition-colors hover:border-black/40"
-                    placeholder="A fictional character you resemble"
+                    placeholder="Name of the character"
                   />
                   {renderError("fictionalCharacter")}
                 </div>
@@ -1644,8 +1724,16 @@ export default function JoinUs() {
                     {...register("whyJoinUs")}
                     required
                     rows={4}
+                    maxLength={WORD_LIMITS.whyJoinUs}
+                    onChange={(e) =>
+                      handleTextChange("whyJoinUs", e.target.value)
+                    }
                     className="w-full px-4 py-3 border-2 border-black/20 rounded-2xl focus:outline-none focus:border-black transition-colors hover:border-black/40 resize-none"
                     placeholder="Write concisely. Don't use ChatGPT."
+                  />
+                  <CharacterCounter
+                    fieldName="whyJoinUs"
+                    limit={WORD_LIMITS.whyJoinUs}
                   />
                   {renderError("whyJoinUs")}
                 </div>
