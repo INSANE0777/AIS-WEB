@@ -10,14 +10,14 @@ const leaders = [
     role: "Mentor / Ex-Chairperson",
     image: "/images/Mann.png", 
     description: "Visionary leader who established the foundation of AI Society",
-    achievements: ["Founded AI Society", "Published 10+ Papers", "Industry Mentor"],
+    achievements: [ "Industry Mentor","Research Leader"],
   },
   {
     name: "Samaksh Tyagi",
     role: "Ex-President",
     image: "/images/Sam Photo from AI Society.png",
     description: "Current president driving innovation and community growth",
-    achievements: ["Led 25+ Projects", "Hackathon Champion", "Research Leader"],
+    achievements: ["Led 10+ Projects", "Hackathon Champion"],
   },
   {
     name: "Aviral Jain",
@@ -25,7 +25,7 @@ const leaders = [
     image: "/images/Aviral.png",
 
     description: "Strategic operations leader and community builder",
-    achievements: ["Operations Excellence", "Community Growth", "Partnership Development"],
+    achievements: ["Full stack developer", "AI Researcher"],
   },
 ]
 

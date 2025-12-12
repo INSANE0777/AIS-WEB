@@ -77,11 +77,11 @@ const teamData = {
   },
   community: {
     departments: {
-      "Social Media": ["Siddhi Sanap", "Someone"],
+      "Social Media": ["Siddhi Sanap", "Sidra Siddique"],
       "Design Team": ["Aditi Garg", "Aashima Makani"],
       "Management": ["Samridhi Agrawal", "Lakshay Khasa"],
       "Pr/Outreach": ["Ayushka Mandal", "Sarbojit Das", "Vamika Singh"],
-      "Multimedia": ["Harshiv Batra", "Krishna Goyal"],
+      "Multimedia": ["Krishna Goyal"],
     },
   },
 }
