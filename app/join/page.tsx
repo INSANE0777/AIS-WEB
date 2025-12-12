@@ -67,8 +67,8 @@ const FloatingSvgBackground: React.FC = () => {
   const { reducedMotion } = useMobileOptimization();
 
   const svgs = [
-    `<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#clip0_234_943)"> <path fill-rule="evenodd" clip-rule="evenodd" d="M200 50V4.37114e-06L100 0V49.9803C99.9893 22.3751 77.6077 4.37114e-06 50 4.37114e-06H2.18557e-06V100H50C22.3858 100 -1.20706e-06 122.386 0 150L2.18557e-06 200H100L100 150C100 177.614 122.386 200 150 200H200L200 100H150.02C177.625 99.9893 200 77.6077 200 50Z" fill="url(#paint0_linear_234_943)"/> </g> <defs> <linearGradient id="paint0_linear_234_943" x1="27.5" y1="19" x2="149" y2="174.5" gradientUnits="userSpaceOnUse"> <stop stop-color="#FFD9A0"/> <stop offset="1" stop-color="#FFF5F1"/> </linearGradient> <clipPath id="clip0_234_943"> <rect width="200" height="200" fill="white"/> </clipPath> </defs> </svg>`,
-    `<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#clip0_234_869)"> <path fill-rule="evenodd" clip-rule="evenodd" d="M50 0H0V100H50C22.3858 100 0 122.386 0 150V200H100V150C100 177.614 122.386 200 150 200H200V100H150C177.614 100 200 77.6142 200 50V0H100V50C100 22.3858 77.6142 0 50 0ZM100 100H50C77.6142 100 100 122.386 100 150V100ZM100 100V50C100 77.6142 122.386 100 150 100H100Z" fill="url(#paint0_linear_234_869)"/> </g> <defs> <linearGradient id="paint0_linear_234_869" x1="100" y1="0" x2="100" y2="200" gradientUnits="userSpaceOnUse"> <stop stop-color="#A7B5FF"/> <stop offset="1" stop-color="#F3ACFF"/> </linearGradient> <clipPath id="clip0_234_869"> <rect width="200" height="200" fill="white"/> </clipPath> </defs> </svg>`,
+    `<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clipPath="url(#clip0_234_943)"> <path fillRule="evenodd" clipRule="evenodd" d="M200 50V4.37114e-06L100 0V49.9803C99.9893 22.3751 77.6077 4.37114e-06 50 4.37114e-06H2.18557e-06V100H50C22.3858 100 -1.20706e-06 122.386 0 150L2.18557e-06 200H100L100 150C100 177.614 122.386 200 150 200H200L200 100H150.02C177.625 99.9893 200 77.6077 200 50Z" fill="url(#paint0_linear_234_943)"/> </g> <defs> <linearGradient id="paint0_linear_234_943" x1="27.5" y1="19" x2="149" y2="174.5" gradientUnits="userSpaceOnUse"> <stop stopColor="#FFD9A0"/> <stop offset="1" stopColor="#FFF5F1"/> </linearGradient> <clipPath id="clip0_234_943"> <rect width="200" height="200" fill="white"/> </clipPath> </defs> </svg>`,
+    `<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clipPath="url(#clip0_234_869)"> <path fillRule="evenodd" clipRule="evenodd" d="M50 0H0V100H50C22.3858 100 0 122.386 0 150V200H100V150C100 177.614 122.386 200 150 200H200V100H150C177.614 100 200 77.6142 200 50V0H100V50C100 22.3858 77.6142 0 50 0ZM100 100H50C77.6142 100 100 122.386 100 150V100ZM100 100V50C100 77.6142 122.386 100 150 100H100Z" fill="url(#paint0_linear_234_869)"/> </g> <defs> <linearGradient id="paint0_linear_234_869" x1="100" y1="0" x2="100" y2="200" gradientUnits="userSpaceOnUse"> <stop stopColor="#A7B5FF"/> <stop offset="1" stopColor="#F3ACFF"/> </linearGradient> <clipPath id="clip0_234_869"> <rect width="200" height="200" fill="white"/> </clipPath> </defs> </svg>`,
   ];
 
   useEffect(() => {
@@ -652,7 +652,8 @@ const getFriendlyErrorMessage = (error: any): string => {
   // Check for Appwrite error structure
   const appwriteError = error.response || error;
   const errorCode = appwriteError.code || error.code;
-  const errorMessage = appwriteError.message || error.message || "An unknown error occurred.";
+  const errorMessage =
+    appwriteError.message || error.message || "An unknown error occurred.";
   const errorType = appwriteError.type || error.type;
 
   // Handle specific Appwrite error codes
@@ -674,14 +675,26 @@ const getFriendlyErrorMessage = (error: any): string => {
 
   // Check error message patterns
   const lowerMessage = errorMessage.toLowerCase();
-  
-  if (lowerMessage.includes("network") || lowerMessage.includes("fetch") || lowerMessage.includes("connection")) {
+
+  if (
+    lowerMessage.includes("network") ||
+    lowerMessage.includes("fetch") ||
+    lowerMessage.includes("connection")
+  ) {
     return "Network Error: Please check your internet connection and try again.";
   }
-  if (lowerMessage.includes("permission") || lowerMessage.includes("unauthorized") || lowerMessage.includes("forbidden")) {
+  if (
+    lowerMessage.includes("permission") ||
+    lowerMessage.includes("unauthorized") ||
+    lowerMessage.includes("forbidden")
+  ) {
     return "Permission Denied: Please contact support if this issue persists.";
   }
-  if (lowerMessage.includes("configured") || lowerMessage.includes("not found") || lowerMessage.includes("missing")) {
+  if (
+    lowerMessage.includes("configured") ||
+    lowerMessage.includes("not found") ||
+    lowerMessage.includes("missing")
+  ) {
     return "Configuration Error: Please contact the administrator.";
   }
   if (lowerMessage.includes("validation") || lowerMessage.includes("invalid")) {
@@ -692,7 +705,11 @@ const getFriendlyErrorMessage = (error: any): string => {
   }
 
   // Return the actual error message if it's informative, otherwise use generic message
-  if (errorMessage && errorMessage !== "An unknown error occurred." && errorMessage.length < 200) {
+  if (
+    errorMessage &&
+    errorMessage !== "An unknown error occurred." &&
+    errorMessage.length < 200
+  ) {
     return `Error: ${errorMessage}`;
   }
 
@@ -719,6 +736,71 @@ export default function JoinUs() {
   const [isConfirming, setIsConfirming] = useState(false);
   const [dataToSubmit, setDataToSubmit] = useState<FormData | null>(null);
   const [isButtonHovered, setIsButtonHovered] = useState(false);
+
+  const [charCounts, setCharCounts] = useState({
+    portfolioLinks: 0,
+    elaborateChoices: 0,
+    hobbies: 0,
+    whyJoinUs: 0,
+  });
+
+  const WORD_LIMITS = {
+    portfolioLinks: 500,
+    elaborateChoices: 750,
+    hobbies: 750,
+    whyJoinUs: 750,
+  };
+
+  const handleTextChange = (
+    fieldName: keyof typeof WORD_LIMITS,
+    value: string
+  ) => {
+    setCharCounts((prev) => ({
+      ...prev,
+      [fieldName]: value.length,
+    }));
+  };
+
+  const CharacterCounter = ({
+    fieldName,
+    limit,
+  }: {
+    fieldName: keyof typeof WORD_LIMITS;
+    limit: number;
+  }) => {
+    const count = charCounts[fieldName];
+    const percentage = (count / limit) * 100;
+    const isWarning = percentage > 80;
+    const isExceeded = count > limit;
+
+    return (
+      <div className="flex items-center justify-between mt-1 text-xs">
+        <span
+          className={`${
+            isExceeded
+              ? "text-red-600 font-semibold"
+              : isWarning
+              ? "text-amber-600"
+              : "text-gray-500"
+          }`}
+        >
+          {count} / {limit} characters
+        </span>
+        <div className="w-24 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+          <div
+            className={`h-full transition-all ${
+              isExceeded
+                ? "bg-red-500"
+                : isWarning
+                ? "bg-amber-500"
+                : "bg-green-500"
+            }`}
+            style={{ width: `${Math.min(percentage, 100)}%` }}
+          />
+        </div>
+      </div>
+    );
+  };
 
   const {
     register,
@@ -791,6 +873,13 @@ export default function JoinUs() {
           Object.entries(parsedData).forEach(([key, value]) => {
             if (key in formSchema._def.schema.shape && value) {
               setValue(key as keyof FormData, value as any);
+              // Update charCounts from loaded data
+              if (key in WORD_LIMITS) {
+                handleTextChange(
+                  key as keyof typeof WORD_LIMITS,
+                  value as string
+                );
+              }
             }
           });
         } catch (error) {
@@ -906,6 +995,12 @@ export default function JoinUs() {
         localStorage.removeItem("ais-registration-form");
       setDataToSubmit(null);
       reset();
+      setCharCounts({
+        portfolioLinks: 0,
+        elaborateChoices: 0,
+        hobbies: 0,
+        whyJoinUs: 0,
+      });
     } catch (error: any) {
       const friendlyError = getFriendlyErrorMessage(error);
       setErrorMessage(friendlyError);
@@ -1046,7 +1141,7 @@ export default function JoinUs() {
           {/* ──────────────────────────────────────── */}
           {/* B&W "Join the AI Revolution" BUTTON */}
           {/* ──────────────────────────────────────── */}
-          <div 
+          <div
             className="flex flex-col items-center mb-4 relative"
             onMouseEnter={() => setIsButtonHovered(true)}
             onMouseLeave={() => setIsButtonHovered(false)}
@@ -1061,82 +1156,90 @@ export default function JoinUs() {
               <div className="relative w-14 h-14">
                 {/* Black circular background */}
                 <div className="absolute w-14 h-14 bg-black rounded-full left-26 -translate-x-1/2 -z-10" />
-                
-                <motion.div 
+
+                <motion.div
                   className="absolute w-10 h-10 bg-white rounded-full left-26 -translate-x-1/2 shadow-lg"
                   animate={
-                    isButtonHovered ? {
-                      scale: [1, 1.1, 1],
-                      rotate: [0, -5, 5, 0],
-                      transition: {
-                        duration: 0.5,
-                        ease: "easeInOut"
-                      }
-                    } : {
-                      y: [0, -3, 0],
-                      transition: {
-                        duration: 2,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                      }
-                    }
+                    isButtonHovered
+                      ? {
+                          scale: [1, 1.1, 1],
+                          rotate: [0, -5, 5, 0],
+                          transition: {
+                            duration: 0.5,
+                            ease: "easeInOut",
+                          },
+                        }
+                      : {
+                          y: [0, -3, 0],
+                          transition: {
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                          },
+                        }
                   }
                 >
                   {/* Eyes */}
-                  <motion.div 
+                  <motion.div
                     className="absolute w-2 h-2 bg-black rounded-full"
                     animate={
-                      isButtonHovered ? {
-                        scaleY: [1, 0.2, 1],
-                        transition: {
-                          duration: 0.2,
-                          times: [0, 0.5, 1]
-                        }
-                      } : {}
+                      isButtonHovered
+                        ? {
+                            scaleY: [1, 0.2, 1],
+                            transition: {
+                              duration: 0.2,
+                              times: [0, 0.5, 1],
+                            },
+                          }
+                        : {}
                     }
-                    style={{ left: '25%', top: '40%' }}
+                    style={{ left: "25%", top: "40%" }}
                   />
-                  <motion.div 
+                  <motion.div
                     className="absolute w-2 h-2 bg-black rounded-full"
                     animate={
-                      isButtonHovered ? {
-                        scaleY: [1, 0.2, 1],
-                        transition: {
-                          duration: 0.2,
-                          times: [0, 0.5, 1]
-                        }
-                      } : {}
+                      isButtonHovered
+                        ? {
+                            scaleY: [1, 0.2, 1],
+                            transition: {
+                              duration: 0.2,
+                              times: [0, 0.5, 1],
+                            },
+                          }
+                        : {}
                     }
-                    style={{ right: '25%', top: '40%' }}
+                    style={{ right: "25%", top: "40%" }}
                   />
                   {/* Cheeks */}
-                  <motion.div 
+                  <motion.div
                     className="absolute w-2 h-1.5 bg-pink-300 rounded-full"
                     animate={{
-                      opacity: isButtonHovered ? 0.8 : 0.6
+                      opacity: isButtonHovered ? 0.8 : 0.6,
                     }}
-                    style={{ left: '15%', top: '55%' }}
+                    style={{ left: "15%", top: "55%" }}
                   />
-                  <motion.div 
+                  <motion.div
                     className="absolute w-2 h-1.5 bg-pink-300 rounded-full"
                     animate={{
-                      opacity: isButtonHovered ? 0.8 : 0.6
+                      opacity: isButtonHovered ? 0.8 : 0.6,
                     }}
-                    style={{ right: '15%', top: '55%' }}
+                    style={{ right: "15%", top: "55%" }}
                   />
                   {/* Mouth */}
-                  <motion.div 
+                  <motion.div
                     className="absolute w-4 h-2 border-b-2 border-black rounded-full"
                     animate={
-                      isButtonHovered ? {
-                        scaleY: 1.5,
-                        y: -1
-                      } : {
-                        scaleY: 1,
-                        y: 0
-                      }
+                      isButtonHovered
+                        ? {
+                            scaleY: 1.5,
+                            y: -1,
+                          }
+                        : {
+                            scaleY: 1,
+                            y: 0,
+                          }
                     }
-                    style={{ left: '30%', top: '60%' }}
+                    style={{ left: "30%", top: "60%" }}
                   />
                   {/* Sparkles on hover */}
                   <AnimatePresence>
@@ -1167,22 +1270,24 @@ export default function JoinUs() {
                 <motion.div
                   className="absolute -bottom-1 left-1/2 w-4 h-4 -translate-x-1/2"
                   animate={
-                    isButtonHovered ? {
-                      y: [0, -4, 0],
-                      transition: {
-                        duration: 0.3,
-                        repeat: Infinity,
-                        repeatType: "reverse"
-                      }
-                    } : {
-                      y: [0, 2, 0],
-                      transition: {
-                        duration: 1,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                        delay: 0.5
-                      }
-                    }
+                    isButtonHovered
+                      ? {
+                          y: [0, -4, 0],
+                          transition: {
+                            duration: 0.3,
+                            repeat: Infinity,
+                            repeatType: "reverse",
+                          },
+                        }
+                      : {
+                          y: [0, 2, 0],
+                          transition: {
+                            duration: 1,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                            delay: 0.5,
+                          },
+                        }
                   }
                 >
                   <div className="w-full h-full bg-white rotate-45 transform origin-center shadow-md" />
@@ -1217,110 +1322,88 @@ export default function JoinUs() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: "backOut" }}
             >
-            {/* Animated Sparkles (White) */}
-            <motion.div
-              className="absolute inset-0 pointer-events-none"
-              initial={{ opacity: 0 }}
-              whileHover={{ opacity: 1 }}
-            >
-              {[...Array(6)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="absolute w-1 h-1 bg-white rounded-full"
-                  initial={{ x: 0, y: 0, scale: 0 }}
-                  animate={{
-                    x: [0, (i % 2 === 0 ? 1 : -1) * (20 + i * 10), 0],
-                    y: [0, -30 - i * 5, 0],
-                    scale: [0, 1.5, 0],
-                    opacity: [0, 1, 0],
-                  }}
-                  transition={{
-                    duration: 0.8,
-                    repeat: Infinity,
-                    repeatDelay: 1 + i * 0.2,
-                    ease: "easeOut",
-                  }}
-                  style={{
-                    left: `${20 + i * 10}%`,
-                    top: "50%",
-                  }}
-                />
-              ))}
-            </motion.div>
-
-            {/* SVG with "clink" rotation */}
-            <motion.div
-              className="relative z-10"
-              animate={{ rotate: [0, -10, 10, 0] }}
-              transition={{
-                duration: 0.6,
-                repeat: Infinity,
-                repeatDelay: 3,
-                ease: "easeInOut",
-              }}
-            >
-              <svg
-                width="28"
-                height="28"
-                viewBox="0 0 200 200"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="drop-shadow-md"
+              {/* Animated Sparkles (White) */}
+              <motion.div
+                className="absolute inset-0 pointer-events-none"
+                initial={{ opacity: 0 }}
+                whileHover={{ opacity: 1 }}
               >
-                <g clipPath="url(#clip0_119_300)">
-                  <path
-                    d="M99.6778 105.287C99.6778 -81.6924 145.108 21.3021 98.3534 102.278C145.098 21.3021 257.091 9.12898 95.091 102.638C257.052 9.14845 190.528 99.9892 97.0387 99.9892C190.528 99.9892 257.062 190.859 95.091 97.3404C257.052 190.83 145.108 178.686 98.3534 97.7007C145.098 178.686 99.6778 281.759 99.6778 94.7012C99.6778 281.681 54.2379 178.686 100.993 97.7007C54.2477 178.686 -57.7451 190.859 104.255 97.3404C-57.7062 190.83 8.81757 99.9892 102.307 99.9892C8.81757 99.9892 -57.7159 9.12898 104.255 102.638C-57.7062 9.14845 54.2379 21.3021 100.993 102.278C54.2379 21.3021 99.6778 -81.7411 99.6778 105.287Z"
-                    fill="currentColor"
+                {[...Array(6)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute w-1 h-1 bg-white rounded-full"
+                    initial={{ x: 0, y: 0, scale: 0 }}
+                    animate={{
+                      x: [0, (i % 2 === 0 ? 1 : -1) * (20 + i * 10), 0],
+                      y: [0, -30 - i * 5, 0],
+                      scale: [0, 1.5, 0],
+                      opacity: [0, 1, 0],
+                    }}
+                    transition={{
+                      duration: 0.8,
+                      repeat: Infinity,
+                      repeatDelay: 1 + i * 0.2,
+                      ease: "easeOut",
+                    }}
+                    style={{
+                      left: `${20 + i * 10}%`,
+                      top: "50%",
+                    }}
                   />
-                </g>
-                <defs>
-                  <clipPath id="clip0_119_300">
-                    <rect width="200" height="200" fill="white" />
-                  </clipPath>
-                </defs>
-              </svg>
-            </motion.div>
+                ))}
+              </motion.div>
 
-            <span className="relative z-10 tracking-wide">
-              Join the AI Revolution
-            </span>
-
-            {/* Glass Clink Icon */}
-            <motion.div
-              className="relative z-10 ml-1"
-              initial={{ x: -5, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.3 }}
-            >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                className="text-white"
+              {/* SVG with "clink" rotation */}
+              <motion.div
+                className="relative z-10"
+                animate={{ rotate: [0, -10, 10, 0] }}
+                transition={{
+                  duration: 0.6,
+                  repeat: Infinity,
+                  repeatDelay: 3,
+                  ease: "easeInOut",
+                }}
               >
-                <path d="M15 11L12 8L9 11" />
-                <path d="M12 8V16" />
-                <path d="M9 13L12 16L15 13" />
-              </svg>
-            </motion.div>
+                <svg
+                  width="28"
+                  height="28"
+                  viewBox="0 0 200 200"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="drop-shadow-md"
+                >
+                  <g clipPath="url(#clip0_119_300)">
+                    <path
+                      d="M99.6778 105.287C99.6778 -81.6924 145.108 21.3021 98.3534 102.278C145.098 21.3021 257.091 9.12898 95.091 102.638C257.052 9.14845 190.528 99.9892 97.0387 99.9892C190.528 99.9892 257.062 190.859 95.091 97.3404C257.052 190.83 145.108 178.686 98.3534 97.7007C145.098 178.686 99.6778 281.759 99.6778 94.7012C99.6778 281.681 54.2379 178.686 100.993 97.7007C54.2477 178.686 -57.7451 190.859 104.255 97.3404C-57.7062 190.83 8.81757 99.9892 102.307 99.9892C8.81757 99.9892 -57.7159 9.12898 104.255 102.638C-57.7062 9.14845 54.2379 21.3021 100.993 102.278C54.2379 21.3021 99.6778 -81.7411 99.6778 105.287Z"
+                      fill="currentColor"
+                    />
+                  </g>
+                  <defs>
+                    <clipPath id="clip0_119_300">
+                      <rect width="200" height="200" fill="white" />
+                    </clipPath>
+                  </defs>
+                </svg>
+              </motion.div>
 
-            {/* Glow Pulse (White) */}
-            <motion.div
-              className="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-30"
-              animate={{
-                scale: [1, 1.3, 1],
-                opacity: [0.3, 0, 0.3],
-              }}
-              transition={{
-                duration: 1.5,
-                delay: 0.5,
-                repeat: Infinity,
-              }}
-            />
-          </motion.button>
+              <span className="relative z-10 tracking-wide">
+                Join the AI Revolution
+              </span>
+
+              {/* Glow Pulse (White) */}
+              <motion.div
+                className="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-30"
+                animate={{
+                  scale: [1, 1.3, 1],
+                  opacity: [0.3, 0, 0.3],
+                }}
+                transition={{
+                  duration: 1.5,
+                  delay: 0.5,
+                  repeat: Infinity,
+                }}
+              />
+            </motion.button>
           </div>
           <h1 className="text-5xl md:text-6xl font-black text-black mb-6">
             Registration <span className="text-black/60">Form</span>
@@ -1586,7 +1669,7 @@ export default function JoinUs() {
 
         <div
           ref={formRef}
-          className="form-section bg-white p-6 sm:p-8 rounded-2xl border border-black/10 hover:border-black/20 transition-all scroll-mt-24"
+          className="form-section mb-12 bg-white p-6 sm:p-8 rounded-2xl border border-black/10 hover:border-black/20 transition-all scroll-mt-24"
         >
           <div className="flex items-center space-x-3 mb-8">
             <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center">
@@ -1792,8 +1875,16 @@ export default function JoinUs() {
                 <textarea
                   {...register("portfolioLinks")}
                   rows={3}
+                  maxLength={WORD_LIMITS.portfolioLinks}
+                  onChange={(e) =>
+                    handleTextChange("portfolioLinks", e.target.value)
+                  }
                   className="w-full px-4 py-3 border-2 border-black/20 rounded-2xl focus:outline-none focus:border-black transition-colors hover:border-black/40 resize-none"
                   placeholder="Add text, project descriptions, or links..."
+                />
+                <CharacterCounter
+                  fieldName="portfolioLinks"
+                  limit={WORD_LIMITS.portfolioLinks}
                 />
                 {renderError("portfolioLinks")}
               </div>
@@ -1808,8 +1899,16 @@ export default function JoinUs() {
                     {...register("elaborateChoices")}
                     required
                     rows={4}
+                    maxLength={WORD_LIMITS.elaborateChoices}
+                    onChange={(e) =>
+                      handleTextChange("elaborateChoices", e.target.value)
+                    }
                     className="w-full px-4 py-3 border-2 border-black/20 rounded-2xl focus:outline-none focus:border-black transition-colors hover:border-black/40 resize-none"
                     placeholder="Explain your department and skill choices"
+                  />
+                  <CharacterCounter
+                    fieldName="elaborateChoices"
+                    limit={WORD_LIMITS.elaborateChoices}
                   />
                   {renderError("elaborateChoices")}
                 </div>
@@ -1821,8 +1920,16 @@ export default function JoinUs() {
                     {...register("hobbies")}
                     required
                     rows={4}
+                    maxLength={WORD_LIMITS.hobbies}
+                    onChange={(e) =>
+                      handleTextChange("hobbies", e.target.value)
+                    }
                     className="w-full px-4 py-3 border-2 border-black/20 rounded-2xl focus:outline-none focus:border-black transition-colors hover:border-black/40 resize-none"
                     placeholder="Describe your hobbies in a few lines"
+                  />
+                  <CharacterCounter
+                    fieldName="hobbies"
+                    limit={WORD_LIMITS.hobbies}
                   />
                   {renderError("hobbies")}
                 </div>
@@ -1836,7 +1943,7 @@ export default function JoinUs() {
                     {...register("fictionalCharacter")}
                     required
                     className="w-full px-4 py-3 border-2 border-black/20 rounded-full focus:outline-none focus:border-black transition-colors hover:border-black/40"
-                    placeholder="A fictional character you resemble"
+                    placeholder="Name of the character"
                   />
                   {renderError("fictionalCharacter")}
                 </div>
@@ -1848,8 +1955,16 @@ export default function JoinUs() {
                     {...register("whyJoinUs")}
                     required
                     rows={4}
+                    maxLength={WORD_LIMITS.whyJoinUs}
+                    onChange={(e) =>
+                      handleTextChange("whyJoinUs", e.target.value)
+                    }
                     className="w-full px-4 py-3 border-2 border-black/20 rounded-2xl focus:outline-none focus:border-black transition-colors hover:border-black/40 resize-none"
                     placeholder="Write concisely. Don't use ChatGPT."
+                  />
+                  <CharacterCounter
+                    fieldName="whyJoinUs"
+                    limit={WORD_LIMITS.whyJoinUs}
                   />
                   {renderError("whyJoinUs")}
                 </div>
