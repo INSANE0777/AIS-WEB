@@ -19,7 +19,7 @@ import { gsap } from "gsap"
 // A simple hook to detect mobile screen sizes with debouncing
 const useIsMobile = (breakpoint = 768) => {
   const [isMobile, setIsMobile] = useState(false)
-  const timeoutRef = useRef<NodeJS.Timeout>()
+  const timeoutRef = useRef<NodeJS.Timeout>(undefined)
   
   useEffect(() => {
     const checkScreenSize = () => {

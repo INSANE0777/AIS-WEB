@@ -14,7 +14,7 @@ export default function NotFoundPage() {
   )
 }
 
-// 1. Message Display Component
+// 1. Message Display Component 
 function MessageDisplay() {
   const router = useRouter()
   const [isVisible, setIsVisible] = useState(false)
@@ -211,7 +211,7 @@ interface Circulo {
 
 function CircleAnimation() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const requestIdRef = useRef<number>()
+  const requestIdRef = useRef<number>(undefined)
   const timerRef = useRef(0)
   const circulosRef = useRef<Circulo[]>([])
 
