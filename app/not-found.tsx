@@ -14,7 +14,7 @@ export default function NotFoundPage() {
   )
 }
 
-// 1. Message Display Component
+// 1. Message Display Component 
 function MessageDisplay() {
   const router = useRouter()
   const [isVisible, setIsVisible] = useState(false)
