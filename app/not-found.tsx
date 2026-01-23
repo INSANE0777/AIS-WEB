@@ -211,7 +211,7 @@ interface Circulo {
 
 function CircleAnimation() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const requestIdRef = useRef<number>()
+  const requestIdRef = useRef<number>(undefined)
   const timerRef = useRef(0)
   const circulosRef = useRef<Circulo[]>([])
 

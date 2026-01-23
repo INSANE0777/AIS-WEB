@@ -8,7 +8,7 @@ interface FluidGradientProps {
 
 export default function FluidGradient({ className = "" }: FluidGradientProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const animationRef = useRef<number>()
+  const animationRef = useRef<number>(undefined)
 
   useEffect(() => {
     const canvas = canvasRef.current
