@@ -1,16 +1,18 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState, type FormEvent } from "react";
 import { gsap } from "gsap";
 // --- GSAP PREMIUM PLUGINS ---
 import { MorphSVGPlugin } from "gsap/MorphSVGPlugin";
 import { DrawSVGPlugin } from "gsap/DrawSVGPlugin";
 import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 
-import { Megaphone, Star } from "lucide-react";
+import { Megaphone, Star, ArrowRight } from "lucide-react";
 import dynamic from "next/dynamic";
 import TextReveal from "@/components/text-reveal";
 import InteractiveCard from "@/components/InteractiveCard";
+import { Client, Databases, ID } from "appwrite";
+import MagneticButton from "@/components/magnetic-button";
 
 // Dynamically import PDFFlipbook with no SSR to avoid webpack issues
 const PDFFlipbook = dynamic(() => import("@/components/pdf-flipbook"), {
@@ -27,9 +29,57 @@ const PDFFlipbook = dynamic(() => import("@/components/pdf-flipbook"), {
 
 const announcements: never[] = [];
 
+// Initialize Appwrite client
+const client = new Client()
+  .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)
+  .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID!)
+
+const databases = new Databases(client)
+
 export default function Announcements() {
   const pageRef = useRef<HTMLDivElement>(null);
   const headerIconRef = useRef<SVGSVGElement>(null);
+  const [email, setEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState("");
+
+  const handleNewsletterSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitMessage("");
+
+    try {
+      await databases.createDocument(
+        process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
+        process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID!,
+        ID.unique(),
+        {
+          newsletter: email,
+          subscribed_at: new Date().toISOString(),
+          status: "active",
+        }
+      );
+
+      setSubmitMessage("Successfully subscribed to newsletter!");
+      setEmail("");
+
+      setTimeout(() => {
+        setSubmitMessage("");
+      }, 3000);
+    } catch (error: any) {
+      console.error("Newsletter signup error:", error);
+      if (error.code === 409) {
+        setSubmitMessage("Email already subscribed!");
+      } else {
+        setSubmitMessage("Something went wrong. Please try again.");
+      }
+      setTimeout(() => {
+        setSubmitMessage("");
+      }, 3000);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   useEffect(() => {
     // --- Register GSAP plugins on the client ---
@@ -250,7 +300,10 @@ export default function Announcements() {
 
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="page-header text-center mb-20">
-          <div className="inline-flex items-center space-x-2 bg-black text-white px-6 py-3 rounded-full text-sm font-medium mb-8 cursor-pointer">
+          <button
+            onClick={() => document.getElementById('newsletter-section')?.scrollIntoView({ behavior: 'smooth' })}
+            className="inline-flex items-center space-x-2 bg-black text-white px-6 py-3 rounded-full text-sm font-medium mb-8 cursor-pointer hover:bg-black/90 transition-colors"
+          >
             <svg
               ref={headerIconRef}
               width="20"
@@ -275,7 +328,7 @@ export default function Announcements() {
             </svg>
 
             <span>Stay Updated</span>
-          </div>
+          </button>
           <TextReveal className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-black mb-6 leading-tight">
             Announcements
           </TextReveal>
@@ -284,6 +337,73 @@ export default function Announcements() {
             Stay informed about the latest updates, opportunities, and events
             from the AI Society community.
           </p>
+        </div>
+
+        <div id="newsletter-section" className="py-12">
+          <InteractiveCard
+            className="bg-white/90 backdrop-blur-sm rounded-2xl border border-black/10 p-8 sm:p-12 max-w-5xl mx-auto"
+            spillColor="rgba(0, 0, 0, 0.05)"
+          >
+            <div className="text-center mb-8">
+              <h3 className="text-2xl sm:text-3xl font-bold text-black mb-2">
+                AIS Newsletter Epoch - The Emergence
+              </h3>
+              <p className="text-black/60 text-base sm:text-lg">
+                Explore our latest newsletter with interactive page-flipping
+                experience
+              </p>
+            </div>
+            <PDFFlipbook pdfUrl="/AIS Newsletter.pdf" className="w-full" />
+          </InteractiveCard>
+        </div>
+
+        <div className="mt-8 mb-20 text-center">
+          <InteractiveCard
+            className="bg-black text-white p-8 sm:p-12 rounded-2xl max-w-5xl mx-auto"
+            spillColor="rgba(59, 130, 246, 0.2)"
+          >
+            <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-2 mb-4">
+              <Megaphone size={24} className="text-blue-400" />
+              <h2 className="text-2xl sm:text-3xl font-bold text-center">
+                Never Miss an Update
+              </h2>
+              <Star size={24} className="text-yellow-400" />
+            </div>
+            <p className="text-white/80 mb-8 max-w-2xl mx-auto text-sm sm:text-base px-4">
+              Subscribe to our announcement feed and get instant notifications
+              about important updates, deadlines, and opportunities.
+            </p>
+            <form onSubmit={handleNewsletterSubmit} className="relative max-w-md mx-auto">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="YOUR EMAIL"
+                disabled={isSubmitting}
+                className="w-full bg-white text-black px-6 py-4 rounded-full font-semibold placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-white/50 text-sm sm:text-base disabled:opacity-50"
+                required
+              />
+              <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
+                <MagneticButton
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-10 h-10 bg-black border border-white rounded-full flex items-center justify-center hover:scale-110 hover:bg-white hover:text-black transition-all disabled:opacity-50"
+                >
+                  <ArrowRight size={18} className="text-white group-hover:text-black" />
+                </MagneticButton>
+              </div>
+            </form>
+            {submitMessage && (
+              <div
+                className={`mt-4 text-sm font-medium ${submitMessage.includes("Success")
+                  ? "text-green-400"
+                  : "text-red-400"
+                  }`}
+              >
+                {submitMessage}
+              </div>
+            )}
+          </InteractiveCard>
         </div>
 
         <div className="py-12">
@@ -316,58 +436,11 @@ export default function Announcements() {
               </div>
               <div className="flex justify-center">
                 <img
-                  src="/images/ai911.jpeg"
+                  src="/images/Afjal.png"
                   alt="AI911 Event Poster"
                   className="w-full h-auto rounded-lg shadow-lg"
                 />
               </div>
-            </div>
-          </InteractiveCard>
-        </div>
-
-        <div className="py-20">
-          <InteractiveCard
-            className="bg-white/90 backdrop-blur-sm rounded-2xl border border-black/10 p-8 sm:p-12 max-w-5xl mx-auto"
-            spillColor="rgba(0, 0, 0, 0.05)"
-          >
-            <div className="text-center mb-8">
-              <h3 className="text-2xl sm:text-3xl font-bold text-black mb-2">
-                AIS Newsletter Epoch - The Emergence
-              </h3>
-              <p className="text-black/60 text-base sm:text-lg">
-                Explore our latest newsletter with interactive page-flipping
-                experience
-              </p>
-            </div>
-            <PDFFlipbook pdfUrl="/AIS Newsletter.pdf" className="w-full" />
-          </InteractiveCard>
-        </div>
-
-        <div className="mt-20 text-center">
-          <InteractiveCard
-            className="bg-black text-white p-8 sm:p-12 rounded-2xl"
-            spillColor="rgba(59, 130, 246, 0.2)"
-          >
-            <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-2 mb-4">
-              <Megaphone size={24} className="text-blue-400" />
-              <h2 className="text-2xl sm:text-3xl font-bold text-center">
-                Never Miss an Update
-              </h2>
-              <Star size={24} className="text-yellow-400" />
-            </div>
-            <p className="text-white/80 mb-8 max-w-2xl mx-auto text-sm sm:text-base px-4">
-              Subscribe to our announcement feed and get instant notifications
-              about important updates, deadlines, and opportunities.
-            </p>
-            <div className="flex flex-col sm:flex-row max-w-md mx-auto gap-4">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-4 py-3 rounded-full text-black focus:outline-none focus:ring-2 focus:ring-white text-sm sm:text-base"
-              />
-              <button className="bg-white text-black px-6 py-3 rounded-full font-semibold hover:bg-white/90 transition-colors text-sm sm:text-base whitespace-nowrap">
-                Subscribe
-              </button>
             </div>
           </InteractiveCard>
         </div>
